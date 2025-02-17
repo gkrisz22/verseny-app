@@ -1,18 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter, Poppins } from "next/font/google";
+import { Outfit, Inter, Poppins } from "next/font/google";
 import "./globals.css";
-import { WebVitals } from "@/analytics/web-vitals";
+import { WebVitals } from "@/lib/web-vitals";
 import { ThemeProvider } from "@/components/ui/theme-provider";
+import { NavigationBar } from "./(public)/_components/navigation-bar";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 const inter = Inter({
   variable: "--font-inter",
@@ -26,8 +18,18 @@ const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
 });
 
-// Add all fonts to the page
-const fonts = [geistSans, geistMono, inter, poppins];
+const outfit = Outfit({
+  variable: "--font-outfit",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+});
+
+const fonts = [
+  inter, 
+  poppins,
+  outfit,
+];
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -40,15 +42,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="hu" suppressHydrationWarning>
+    <html lang="hu">
       <body
-        className={`${fonts.map((font) => font.variable).join(" ")} antialiased font-primary`}>
+        className={`${fonts.map((font) => font.variable).join(" ")} antialiased font-primary bg-background text-foreground`}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
-            enableSystem
+            enableSystem={true}
           >
           <WebVitals />
+
+          <NavigationBar />
         {children}
         </ThemeProvider>
       </body>

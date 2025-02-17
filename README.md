@@ -3,6 +3,7 @@
 ## Dependencies
 - Zod: for schema validation (https://zod.dev)
 - ShadCN (https://shadcn.com)
+- Framer Motion (https://www.framer.com/motion)
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
