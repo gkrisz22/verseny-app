@@ -1,10 +1,10 @@
-import { ToggleTheme } from '@/components/ui/theme-toggler'
 import React from 'react'
+import { SignUpForm } from '../_components/sign-up-form'
 
 const SignUpPage = () => {
   return (
-    <div className='min-h-screen flex items-center justify-center bg-background'>
-        <ToggleTheme />
+    <div className="w-full max-w-sm">
+      <SignUpForm />
     </div>
   )
 }

@@ -12,6 +12,8 @@ export function ToggleTheme() {
   return (
     <Button variant={"ghost"} onClick={() => setTheme( theme === "dark" ? "light" : "dark" )}>
         {theme === "dark" ? <Sun /> : <Moon />}
+
+        <span className="sr-only">Témaváltás</span>
     </Button>
   )
 };

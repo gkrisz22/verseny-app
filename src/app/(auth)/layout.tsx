@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { Outfit, Inter, Poppins } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import { WebVitals } from "@/lib/web-vitals";
 import { ThemeProvider } from "@/components/ui/theme-provider";
-import { NavigationBar } from "./(public)/_components/navigation-bar";
-
+import { NavigationBar } from "../(public)/_components/navigation-bar";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const poppins = Poppins({
@@ -25,11 +25,7 @@ const outfit = Outfit({
   weight: ["400", "500", "600", "700"],
 });
 
-const fonts = [
-  inter, 
-  poppins,
-  outfit,
-];
+const fonts = [inter, poppins, outfit];
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -44,16 +40,20 @@ export default function RootLayout({
   return (
     <html lang="hu">
       <body
-        className={`${fonts.map((font) => font.variable).join(" ")} antialiased font-primary bg-background text-foreground`}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem={true}
-          >
+        className={`${fonts
+          .map((font) => font.variable)
+          .join(" ")} antialiased font-primary bg-background text-foreground`}
+      >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem={true}
+        >
           <WebVitals />
-
           <NavigationBar />
-        {children}
+          <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10 bg-background text-foreground">
+            {children}
+          </div>
         </ThemeProvider>
       </body>
     </html>

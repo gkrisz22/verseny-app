@@ -4,10 +4,18 @@
 - Zod: for schema validation (https://zod.dev)
 - ShadCN (https://shadcn.com)
 - Framer Motion (https://www.framer.com/motion)
+- AuthJS (https://authjs.com)
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
+
+### First Time Setup
+
+1. Clone the repository
+2. Run `npm install` to install the dependencies
+3. Write `npx auth secret` to generate a secret key for the authentication system
+4. Run `npm run dev` to start the development server
 
 First, run the development server:
 

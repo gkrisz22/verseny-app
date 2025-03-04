@@ -161,7 +161,7 @@ export function NavigationBar() {
             <ToggleTheme />
 
             <Link href="/sign-in" passHref className="hidden md:flex">
-              <Button variant={"outline"}>
+              <Button variant={"default"}>
                 Versenyfelület
                 <LogIn />
               </Button>
@@ -172,6 +172,7 @@ export function NavigationBar() {
               onClick={() => setIsOpen(!isOpen)}
             >
               <Menu />
+              <span className="sr-only">Navigáció megnyitása</span>
             </Button>
           </div>
         </Container>
