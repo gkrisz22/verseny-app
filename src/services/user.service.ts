@@ -26,7 +26,6 @@ export class UserService {
     }
 
     findUserByEmail(email: string) {
-        console.log('findUserByEmail', email);
         return this.db.user.findUnique({
             where: {
                 email,
@@ -34,3 +33,4 @@ export class UserService {
         });
     }
 }
+

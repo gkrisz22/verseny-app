@@ -110,7 +110,7 @@ export function SignUpForm({
                 </Alert>
               )
             }
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={isPending}>
               {isPending ? <><LoaderCircle className="animate-spin" /> <span>Ellenőrzés...</span></> : "Tovább"}
             </Button>
           </div>

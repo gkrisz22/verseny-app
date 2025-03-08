@@ -11,6 +11,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
+import { EvaluationTable } from "./evaluation-table";
 
 interface EvaluatorBuilderProps {
   stageId: string;
@@ -31,6 +32,10 @@ const EvaluatorBuilder = ({ stageId }: EvaluatorBuilderProps) => {
   ]);
 
   const [taskGroup, setTaskGroup] = React.useState<any>([1]);
+
+  return (
+    <EvaluationTable />
+  );
 
   return (
     <div className="mt-4 flex flex-col gap-4">

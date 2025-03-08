@@ -4,6 +4,7 @@ import "../globals.css";
 import { WebVitals } from "@/lib/web-vitals";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { NavigationBar } from "../(public)/_components/navigation-bar";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -49,6 +50,7 @@ export default function RootLayout({
           defaultTheme="system"
           enableSystem={true}
         >
+          <Toaster />
           <WebVitals />
           <NavigationBar />
           <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10 bg-background text-foreground">

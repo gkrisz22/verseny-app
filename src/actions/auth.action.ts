@@ -4,7 +4,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { UserService } from "@/services/user.service";
 import { ActionResponse } from "@/types/form/action-response";
-import { SignUpFirstStepData } from "@/types/form/auth";
+import { SignUpFirstStepData, SignUpTeacherData } from "@/types/form/auth";
 import { signIn } from "@/auth";
 import { redirect } from "next/navigation";
 
@@ -54,4 +54,49 @@ export const signInGithub = async () => {
 };
 export const signInGoogle = async () => {
     await signIn("google");
+};
+
+
+export const signUpTeacher = async (prevState: ActionResponse<SignUpTeacherData>, formData: FormData) : Promise<ActionResponse<SignUpTeacherData>> => {
+
+    const rawData = Object.fromEntries(formData.entries());
+    const schema = z.object({
+        email: z.string().email("Hibás e-mail cím formátum!"),
+        name: z.string().nonempty("Név megadása kötelező!"),
+        password: z.string().min(8, "A jelszó legalább 8 karakter hosszú legyen!"),
+        passwordConfirm: z.string().refine((data) => data === rawData.password, {
+            message: "A két jelszó nem egyezik meg!",
+        }),
+        subjects: z.string().nonempty("Tantárgyak megadása kötelező!"),
+    });
+
+    const validatedData = schema.safeParse(rawData);
+    
+    if(!validatedData.success) {
+        return {
+            success: false,
+            message: "Validációs hibák történtek.",
+            errors: validatedData.error.flatten().fieldErrors,
+            inputs: validatedData.data,
+        };
+    }
+
+    const { email, name, password, subjects } = validatedData.data;
+    const res = await userService.findUserByEmail(email);
+
+    if (res) {
+        return {
+            success: false,
+            message: "Validációs hibák történtek.",
+            errors: {
+                email: ["Ezzel az e-mail címmel már regisztráltak."],
+            }
+        };
+    }
+
+    return {
+        success: true,
+        message: "Sikeres regisztráció"
+    };
+
 };
