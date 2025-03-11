@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { getStageById } from "@/actions/competition.action";
 import { Calendar } from "lucide-react";
 import React from "react";
+import TaskUploader from "./_components/task-uploader";
+
 
 const VersenyKatForduloPage = async ({
   params,
@@ -20,7 +22,7 @@ const VersenyKatForduloPage = async ({
     <div className="flex flex-col space-y-6">
 
       <h1 className="text-2xl font-semibold">{stage.name} forduló</h1>
-      
+
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard icon={Calendar} title="Verseny" value={stage.createdAt.toLocaleDateString()} />
         <StatCard icon={Calendar} title="Verseny" value={stage.createdAt.toLocaleDateString()} />
@@ -46,9 +48,11 @@ const VersenyKatForduloPage = async ({
             </CardHeader>
             <CardContent>
               <p>Feladat feltöltés, megtekintés, értékelő</p>
+
+              <TaskUploader />
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Felügyelők</CardTitle>
@@ -59,7 +63,7 @@ const VersenyKatForduloPage = async ({
           </Card>
         </div>
       </div>
-      
+
 
     </div>
   );

@@ -10,6 +10,7 @@ import {
   LayoutGrid,
   PieChart,
   Settings2,
+  UniversityIcon,
 } from "lucide-react"
 
 import { NavMain } from "./nav-main"
@@ -33,26 +34,21 @@ export const data = {
   },
   teams: [
     {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
+      name: "Stromfeld Aurél Technikum",
+      logo: UniversityIcon,
+      role: "Adminisztrátor",
     },
     {
-      name: "Acme Corp.",
+      name: "Táncsics Mihály Technikum",
       logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
+      role: "Kapcsolattartó",
     },
   ],
   navMain: [
     {
       title: "Analítika",
       url: "/dashboard",
-      icon: PieChart
+      icon: PieChart,
     },
     {
       title: "Versenyek",
@@ -97,7 +93,7 @@ export const data = {
         {
           title: "Diákok",
           url: "#",
-        }
+        },
       ],
     },
     {
@@ -112,7 +108,7 @@ export const data = {
         {
           title: "Oldalak",
           url: "#",
-        }
+        },
       ],
     },
     {
@@ -139,7 +135,7 @@ export const data = {
       ],
     },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const sidebar = useSidebar();

@@ -11,7 +11,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
-import { EvaluationTable } from "./evaluation-table";
+import EvaluationTable from "./evaluation/evaluation-table";
 
 interface EvaluatorBuilderProps {
   stageId: string;

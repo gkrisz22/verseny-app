@@ -6,15 +6,14 @@ import type { CategoryFormData, CompetitionFormData, StageFormData } from "@/typ
 import { db } from "@/lib/db";
 import { ActionResponse } from "@/types/form/action-response";
 
-const competitionSchema = z.object({
-    name: z.string().min(3, "Túl rövid a verseny neve"),
-    from: z.string().min(3, "From is too short"),
-    to: z.string().min(3, "To is too short"),
-    type: z.string().nonempty("Típus nem lehet üres"),
-});
-
-export async function createCompetition(prevState: ActionResponse<CompetitionFormData>, formData: FormData) : Promise<ActionResponse<CompetitionFormData>> 
+export async function createCompetition(prevState: ActionResponse<CompetitionFormData>, formData: FormData) : Promise<ActionResponse<CompetitionFormData>>
 {
+    const competitionSchema = z.object({
+        name: z.string().min(3, "Túl rövid a verseny neve"),
+        from: z.string().min(3, "From is too short"),
+        to: z.string().min(3, "To is too short"),
+        type: z.string().nonempty("Típus nem lehet üres"),
+    });
     const rawData = Object.fromEntries(formData.entries());
 
     const validatedData = competitionSchema.safeParse(rawData);
@@ -86,7 +85,7 @@ export async function getCompetitionById(id: string) {
 
 export async function updateCompetition(prevState: ActionResponse<CompetitionFormData>, formData: FormData, id: string): Promise<ActionResponse<CompetitionFormData>> {
     const rawData = Object.fromEntries(formData.entries());
-    
+
     const validatedData = competitionSchema.safeParse(rawData);
 
     if(!validatedData.success){
@@ -171,7 +170,7 @@ export async function createCategory(prevState: ActionResponse<CategoryFormData>
             description: "",
         },
     });
-    
+
     revalidatePath("/");
 
     return {

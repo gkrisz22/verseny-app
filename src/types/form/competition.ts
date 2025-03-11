@@ -14,3 +14,8 @@ export interface StageFormData {
   categoryId: string;
   name: string;
 }
+
+export interface TaskFormData {
+  stageId: string;
+  file: File;
+}
