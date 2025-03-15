@@ -175,7 +175,7 @@ const SignUpSchoolForm = ({
                 <SelectContent id="regio">
                   <SelectGroup>
                     <SelectLabel>Régiók</SelectLabel>
-                    {regions.regions.map((r: any) => {
+                    {regions.regions.map((r) => {
                       return (
                         <SelectItem key={r.id} value={r.id}>
                           {r.name}
@@ -186,7 +186,7 @@ const SignUpSchoolForm = ({
                   <SelectSeparator />
                   <SelectGroup>
                     <SelectLabel>Vármegyék</SelectLabel>
-                    {regions.counties.map((r: any) => {
+                    {regions.counties.map((r) => {
                       return (
                         <SelectItem key={r.id} value={r.id}>
                           {r.name}

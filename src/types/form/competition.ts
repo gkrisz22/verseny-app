@@ -1,3 +1,5 @@
+import { File } from "@prisma/client";
+
 export interface CompetitionFormData {
   name: string;
   from: string;
@@ -17,5 +19,5 @@ export interface StageFormData {
 
 export interface TaskFormData {
   stageId: string;
-  file: File;
+  files: File
 }

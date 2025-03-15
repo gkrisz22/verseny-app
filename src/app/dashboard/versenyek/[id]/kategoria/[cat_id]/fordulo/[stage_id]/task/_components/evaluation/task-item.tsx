@@ -157,11 +157,11 @@ export default function TaskItem({
                                     value={editData.name}
                                     onChange={(e) => setEditData({ ...editData, name: e.target.value })}
                                     onKeyDown={(e) => handleKeyDown(e, "name")}
-                                    className="h-8 max-w-[200px]"
+                                    className="h-8 max-w-[400px] w-full text-base"
                                     autoFocus
                                 />
                             ) : (
-                                <div className="font-medium">{subtask.name}</div>
+                                <div className="font-medium text-base">{subtask.name}</div>
                             )}
                         </div>
 
@@ -208,8 +208,10 @@ export default function TaskItem({
                                     <div className="flex items-center gap-2">
                                         {subtask.taskType === "checkbox" && <Checkbox id={`checkbox-${subtask.id}`} className="mr-1" />}
                                         <Badge variant="outline" className="mr-2">
-                                            {subtask.points} pts
-                                            {hasChildren && ` + ${childrenPoints} = ${subtask.totalPoints}`}
+                                            {
+                                                hasChildren ? (subtask.points == 0 ? childrenPoints : subtask.points + " + " + childrenPoints) : subtask.points
+                                            } {" "}
+                                            pont
                                         </Badge>
                                     </div>
                                     <div className="flex items-center">

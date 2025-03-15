@@ -41,16 +41,8 @@ export default function EvaluationTable() {
         const newTaskId = uuidv4()
         const newTask: Task = {
             id: newTaskId,
-            name: `Task ${tasks.length + 1}`,
-            subtasks: [
-                {
-                id: uuidv4(),
-                name: "Feladat",
-                parentId: null,
-                points: 1,
-                taskType: "numerical" as TaskType,
-                },
-            ],
+            name: `${tasks.length + 1}. feladat`,
+            subtasks: [],
         }
 
     setTasks([...tasks, newTask])
@@ -72,6 +64,8 @@ export default function EvaluationTable() {
 
   const addSubtask = (taskId: string, parentId: string | null) => {
     const newSubtaskId = uuidv4()
+    const parentSubtask = tasks.find((task) => task.id === taskId)?.subtasks.find((subtask) => subtask.id === parentId)
+
     setTasks(
       tasks.map((task) => {
         if (task.id === taskId) {
@@ -81,10 +75,10 @@ export default function EvaluationTable() {
               ...task.subtasks,
               {
                 id: newSubtaskId,
-                name: "New Criteria",
+                name: "Feladat",
                 parentId,
-                points: 5,
-                taskType: "numerical",
+                points: 1,
+                taskType: parentSubtask?.taskType || "numerical",
               },
             ],
           }

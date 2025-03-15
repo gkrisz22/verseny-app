@@ -147,7 +147,7 @@ export default function TaskContent({
             <Button variant="ghost" size="icon" onClick={() => setEditingTaskName(true)}>
               <Edit className="h-4 w-4" />
             </Button>
-            <Badge variant="outline" className="ml-auto bg-background">
+            <Badge variant="outline" className="ml-auto bg-background px-2">
               <SigmaIcon />{totalPoints} pont
             </Badge>
           </div>

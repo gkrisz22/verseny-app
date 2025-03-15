@@ -5,6 +5,7 @@ import { getStageById } from "@/actions/competition.action";
 import { Calendar } from "lucide-react";
 import React from "react";
 import TaskUploader from "./_components/task-uploader";
+import TaskFiles from "./_components/task-files";
 
 
 const VersenyKatForduloPage = async ({
@@ -47,9 +48,7 @@ const VersenyKatForduloPage = async ({
               <CardTitle>Feladat</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>Feladat feltöltés, megtekintés, értékelő</p>
-
-              <TaskUploader />
+              <TaskFiles stageId={id} files={stage.files} />
             </CardContent>
           </Card>
 

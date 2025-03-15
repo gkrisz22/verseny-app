@@ -6,14 +6,16 @@ import type { CategoryFormData, CompetitionFormData, StageFormData } from "@/typ
 import { db } from "@/lib/db";
 import { ActionResponse } from "@/types/form/action-response";
 
+const competitionSchema = z.object({
+    name: z.string().min(3, "Túl rövid a verseny neve"),
+    from: z.string().min(3, "From is too short"),
+    to: z.string().min(3, "To is too short"),
+    type: z.string().nonempty("Típus nem lehet üres"),
+});
+
 export async function createCompetition(prevState: ActionResponse<CompetitionFormData>, formData: FormData) : Promise<ActionResponse<CompetitionFormData>>
 {
-    const competitionSchema = z.object({
-        name: z.string().min(3, "Túl rövid a verseny neve"),
-        from: z.string().min(3, "From is too short"),
-        to: z.string().min(3, "To is too short"),
-        type: z.string().nonempty("Típus nem lehet üres"),
-    });
+    
     const rawData = Object.fromEntries(formData.entries());
 
     const validatedData = competitionSchema.safeParse(rawData);
@@ -228,6 +230,8 @@ export async function createStage(prevState: ActionResponse<StageFormData>, form
             name,
             categoryId,
             description: "",
+            startDate: new Date(),
+            endDate: new Date(),
         },
     });
 
@@ -244,6 +248,9 @@ export async function getStageById(id: string) {
         where: {
             id,
         },
+        include: {
+            files: true
+        }
     });
 
     return res;
