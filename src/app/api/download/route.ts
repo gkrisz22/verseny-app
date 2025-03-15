@@ -50,6 +50,7 @@ export async function GET(req: NextRequest) {
             },
         });
     } catch (error) {
+        console.error(error);
         return NextResponse.json({ success: false, message: "Lejárt a fájl kiszolgálási ideje." }, { status: 500 });
     }
 }

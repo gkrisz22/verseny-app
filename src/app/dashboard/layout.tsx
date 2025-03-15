@@ -8,7 +8,6 @@ import { SessionProvider } from "next-auth/react";
 import {
   SidebarInset,
   SidebarProvider,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "./_components/sidebar/app-sidebar";
 import TopNav from "./_components/sidebar/top-nav";
@@ -27,14 +26,14 @@ const poppins = Poppins({
   display: "swap",
   weight: ["400", "500", "600", "700"],
 });
-
+/*
 const outfit = Outfit({
   variable: "--font-outfit",
   subsets: ["latin"],
   display: "swap",
   weight: ["400", "500", "600", "700"],
 });
-
+*/
 const fonts = [inter, poppins];
 
 export const metadata: Metadata = {

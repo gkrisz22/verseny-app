@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Check, FolderArchiveIcon, Grid, List, Search, SlidersHorizontal, Trash } from "lucide-react"
+import { Check, Grid, List, Search, SlidersHorizontal, Trash } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {

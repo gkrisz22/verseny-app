@@ -43,7 +43,7 @@ export function CreateCategoryDialog({
     }
 
     console.log(state);
-  }, [state.success]);
+  }, [state.success, state]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

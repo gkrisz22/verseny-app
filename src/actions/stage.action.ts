@@ -58,8 +58,8 @@ export async function assignTask(prevState: ActionResponse<TaskFormData>, formDa
     const getStageFiles = await stageService.getStageFiles(validatedData.data.stageId);
     const to_delete = getStageFiles.filter((file) => !newFiles.includes(file.id));
 
-    const assignFiles = await stageService.assignFilesToStage(validatedData.data.stageId, newFiles);
-    const removeFiles = await stageService.removeFiles(validatedData.data.stageId, to_delete.map((file) => file.id));
+    await stageService.assignFilesToStage(validatedData.data.stageId, newFiles);
+    await stageService.removeFiles(validatedData.data.stageId, to_delete.map((file) => file.id));
 
     revalidatePath("/");
 

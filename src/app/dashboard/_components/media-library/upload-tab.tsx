@@ -2,12 +2,11 @@
 
 import { useState, useCallback, useActionState, useEffect } from "react"
 import { useDropzone } from "react-dropzone"
-import { Upload, X, FileIcon, ImageIcon, FileTextIcon, FileVideoIcon, FolderArchiveIcon } from "lucide-react"
+import { Upload, X} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { uploadFiles } from "@/actions/media.actions"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { MediaFile } from "@/types/media"
 import Image from "next/image"
 
 interface UploadTabProps {
@@ -65,9 +64,9 @@ export function UploadTab({ onUploadSuccess, getFileIcon }: UploadTabProps) {
       onUploadSuccess()
       setFiles([])
     }
-  }, [state.success])
+  }, [state.success, onUploadSuccess])
 
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = async () => {
     const dataToSubmit = new FormData();
     
     files.forEach(fileItem => {

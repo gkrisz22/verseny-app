@@ -4,8 +4,6 @@ import * as React from "react"
 import {
   AudioWaveform,
   Bot,
-  Command,
-  GalleryVerticalEnd,
   Globe,
   LayoutGrid,
   PieChart,
@@ -14,7 +12,6 @@ import {
 } from "lucide-react"
 
 import { NavMain } from "./nav-main"
-import { NavUser } from "./nav-user"
 import { TeamSwitcher } from "./team-switcher"
 import {
   Sidebar,

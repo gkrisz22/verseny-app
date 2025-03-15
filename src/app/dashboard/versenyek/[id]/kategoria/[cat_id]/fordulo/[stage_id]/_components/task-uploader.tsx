@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
-import { set } from "date-fns";
 
 const initialState = {
   success: false,
@@ -40,7 +39,7 @@ const TaskUploader = ({
   const [localFiles, setLocalFiles] = React.useState<MediaFile[]>(files);
   const [modified, setModified] = React.useState(false);
 
-  const handleAssign = async (formData: FormData) => {
+  const handleAssign = async (_: FormData) => {
     const dataToSend = new FormData();
 
     dataToSend.append("stageId", stageId);

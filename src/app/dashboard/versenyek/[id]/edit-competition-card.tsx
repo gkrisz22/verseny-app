@@ -6,7 +6,7 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import React, { useRef } from "react";
+import React from "react";
 import CardTitle from "../../_components/common/card-title";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";

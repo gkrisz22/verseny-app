@@ -5,7 +5,6 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import React, { useMemo } from "react";
 import { data as NavData } from "./app-sidebar";
 import { NavUser } from "./nav-user";
-import { auth } from "@/auth";
 import { User } from "next-auth";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";

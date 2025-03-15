@@ -6,7 +6,7 @@ import { ArrowRight, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
-import { Category, Stage } from "@prisma/client";
+import { Stage } from "@prisma/client";
 
 
 export const columns: ColumnDef<Stage>[] = [

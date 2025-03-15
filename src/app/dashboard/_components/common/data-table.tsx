@@ -169,6 +169,7 @@ const ExportToXLSX = <TData,>({ data }: ExportToXLSXProps<TData>) => {
       XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
       XLSX.writeFile(workbook, "export.xlsx");
     } catch (error) {
+      console.error(error);
       toast.error("Hiba történt az exportálás során.");
     }
 

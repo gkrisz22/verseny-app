@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { getStageById } from "@/actions/competition.action";
 import { Calendar } from "lucide-react";
 import React from "react";
-import TaskUploader from "./_components/task-uploader";
 import TaskFiles from "./_components/task-files";
 
 

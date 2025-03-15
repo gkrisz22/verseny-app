@@ -52,9 +52,16 @@ export async function createCompetition(prevState: ActionResponse<CompetitionFor
         },
     });
 
+    if(!res){
+        return {
+            success: false,
+            message: "Hiba történt a verseny létrehozása közben.",
+        }
+    }
 
   revalidatePath("/");
 
+  
   return {
     success: true,
     message: "Verseny létrehozva.",
@@ -124,6 +131,13 @@ export async function updateCompetition(prevState: ActionResponse<CompetitionFor
             description: ''
         },
     });
+
+    if(!res){
+        return {
+            success: false,
+            message: "Hiba történt a verseny frissítése közben.",
+        }
+    }
 
     revalidatePath("/");
 

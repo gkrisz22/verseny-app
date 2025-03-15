@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
 import React, { useActionState } from "react";
-import { createCategory, createStage } from "@/actions/competition.action";
+import { createStage } from "@/actions/competition.action";
 import { StageFormData } from "@/types/form/competition";
 import { toast } from "sonner";
 import { Category } from "@prisma/client";
@@ -39,7 +39,7 @@ export function CreateStageDialog({ category }: { category: Category }) {
     }
 
     console.log(state);
-  }, [state.success]);
+  }, [state.success, state]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

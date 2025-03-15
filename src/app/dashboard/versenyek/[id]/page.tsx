@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { getCategoriesByCompetitionId, getCompetitionById } from "@/actions/competition.action";
 import React from "react";
