@@ -100,3 +100,4 @@ export const signUpTeacher = async (prevState: ActionResponse<SignUpTeacherData>
     };
 
 };
+

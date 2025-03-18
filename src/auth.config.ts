@@ -9,14 +9,14 @@ export default {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
+      const isOnDashboard = nextUrl.pathname.startsWith("/admin");
 
       const unauthorizedPaths = ["/sign-in", "/sign-up"];
 
       if (isOnDashboard) {
         return isLoggedIn;
       } else if (unauthorizedPaths.includes(nextUrl.pathname) && isLoggedIn) {
-        return Response.redirect(new URL("/dashboard", nextUrl));
+        return Response.redirect(new URL("/admin", nextUrl));
       }
       return true;
     },

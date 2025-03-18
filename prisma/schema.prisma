@@ -217,3 +217,13 @@ model File {
   stage       Stage?   @relation(fields: [stageId], references: [id])
   stageId     String?
 }
+
+
+model Role {
+  id          String    @id @default(cuid())
+  name        String
+  description String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+}
