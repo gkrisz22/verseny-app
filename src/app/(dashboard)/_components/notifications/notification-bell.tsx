@@ -29,10 +29,8 @@ export function NotificationBell() {
   const handleNotificationClick = (id: string, link?: string) => {
     markAsRead(id)
     setOpen(false)
-    // In a real app, you might want to navigate to the link
   }
 
-  // Get icon based on notification type
   const getNotificationIcon = (type: NotificationType) => {
     switch (type) {
       case "success":
@@ -59,15 +57,15 @@ export function NotificationBell() {
               {unreadCount > 9 ? "9+" : unreadCount}
             </Badge>
           )}
-          <span className="sr-only">Notifications</span>
+          <span className="sr-only">Értesítések</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80">
         <div className="flex items-center justify-between p-4">
-          <h3 className="font-medium">Notifications</h3>
+          <h3 className="font-medium">Értesítések</h3>
           {unreadCount > 0 && (
             <Button variant="ghost" size="sm" onClick={markAllAsRead}>
-              Mark all as read
+              Mind olvasott
             </Button>
           )}
         </div>
@@ -112,19 +110,19 @@ export function NotificationBell() {
                 className="flex w-full cursor-pointer items-center justify-center p-2 font-medium"
                 onClick={() => setOpen(false)}
               >
-                See all notifications
+                Összes értesítés
               </Link>
             </DropdownMenuItem>
           </>
         ) : (
           <div className="flex flex-col items-center justify-center p-4">
-            <p className="text-sm text-muted-foreground">No unread notifications</p>
+            <p className="text-sm text-muted-foreground">Nincs új értesítés.</p>
             <Link
               href="/organization/notifications"
               className="mt-2 text-sm font-medium text-primary"
               onClick={() => setOpen(false)}
             >
-              View all notifications
+              Összes értesítés
             </Link>
           </div>
         )}

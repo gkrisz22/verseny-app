@@ -16,7 +16,7 @@ const StatisticsSection = () => {
         <div className="text-3xl font-bold">3</div>
         <p className="text-xs text-muted-foreground">Jelenleg ennyi verseny elérhető</p>
         <Button asChild variant="ghost" className="mt-4 w-full justify-between">
-          <Link href="/organization/competitions/active">
+          <Link href="/organization/versenyek/aktualis">
             Tekintse meg őket
             <ArrowRight className="h-4 w-4" />
           </Link>

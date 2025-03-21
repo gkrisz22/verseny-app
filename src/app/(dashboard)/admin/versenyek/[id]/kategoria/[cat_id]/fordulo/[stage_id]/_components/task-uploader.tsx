@@ -3,7 +3,7 @@
 import { assignTask } from "@/actions/stage.action";
 import React, { useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import { MediaLibrary } from "@/app/dashboard/_components/media-library/media-library";
+import { MediaLibrary } from "@/app/(dashboard)/_components/media-library/media-library";
 import { MediaFile } from "@/types/media";
 import { File } from "@prisma/client";
 import {

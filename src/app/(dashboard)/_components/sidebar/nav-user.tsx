@@ -45,17 +45,18 @@ export  function NavUser({
           <DropdownMenuTrigger asChild>
             <Button
               variant={"ghost"}
+              size="sm"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
+              <Avatar className="size-7 rounded-lg">
                 <AvatarImage src={user?.image ?? undefined} alt={user.name ?? ""} />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
+              {/*<div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user?.name}</span>
                 <span className="truncate text-xs">{user?.email}</span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              <ChevronsUpDown className="ml-auto size-4" />*/}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent

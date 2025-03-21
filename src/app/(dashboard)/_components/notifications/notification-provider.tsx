@@ -42,100 +42,32 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     const mockNotifications: Notification[] = [
       {
         id: "1",
-        title: "New Competition Registration",
-        message: "A new participant has registered for Math Challenge 2025",
+        title: "Nemes Tihamér Alkalmazói Verseny",
+        message: "Elindult a jelentkezési időszak az idei versenyre",
         type: "info",
         status: "unread",
         createdAt: new Date(Date.now() - 1000 * 60 * 5), 
-        link: "/organization/competitions/active/1",
+        link: "/organization/versenyek/aktualis/1",
         sender: {
-          id: "admin1",
-          name: "System",
+          id: "1",
+          name: "Rendszer",
           avatar: "/placeholder.svg?height=32&width=32",
         },
       },
       {
         id: "2",
-        title: "Competition Update",
-        message: "Science Olympiad registration deadline has been extended",
+        title: "Verseny módosítás",
+        message: "A Nemes Tihamér verseny jelentkezési határideje meghosszabbodott.",
         type: "info",
         status: "unread",
-        createdAt: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-        link: "/organization/competitions/active/2",
+        createdAt: new Date(Date.now() - 1000 * 60 * 30),
+        link: "/organization/versenyek/aktualis/2",
         sender: {
-          id: "admin2",
-          name: "Admin",
+          id: "1",
+          name: "Rendszer",
           avatar: "/placeholder.svg?height=32&width=32",
         },
-      },
-      {
-        id: "3",
-        title: "New User Joined",
-        message: "Emily Davis has joined your organization as a teacher",
-        type: "success",
-        status: "unread",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-        link: "/organization/users",
-        sender: {
-          id: "system",
-          name: "System",
-          avatar: "/placeholder.svg?height=32&width=32",
-        },
-      },
-      {
-        id: "4",
-        title: "System Maintenance",
-        message: "The system will be down for maintenance on Sunday, 2AM-4AM",
-        type: "warning",
-        status: "read",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-        sender: {
-          id: "system",
-          name: "System",
-          avatar: "/placeholder.svg?height=32&width=32",
-        },
-      },
-      {
-        id: "5",
-        title: "Competition Results",
-        message: "Results for Math Challenge 2024 have been published",
-        type: "success",
-        status: "read",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
-        link: "/organization/competitions/previous/1",
-        sender: {
-          id: "admin1",
-          name: "System",
-          avatar: "/placeholder.svg?height=32&width=32",
-        },
-      },
-      {
-        id: "6",
-        title: "Account Security",
-        message: "Your password was changed successfully",
-        type: "success",
-        status: "archived",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7), // 7 days ago
-        sender: {
-          id: "system",
-          name: "System",
-          avatar: "/placeholder.svg?height=32&width=32",
-        },
-      },
-      {
-        id: "7",
-        title: "Payment Processed",
-        message: "Your payment for competition registration has been processed",
-        type: "info",
-        status: "archived",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14), // 14 days ago
-        link: "/organization/billing",
-        sender: {
-          id: "system",
-          name: "System",
-          avatar: "/placeholder.svg?height=32&width=32",
-        },
-      },
+      }
     ]
 
     setNotifications(mockNotifications)
@@ -180,7 +112,6 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
     setNotifications((prev) => [newNotification, ...prev])
 
-    // Show a toast for the new notification
     toast(notification.title, {
       description: notification.message,
     })

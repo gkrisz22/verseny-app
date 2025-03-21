@@ -13,24 +13,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 // Authentication schema
 model User {
-  id            String          @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String?
-  username      String?         @unique
-  email         String?         @unique
+  username      String?   @unique
+  email         String?   @unique
   emailVerified DateTime?
   image         String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   accounts      Account[]
   sessions      Session[]
   Authenticator Authenticator[]
   files         File[]
 }
- 
+
 model Account {
   id                       String  @id @default(cuid())
   userId                   String  @unique
@@ -46,35 +45,35 @@ model Account {
   session_state            String?
   refresh_token_expires_in Int?
   user                     User?   @relation(fields: [userId], references: [id])
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
- 
+
   @@unique([provider, providerAccountId])
   @@index([userId])
 }
- 
+
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id])
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
- 
+
   @@index([userId])
 }
- 
+
 model VerificationToken {
   identifier String
   token      String
   expires    DateTime
- 
+
   @@unique([identifier, token])
 }
- 
+
 model Authenticator {
   credentialID         String  @unique
   userId               String
@@ -84,22 +83,45 @@ model Authenticator {
   credentialDeviceType String
   credentialBackedUp   Boolean
   transports           String?
- 
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   @@id([userId, credentialID])
 }
 
 model Competition {
-  id          String    @id @default(cuid())
-  title       String 
-  description String    @db.Text
+  id          String            @id @default(cuid())
+  title       String
+  description String            @db.Text
   startDate   DateTime
   endDate     DateTime?
   status      CompetitionStatus @default(UPCOMING)
-  categories  Category[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  categories Category[]
+  typeId     String
+  type       CompetitionType @relation(fields: [typeId], references: [id])
+}
+
+model Information {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.Text
+  startDate   DateTime
+  endDate     DateTime?
+  status      String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model CompetitionType {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  competitions Competition[]
 }
 
 enum CompetitionStatus {
@@ -109,30 +131,33 @@ enum CompetitionStatus {
 }
 
 model Category {
-  id          String    @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
-  description String    @db.Text
-  competition Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
-  competitionId String
+  description String   @db.Text
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  stages      Stage[]
+  competitionId String
+  competition   Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+
+  stages Stage[]
 }
 
 model Stage {
-  id          String    @id @default(cuid())
+  id          String @id @default(cuid())
   name        String
   description String
-  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  categoryId  String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
 
-  status      StageStatus @default(UPCOMING)
-  startDate   DateTime
-  endDate     DateTime?
-  files       File[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  status    StageStatus @default(UPCOMING)
+  startDate DateTime
+  endDate   DateTime?
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  files      File[]
 }
 
 enum StageStatus {
@@ -141,89 +166,40 @@ enum StageStatus {
   FINISHED
 }
 
-/*
-
-model Teacher {
-  id          String    @id @default(cuid())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  schools     TeacherSchool[]
-}
-
-
-model School {
-  id          String    @id @default(cuid())
-  name        String
-  address     String
-  om          String    @default("N/A")
-  area        String
-  teachers    TeacherSchool[]
-  students    StudentSchool[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
-
-model Student {
-  id          String    @id @default(cuid())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  schools     StudentSchool[]
-}
-
-model TeacherSchool {
-  teacherId   String
-  schoolId    String
-  teacher     Teacher   @relation(fields: [teacherId], references: [id])
-  school      School    @relation(fields: [schoolId], references: [id])
-  from        DateTime
-  to          DateTime?
-  @@id([teacherId, schoolId])
-}
-
-model StudentSchool {
-  studentId   String
-  schoolId    String
-  student     Student   @relation(fields: [studentId], references: [id])
-  school      School    @relation(fields: [schoolId], references: [id])
-
-  from        DateTime
-  to          DateTime?
-
-  @@id([studentId, schoolId])
-}
-
-model Evaulator {
-  id          String    @id @default(cuid())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  User        User      @relation(fields: [userId], references: [id])
-  userId      String    @unique
-
-}
-*/
-
 model File {
-  id          String    @id @default(cuid())
-  name        String
-  fsName      String    @unique
-  path        String
-  size        Int
-  type        String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  user        User      @relation(fields: [uploadedBy], references: [id])
-  uploadedBy  String
+  id         String   @id @default(cuid())
+  name       String
+  fsName     String   @unique
+  path       String
+  size       Int
+  type       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [uploadedBy], references: [id])
+  uploadedBy String
 
-  stage       Stage?   @relation(fields: [stageId], references: [id])
-  stageId     String?
+  stage   Stage?  @relation(fields: [stageId], references: [id])
+  stageId String?
 }
-
 
 model Role {
-  id          String    @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
   description String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  permissions Permission[]
+}
+
+// can(user, 'action', 'resource')
+model Permission {
+  id          String   @id @default(cuid())
+  role        Role     @relation(fields: [roleId], references: [id])
+  roleId      String
+  resource    String
+  action      String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

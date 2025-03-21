@@ -62,13 +62,12 @@ export default async function RootLayout({
         >
           <WebVitals />
           <Toaster />
-
           <SessionProvider>
-            <SidebarProvider>
-              <AppSidebar variant="sidebar" />
-              <SidebarInset className="bg-muted">
+            <SidebarProvider className="bg-background">
+              <AppSidebar variant="floating" />
+              <SidebarInset>
                 <TopNav user={session?.user} />
-                <main className="flex-1 container mx-auto p-4 bg-muted">{children}</main>
+                <main className="flex-1 container mx-auto p-4 bg-background">{children}</main>
               </SidebarInset>
             </SidebarProvider>
           </SessionProvider>
