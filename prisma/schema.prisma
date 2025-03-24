@@ -192,7 +192,7 @@ model Role {
   permissions Permission[]
 }
 
-// can(user, 'action', 'resource')
+
 model Permission {
   id          String   @id @default(cuid())
   role        Role     @relation(fields: [roleId], references: [id])

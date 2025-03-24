@@ -1,23 +1,10 @@
-import { PrismaClient } from "@prisma/client";
 import path from "path";
 import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
+import { Service } from "./service";
 
 
-export class MediaService {
-    private static instance: MediaService;
-    private db: PrismaClient;
-
-    public static getInstance(prisma: PrismaClient): MediaService {
-        if (!MediaService.instance) {
-            MediaService.instance = new MediaService(prisma);
-        }
-        return MediaService.instance;
-    }
-
-    private constructor(prisma: PrismaClient) {
-        this.db = prisma;
-    }
+export class MediaService extends Service { 
 
     findFileById(id: string) {
         return this.db.file.findUnique({
@@ -28,6 +15,7 @@ export class MediaService {
     }
 
     async uploadFile(file: File, userId: string) {
+        console.log(" asdsaf");
         const uploadDir = path.join(process.cwd(), 'public/uploads');
         const fsName = uuidv4() + path.extname(file.name);
 
@@ -85,4 +73,5 @@ export class MediaService {
         return true;
     }
 }
-
+const mediaService = new MediaService();
+export default mediaService;

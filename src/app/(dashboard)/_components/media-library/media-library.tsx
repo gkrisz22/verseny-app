@@ -43,10 +43,10 @@ export function MediaLibrary({ onFilesSelected, trigger, selectedDefault }: Medi
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger || <Button variant="outline">Fájlkezelő</Button>}</DialogTrigger>
       <DialogContent className="sm:max-w-[900px] h-[80vh] max-h-[800px] flex flex-col p-0 gap-0">
-        <DialogHeader className="px-6 pt-6 pb-2">
+        <DialogHeader className="px-6 pt-6 pb-6">
           <DialogTitle>Média könyvtár</DialogTitle>
         </DialogHeader>
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden px-6">
           <TabsList className="px-6 grid w-full grid-cols-2">
             <TabsTrigger value="upload">Feltöltés</TabsTrigger>
             <TabsTrigger value="library">Könyvtár</TabsTrigger>

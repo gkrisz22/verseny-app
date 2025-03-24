@@ -5,7 +5,7 @@ import { useDropzone } from "react-dropzone"
 import { Upload, X} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { uploadFiles } from "@/actions/media.actions"
+import { uploadFiles } from "@/app/_actions/media.action"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import Image from "next/image"
 
@@ -107,6 +107,8 @@ export function UploadTab({ onUploadSuccess, getFileIcon }: UploadTabProps) {
                             src={fileItem.preview || "/placeholder.svg"}
                             alt="Előnézet"
                             className="h-full w-full object-cover"
+                            width={100}
+                            height={100}
                             onLoad={() => {
                               URL.revokeObjectURL(fileItem.preview!)
                             }}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { downloadFile } from "@/actions/media.actions";
+import { downloadFile } from "@/app/_actions/media.action";
 
 export function useDownload() {
     const [isPending, startTransition] = useTransition();

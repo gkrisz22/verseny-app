@@ -1,31 +1,24 @@
-import { db } from "@/lib/db";
-import { PrismaClient } from "@prisma/client";
+import { Competition } from "@prisma/client";
+import { CrudService, Service } from "./service";
+import { CompetitionDTO } from "@/lib/definitions";
 
-export class CompetitionService {
-  private static instance: CompetitionService;
-  private db: PrismaClient;
-
-  public static getInstance(prisma: PrismaClient): CompetitionService {
-    if (!CompetitionService.instance) {
-        CompetitionService.instance = new CompetitionService(prisma);
-    }
-    return CompetitionService.instance;
+export class CompetitionService extends Service implements CrudService<Competition> {
+  create(data: Competition): Promise<Competition> {
+    return this.db.competition.create({
+      data,
+    });
   }
 
-  private constructor(prisma: PrismaClient) {
-    this.db = prisma;
-  }
-
-  getAll () {
-    return this.db.competition.findMany();
-  }
-
-  findOne(id: string) {
+  get(id: string) {
     return this.db.competition.findUnique({
       where: {
         id,
       },
     });
+  }
+
+  getAll () {
+    return this.db.competition.findMany();
   }
 
   getActive() {
@@ -40,6 +33,24 @@ export class CompetitionService {
       },
     });
   }
+
+  update(id: string, data: Partial<Competition>) {
+    return this.db.competition.update({
+      where: {
+        id,
+      },
+      data,
+    }); 
+  }
+
+  delete(id: string) {
+    return this.db.competition.delete({
+      where: {
+        id,
+      },
+    }).then(() => true).catch(() => false);
+  }
 }
 
-export default CompetitionService.getInstance(db);
+const competitionService = new CompetitionService();
+export default competitionService;

@@ -1,22 +1,37 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
+import { CrudService, Service } from "./service";
 
-export class UserService {
-
-    private static instance: UserService;
-    private db: PrismaClient;
-
-    public static getInstance(prisma: PrismaClient): UserService {
-        if (!UserService.instance) {
-            UserService.instance = new UserService(prisma);
-        }
-        return UserService.instance;
+export class UserService extends Service implements CrudService<User> {
+    constructor() {
+        super();
     }
 
-    private constructor(prisma: PrismaClient) {
-        this.db = prisma;
+    async create(data: User) {
+        return this.db.user.create({
+            data,
+        }); 
     }
 
-    findUserById(id: string) {
+    async update(id: string, data: Partial<User>) {
+        return this.db.user.update({
+            where: {
+                id,
+            },
+            data,
+        }); 
+    }
+
+    async delete(id: string) {
+        const res = await this.db.user.delete({
+            where: {
+                id,
+            }, 
+        })
+
+        return res ? true : false;
+    }
+
+    async get(id: string) {
         return this.db.user.findUnique({
             where: {
                 id,
@@ -24,12 +39,17 @@ export class UserService {
         });
     }
 
-    findUserByEmail(email: string) {
-        return this.db.user.findUnique({
-            where: {
-                email,
-            },
+    async getWhere(params: Prisma.UserWhereInput) {
+        return this.db.user.findMany({
+            where: params,
         });
     }
+
+    async getAll() {
+        return this.db.user.findMany(); 
+    }
 }
+
+const userService = new UserService();
+export default userService;
 

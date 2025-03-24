@@ -11,13 +11,14 @@ export default {
   	extend: {
   		fontFamily: {
   			primary: [
-  				'var(--font-outfit)',
+				'var(--font-inter)',
   				'sans'
   			],
   			heading: [
   				'var(--font-poppins)',
   				'sans'
-  			]
+  			],
+			inter: ['var(--font-inter)'],
   		},
   		colors: {
   			background: 'hsl(var(--background))',

@@ -3,7 +3,7 @@ import { DataTable } from "../../../_components/common/data-table";
 import { columns } from "./columns";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { CreateCompetitionDialog } from "./create-competition-dialog";
-import { getCurrentCompetitions } from "@/actions/competition.action";
+import { getCurrentCompetitions } from "@/app/_actions/competition.action";
 import CardTitle from "../../../_components/common/card-title";
 
 export interface Competition {

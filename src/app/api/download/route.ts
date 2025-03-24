@@ -1,9 +1,8 @@
 import fs from "fs";
 import path from "path";
 import { NextRequest, NextResponse } from "next/server";
-import { MediaService } from "@/services/media.service";
-import { db } from "@/lib/db";
 import jwt from "jsonwebtoken";
+import mediaService from "@/services/media.service";
 
 export async function GET(req: NextRequest) {
     try {
@@ -21,7 +20,7 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ success: false, message: "Érvénytelen kérés." }, { status: 400 });
         }
 
-        const file = await MediaService.getInstance(db).findFileById(fileId);
+        const file = await mediaService.findFileById(fileId);
         if (!file) {
             return NextResponse.json({ success: false, message: "Fájl nem található a rendszerben." }, { status: 404 });
         }

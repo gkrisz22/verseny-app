@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import type { MediaFile } from "@/types/media"
-import { getMediaFiles } from "@/actions/media.actions"
+import { getMediaFiles } from "@/app/_actions/media.action"
 import { FileVideoIcon, FileIcon, FileTextIcon } from "lucide-react"
 import Image from "next/image"
 
@@ -182,7 +182,7 @@ export function LibraryTab({ selectedFiles, onSelectionChange, getFileIcon }: Li
               >
                 {file.type.startsWith("image") ? (
                   <div className="aspect-square">
-                    <Image src={file.path || "/placeholder.svg"} alt={file.name} className="h-full w-full object-cover" />
+                    <Image src={"/" + file.path || "/placeholder.svg"} alt={file.name} className="h-full w-full object-cover" width={300} height={300} />
                   </div>
                 ) : (
                   <div className="aspect-square bg-muted flex items-center justify-center">
@@ -231,6 +231,8 @@ export function LibraryTab({ selectedFiles, onSelectionChange, getFileIcon }: Li
                       src={file.path || "/placeholder.svg"}
                       alt={file.name}
                       className="h-full w-full object-cover rounded"
+                      width={100}
+                      height={100}
                     />
                   ) : (
                     <div className="h-full w-full bg-muted flex items-center justify-center rounded">

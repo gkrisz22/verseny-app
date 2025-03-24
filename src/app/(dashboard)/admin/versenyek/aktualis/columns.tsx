@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowRight, ArrowUpDown, MoreHorizontal, Trash2Icon } from "lucide-react";
+import { ArrowRight, ArrowUpDown , MoreHorizontal, Trash2Icon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,10 +14,11 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Competition } from "./page";
 import Link from "next/link";
-import { deleteCompetition } from "@/actions/competition.action";
+import { deleteCompetition } from "@/app/_actions/competition.action";
 import { toast } from "sonner";
 import { ConfirmDialog } from "../../../_components/common/confirm-dialog";
 import React from "react";
+import DataTableSortableHeader from "@/app/(dashboard)/_components/common/data-table-sortable-header";
 
 export const columns: ColumnDef<Competition>[] = [
   {
@@ -48,13 +49,7 @@ export const columns: ColumnDef<Competition>[] = [
     accessorKey: "title",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Név
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        <DataTableSortableHeader title="Név" column={column} />
       );
     },
   },
@@ -62,37 +57,20 @@ export const columns: ColumnDef<Competition>[] = [
     accessorKey: "startDate",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Kezdés
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        <DataTableSortableHeader title="Kezdés" column={column} />
       );
     },
     cell: ({ row }) => new Date(row.original.startDate!).toLocaleDateString(),
   },
   {
     accessorKey: "endDate",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          className="w-fit mx-auto"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Befejezés
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) =><DataTableSortableHeader title="Vége" column={column} />,
     cell: ({ row }) => new Date(row.original.endDate!).toLocaleDateString(),
   },
 
   {
     accessorKey: "status",
-    header: "Státusz",
+    header: ({ column }) => <DataTableSortableHeader title="Státusz" column={column} />,
     cell: ({ row }) => {
       const status = row.original?.status;
       return (

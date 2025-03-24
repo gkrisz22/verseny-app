@@ -1,10 +1,10 @@
 import { File } from "@prisma/client";
 
 export interface CompetitionFormData {
-  name: string;
-  from: string;
-  to: string;
-  type: string;
+  title: string;
+  startDate: string;
+  endDate: string;
+  typeId: string;
 }
 
 export interface CategoryFormData {

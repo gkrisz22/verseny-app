@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import React, { useActionState } from "react";
-import { createCompetition } from "@/actions/competition.action";
+import { createCompetition } from "@/app/_actions/competition.action";
 import { CompetitionFormData } from "@/types/form/competition";
 import { toast } from "sonner";
 import { ActionResponse } from "@/types/form/action-response";
@@ -69,31 +69,31 @@ export function CreateCompetitionDialog() {
         </DialogHeader>
         <form className="flex flex-col space-y-4" action={action}>
           <div className="flex flex-col space-y-2">
-            <Label htmlFor="name">Verseny neve</Label>
-            <Input id="name" name="name" type="text" className={state?.errors?.name && "border-red-500"} defaultValue={state.inputs?.name} />
+            <Label htmlFor="title">Verseny neve</Label>
+            <Input id="title" name="title" type="text" className={state?.errors?.title && "border-red-500"} defaultValue={state.inputs?.title} />
             {
-              state?.errors?.name && <p className="text-red-500 text-sm">{state.errors.name}</p>
+              state?.errors?.title && <p className="text-red-500 text-sm">{state.errors.title}</p>
             }
           </div>
           <div className="flex flex-col space-y-2">
-            <Label htmlFor="from">Kezdés</Label>
+            <Label htmlFor="startDate">Kezdés</Label>
             <DatePicker date={fromDate} setDate={setFromDate} label="Válasszon dátumot" />
-            <Input type="hidden" name="from" value={fromDate?.toISOString()} />
+            <Input type="hidden" name="startDate" value={fromDate?.toISOString()} />
             {
-              state?.errors?.from && <p className="text-red-500 text-sm">{state.errors.from}</p>
+              state?.errors?.startDate && <p className="text-red-500 text-sm">{state.errors.startDate}</p>
             }
           </div>
           <div className="flex flex-col space-y-2">
-            <Label htmlFor="to">Befejezés</Label>
+            <Label htmlFor="endDate">Befejezés</Label>
             <DatePicker date={toDate} setDate={setToDate} label="Válasszon dátumot" />
-            <Input type="hidden" name="to" value={toDate?.toISOString()} />
+            <Input type="hidden" name="endDate" value={toDate?.toISOString()} />
             {
-              state?.errors?.to && <p className="text-red-500 text-sm">{state.errors.to}</p>
+              state?.errors?.endDate && <p className="text-red-500 text-sm">{state.errors.endDate}</p>
             }
           </div>
           <div className="flex flex-col space-y-2">
             <Label htmlFor="type">Verseny típusa</Label>
-            <Select  name="type">
+            <Select  name="typeId">
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Válasszon egy típust!" />
               </SelectTrigger>
@@ -106,7 +106,7 @@ export function CreateCompetitionDialog() {
               </SelectContent>
             </Select>
             {
-              state?.errors?.type && <p className="text-red-500 text-sm">{state.errors.type}</p>
+              state?.errors?.typeId && <p className="text-red-500 text-sm">{state.errors.typeId}</p>
             }
           </div>
           {

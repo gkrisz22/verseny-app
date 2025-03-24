@@ -10,7 +10,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { GraduationCap, LoaderCircle, SchoolIcon, UserIcon } from "lucide-react"
 import Link from "next/link"
 import { useActionState } from "react";
-import { signUpFirstStep } from "@/actions/auth.action"
+import { signUpFirstStep } from "@/app/_actions/auth.action"
 import { ActionResponse } from "@/types/form/action-response"
 import { SignUpFirstStepData } from "@/types/form/auth"
 import { Alert, AlertDescription } from "@/components/ui/alert";

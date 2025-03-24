@@ -1,4 +1,4 @@
-import { signInGithub, signInGoogle } from "@/actions/auth.action";
+import { signInGithub, signInGoogle } from "@/app/_actions/auth.action";
 import { Button } from "@/components/ui/button";
 
 export default function ThirdPartySignIn() {
