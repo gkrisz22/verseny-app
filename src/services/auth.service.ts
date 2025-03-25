@@ -1,24 +1,33 @@
-import { Prisma, User } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { CrudService, Service } from "./service";
+import { SignUpSchoolSkeletonDTO } from "@/lib/definitions";
 
-export class UserService extends Service implements CrudService<User> {
+export class AuthService extends Service {
     constructor() {
         super();
     }
 
-    async create(data: User) {
-        return this.db.user.create({
+    async create(data: SignUpSchoolSkeletonDTO) {
+        return this.db.organization.create({
             data,
         }); 
     }
 
-    async createSkeleton(data: Prisma.UserCreateInput) {
-        return this.db.user.create({
+    async createOrganization(data: SignUpSchoolSkeletonDTO) {
+        
+        return this.db.organization.create({
             data,
         });
     }
 
-    async update(id: string, data: Partial<User>) {
+    async createSchoolSkeleton(data: { name: string, organizationId: string }) {
+
+        return this.db.school.create({
+            data,
+        });
+    }
+
+    async update(id: string, data: Partial<SignUpSchoolSkeletonDTO>) {
         return this.db.user.update({
             where: {
                 id,
@@ -56,6 +65,6 @@ export class UserService extends Service implements CrudService<User> {
     }
 }
 
-const userService = new UserService();
-export default userService;
+const authService = new AuthService();
+export default authService;
 

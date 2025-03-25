@@ -91,7 +91,7 @@ export function NavigationBar() {
           <NavigationMenu className="hidden md:flex  text-lg">
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="bg-transparent text-base">
+                <NavigationMenuTrigger className="bg-transparent">
                   Versenyeink
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>

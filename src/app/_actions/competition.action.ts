@@ -31,7 +31,7 @@ export async function createCompetition(prevState: ActionResponse<CompetitionFor
                 endDate: new Date(endDate),
                 status: "UPCOMING",
                 description: '',
-                typeId: "cm8j6h4ib0000t5oc4pccscjt",
+                typeId: "cm8odb5w30000bqtjl5usmuyu",
             }, 
         })
 

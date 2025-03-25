@@ -3,11 +3,14 @@
 import { z } from "zod";
 import userService from "@/services/user.service";
 import { ActionResponse } from "@/types/form/action-response";
-import { SignUpFirstStepData, SignUpTeacherData } from "@/types/form/auth";
+import { SignUpFirstStepData, SignUpSchoolContactData, SignUpSchoolSkeletonData, SignUpTeacherData } from "@/types/form/auth";
 import { signIn } from "@/auth";
 import { redirect } from "next/navigation";
-import { signUpStepOneSchema } from "@/lib/definitions";
+import { OrganizationContactDTO, organizationContactSchema, SignUpSchoolSkeletonDTO, signUpSchoolSkeletonSchema, signUpStepOneSchema } from "@/lib/definitions";
 import { logger } from "@/lib/logger";
+import { actionHandler } from "@/lib/action.handler";
+import authService from "@/services/auth.service";
+import organizationService from "@/services/organization.service";
 
 // Actions
 export const signUpFirstStep = async (prevState: ActionResponse<SignUpFirstStepData>, formData: FormData) : Promise<ActionResponse<SignUpFirstStepData>> => {
@@ -96,3 +99,80 @@ export const signUpTeacher = async (prevState: ActionResponse<SignUpTeacherData>
 
 };
 
+
+
+export const signUpSchoolSkeleton = async (prevState: ActionResponse<SignUpSchoolSkeletonDTO>, formData: FormData) : Promise<ActionResponse<SignUpSchoolSkeletonDTO>> => {
+
+    return actionHandler<SignUpSchoolSkeletonDTO>(signUpSchoolSkeletonSchema, formData, async (data) => {
+        const res = await userService.getWhere({ email: data.email });
+
+        if (res && res.length > 0) {
+            return {
+                success: false,
+                message: "Validációs hibák történtek.",
+                errors: {
+                    email: ["Ezzel az e-mail címmel már regisztráltak."],
+                }
+            };
+        }
+
+        if(data.om && data.om.length > 0)
+        {
+            const existing = await organizationService.getWhere({ om: data.om });
+            if (existing && existing.length > 0) {
+                return {
+                    success: false,
+                    message: "Validációs hibák történtek.",
+                    errors: {
+                        om: ["Ezzel az OM azonosítóval már regisztráltak egy szervezetet."],
+                    }
+                };
+            }
+        }
+
+        const org = await organizationService.create({
+            name: data.name,
+            om: data.om,
+            region: data.region,
+            city: data.city,
+            postalCode: data.postalCode,
+            address: data.address
+        });
+        if (!org) {
+            return {
+                success: false,
+                message: "Hiba történt a regisztráció során.",
+            };
+        }
+
+        
+        redirect(`/sign-up/complete/${org.id}`);
+    });
+};
+
+export const signUpSchoolAdminContact = async (prevState: ActionResponse<OrganizationContactDTO>, formData: FormData) : Promise<ActionResponse<OrganizationContactDTO>> => {
+
+    return actionHandler<OrganizationContactDTO>(organizationContactSchema, formData, async (data) => {
+        const org = await organizationService.getWhere({ id: data.id });
+        if (!org) {
+            return {
+                success: false,
+                message: "Hiba történt a regisztráció során.",
+            };
+        }
+        const res = await organizationService.update(data.id, {
+            contactEmail: data.email,
+            contactName: data.name,
+            phoneNumber: data.phone,
+        });
+
+        if (!res) {
+            return {
+                success: false,
+                message: "Hiba történt a regisztráció során.",
+            }
+        }
+
+        redirect(`/sign-up/complete/`);     
+    });
+};

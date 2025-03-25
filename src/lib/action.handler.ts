@@ -31,7 +31,7 @@ export async function actionHandler<T>(
         success: false,
         message: "Validációs hiba történt",
         errors: validatedData.error.flatten().fieldErrors as { [K in keyof T]?: string[] },
-        inputs: validatedData.data
+        inputs: rawData as T,
       };
     }
 

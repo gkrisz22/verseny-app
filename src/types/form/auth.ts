@@ -10,3 +10,19 @@ export interface SignUpTeacherData {
     passwordConfirm: string;
     subjects:   string;
 }
+
+export interface SignUpSchoolSkeletonData {
+    email:      string;
+    name:       string;
+    om:         string;
+    region:     string;
+    postalCode: string;
+    city:       string;
+    address:    string;
+}
+
+export interface SignUpSchoolContactData {
+    phone:      string;
+    email:      string;
+    website:    string;
+}

@@ -53,7 +53,7 @@ export default function RootLayout({
           <Toaster />
           <WebVitals />
           <NavigationBar />
-          <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10 bg-background text-foreground">
+          <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10 bg-muted text-foreground">
             {children}
           </div>
         </ThemeProvider>
