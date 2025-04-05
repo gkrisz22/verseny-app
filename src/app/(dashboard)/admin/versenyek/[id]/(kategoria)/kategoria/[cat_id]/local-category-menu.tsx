@@ -12,7 +12,7 @@ const _MENU_ITEMS = [
     icon: BadgeInfoIcon,
   },
   {
-    title: 'Kategóriák',
+    title: 'Fordulók',
     url: '',
     icon: LayersIcon,
   },
@@ -28,9 +28,10 @@ const _MENU_ITEMS = [
   },
 ];
 
-const LocalVersenyMenu = ({ competitionId }: { competitionId: string }) => {
+const LocalKategoriaMenu = ({ competitionId }: { competitionId: string }) => {
   return (
     <LocalSideMenu items={_MENU_ITEMS} basePath={`/admin/versenyek/${competitionId}/`}>
+      
       <LocalSideMenu.Footer>
         <Button variant="ghost" className="w-full inline-flex justify-start text-destructive">
           <span className="inline-flex items-center justify-center w-10 h-10 rounded-full">
@@ -39,8 +40,12 @@ const LocalVersenyMenu = ({ competitionId }: { competitionId: string }) => {
           <span className="ml-2">Verseny törlése</span>
         </Button>
       </LocalSideMenu.Footer>
+
+      <LocalSideMenu.Previous href={`/admin/versenyek/${competitionId}/`}>
+        Vissza a versenyhez
+      </LocalSideMenu.Previous>
     </LocalSideMenu>
   );
 };
 
-export default LocalVersenyMenu;
+export default LocalKategoriaMenu;

@@ -22,7 +22,7 @@ const VersenyKategoriaDetailsPage = async ({
 
     return (
         <div>
-          <Link href={`/dashboard/versenyek/${category.competitionId}/`}>
+          <Link href={`/admin/versenyek/${category.competitionId}/`}>
             <Button variant="link" size="sm">
               Vissza a kategóriákhoz
             </Button>
@@ -35,12 +35,7 @@ const VersenyKategoriaDetailsPage = async ({
 
               <CardContent>
                 <DataTable columns={columns} data={category.stages} searchParams={{ column: "name", placeholder: "Keresés forduló név alapján" }} />
-
               </CardContent>
-
-              <CardFooter>
-
-              </CardFooter>
             </Card>
         </div>
     );
