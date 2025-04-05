@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -14,11 +16,18 @@ import { InfoIcon } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import ThirdPartySignIn from "./third-party-login"
 import Link from "next/link"
+import { signInAction } from "@/app/_actions/auth.action";
+import { useActionState } from "react";
 
 export function SignInForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const [state, action, isPending] = useActionState(signInAction, {
+    message: '',
+    success: false,
+  });
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -29,7 +38,7 @@ export function SignInForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form action={action} className="grid gap-6">
             <div className="grid gap-6">
               <div className="grid gap-6">
                 <div className="grid gap-2">
@@ -37,6 +46,8 @@ export function SignInForm({
                   <Input
                     id="email"
                     type="email"
+                    name="email"
+                    defaultValue={state?.inputs?.email}
                     required
                   />
                 </div>
@@ -50,10 +61,10 @@ export function SignInForm({
                       Elfelejtette a jelszavát?
                     </a>
                   </div>
-                  <Input id="password" type="password" required />
+                  <Input id="password" type="password" name="password" required defaultValue={state?.inputs?.password} />
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="remember" className="rounded" />
+                  <Checkbox id="remember" className="rounded" name="remember" />
                   <Label htmlFor="remember">Emlékezzen rám</Label>
                   <Popover>
                     <PopoverTrigger>
@@ -74,8 +85,13 @@ export function SignInForm({
                     </PopoverContent>
                   </Popover>
                 </div>
-                <Button type="submit" className="w-full">
-                  Bejelentkezés
+                {state?.errors && (
+                  <div className="text-red-500 text-sm">
+                    {state?.message}
+                  </div>
+                )}
+                <Button type="submit" className="w-full" disabled={isPending}>
+                  Bejelentkezés {isPending && "Folyamatban..."}
                 </Button>
               </div>
               <div className="text-center text-sm">

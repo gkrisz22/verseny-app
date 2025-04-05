@@ -1,5 +1,5 @@
-'use server';
 import nodemailer from 'nodemailer';
+import { logger } from './logger';
 
 export class Mailer {
   private transporter: nodemailer.Transporter;
@@ -25,7 +25,7 @@ export class Mailer {
   }
 }
 
-export class AccountMailer extends Mailer {
+class AccountMailer extends Mailer {
   constructor() {
     super();
   }
@@ -33,8 +33,19 @@ export class AccountMailer extends Mailer {
     const subject = 'Fiók megerősítése';
     const html = `
       <p>A regisztráció folytatásához, kérjük folytassa az alábbi linken:</p>
-      <a href="${process.env.NEXTAUTH_URL}/verify/token=${token}">Megerősítés</a>
+      <a href="${process.env.URL}/sign-up/verify/${token}">Megerősítés</a>
     `;
-    await this.sendEmail(to, subject, html);
+    try {
+      await this.sendEmail(to, subject, html);
+      logger.info(`Verification email sent to ${to}`);
+      return true;
+    }
+    catch (error) {
+      console.error(error);
+      logger.error(`Error sending verification email to ${to}`);
+      return false;
+    }
   }
 }
+
+export const accountMailer = new AccountMailer();

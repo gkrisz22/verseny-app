@@ -1,11 +1,12 @@
+"use client";
 import React from 'react'
-import { auth } from "@/auth"
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { StudentSelector } from '../_components/student-selector/student-selector';
+import { Student } from '@/types/student';
 
 
-const Dashboard = async () => {
-    const session = await auth();
-
+const Dashboard = () => {
+  const [selectedStudents, setSelectedStudents] = React.useState<Student[]>([])
   return (
     <div>
         <Card>
@@ -13,8 +14,15 @@ const Dashboard = async () => {
             <h2 className='text-xl'>Dashboard</h2>
           </CardHeader>
           <CardContent>
-            <p>Welcome {session?.user?.name}</p>
+          <StudentSelector
+                  onSelectMultiple={setSelectedStudents}
+                  selectedStudents={selectedStudents}
+                  buttonLabel="Select students"
+                  multipleSelection={true}
+                />
           </CardContent>
+
+     
 
         </Card>
             

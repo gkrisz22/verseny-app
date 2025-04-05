@@ -14,6 +14,57 @@ export class OrganizationService extends Service {
         }); 
     }
 
+    async assignUser(orgId: string, userId: string) {
+        const organization = await this.db.organization.findUnique({
+            where: {
+                id: orgId,
+            },
+        });
+
+        if (!organization) {
+            return false;
+        }
+
+        const user = await this.db.user.findUnique({
+            where: {
+                id: userId,
+            },
+        });
+
+        if (!user) {
+            return false;
+        }
+
+        return this.db.organizationUser.create({
+            data: {
+                organizationId: orgId,
+                userId,
+            },
+        });
+    }
+
+    async assignRole(orgId: string, userId: string, roleId: string) {
+        const organizationUser = await this.db.organizationUser.findUnique({
+            where: {
+                organizationId_userId: {
+                    organizationId: orgId,
+                    userId: userId,
+                },
+            },
+        });
+    
+        if (!organizationUser) {
+            return false;
+        }
+    
+        return this.db.organizationRole.create({
+            data: {
+                roleId,
+                organizationUserId: organizationUser.id,
+            },
+        });
+    }
+
     async update(id: string, data: Partial<Prisma.OrganizationUpdateInput>) {
         return this.db.organization.update({
             where: {

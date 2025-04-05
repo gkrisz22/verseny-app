@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { CrudService, Service } from "./service";
+import { Service } from "./service";
 import { SignUpSchoolSkeletonDTO } from "@/lib/definitions";
 
 export class AuthService extends Service {
@@ -7,27 +7,53 @@ export class AuthService extends Service {
         super();
     }
 
-    async create(data: SignUpSchoolSkeletonDTO) {
-        return this.db.organization.create({
+    async create(data: { email: string, name: string }) {
+        return this.db.user.create({
             data,
         }); 
     }
 
-    async createOrganization(data: SignUpSchoolSkeletonDTO) {
-        
-        return this.db.organization.create({
-            data,
+    async createToken(token: string, userId: string) {
+        return this.db.verificationToken.create({
+            data: {
+                token,
+                userId,
+                expires: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 óra
+            },
         });
     }
 
-    async createSchoolSkeleton(data: { name: string, organizationId: string }) {
+    async validateToken(token: string) {
+        const now = new Date();
+        const res = await this.db.verificationToken.findUnique({
+            where: {
+                token,
+            },
+        });
 
-        return this.db.school.create({
-            data,
+        if (!res) {
+            return false;
+        }
+
+        if (res.expires < now) {
+            return false;
+        }
+
+        return res;
+    }
+
+    async markTokenAsUsed(token: string) {
+        return this.db.verificationToken.update({
+            where: {
+                token,
+            },
+            data: {
+                expires: new Date(),
+            },
         });
     }
 
-    async update(id: string, data: Partial<SignUpSchoolSkeletonDTO>) {
+    async update(id: string, data: Partial<Prisma.UserUpdateInput>) {
         return this.db.user.update({
             where: {
                 id,
@@ -50,6 +76,17 @@ export class AuthService extends Service {
         return this.db.user.findUnique({
             where: {
                 id,
+            },
+        });
+    }
+
+    async getWithOrg(id: string) {
+        return this.db.user.findUnique({
+            where: {
+                id,
+            },
+            include: {
+                memberships: true,
             },
         });
     }
