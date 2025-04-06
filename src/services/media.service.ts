@@ -15,7 +15,6 @@ export class MediaService extends Service {
     }
 
     async uploadFile(file: File, userId: string) {
-        console.log(" asdsaf");
         const uploadDir = path.join(process.cwd(), 'public/uploads');
         const fsName = uuidv4() + path.extname(file.name);
 

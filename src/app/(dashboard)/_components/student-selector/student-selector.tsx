@@ -117,7 +117,7 @@ export function StudentSelector({
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex items-center justify-between">
             <TabsList>
-              <TabsTrigger value="library">Adatbázis</TabsTrigger>
+              <TabsTrigger value="library">Diákok</TabsTrigger>
               <TabsTrigger value="upload">Létrehozás</TabsTrigger>
             </TabsList>
             <Button variant="outline" size="sm" onClick={() => setActiveTab("upload")} className="gap-1">

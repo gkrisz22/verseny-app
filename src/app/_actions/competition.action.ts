@@ -6,8 +6,10 @@ import type { CategoryFormData, CompetitionFormData, StageFormData } from "@/typ
 import { db } from "@/lib/db";
 import { ActionResponse } from "@/types/form/action-response";
 import { actionHandler } from "@/lib/action.handler";
-import { competitionSchema } from "@/lib/definitions";
+import { CompetitionDTO, competitionSchema, CompetitionUpdateMetadataDTO, competitionUpdateMetadataSchema } from "@/lib/definitions";
 import { logger } from "@/lib/logger";
+import { Competition } from "@prisma/client";
+import competitionService from "@/services/competition.service";
 
 export async function createCompetition(prevState: ActionResponse<CompetitionFormData>, formData: FormData) : Promise<ActionResponse<CompetitionFormData>>
 {
@@ -50,6 +52,35 @@ export async function createCompetition(prevState: ActionResponse<CompetitionFor
         }
     });
 }
+
+export async function updateCompetitionMetadata(prevState: ActionResponse<CompetitionUpdateMetadataDTO>, formData: FormData): Promise<ActionResponse<CompetitionUpdateMetadataDTO>> {
+    
+    return actionHandler<CompetitionUpdateMetadataDTO>(competitionUpdateMetadataSchema, formData, async (validatedData) => {
+      const { id, title, description } = validatedData;
+
+      const res = await competitionService.update(id, {
+        title,
+        description,
+      });
+
+      if (!res) {
+        return {
+          success: false,
+          inputs: validatedData,
+          message: "Hiba történt a verseny frissítése közben.",
+        }; 
+      }
+
+      revalidatePath("/");
+
+      return {
+        success: true,
+        inputs: validatedData,
+        message: "Verseny frissítve.",
+      };
+    });
+}
+
 
 export async function getCurrentCompetitions() {
    const res =  await db.competition.findMany({

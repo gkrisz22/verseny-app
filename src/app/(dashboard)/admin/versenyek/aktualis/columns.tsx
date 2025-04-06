@@ -107,7 +107,7 @@ const Actions = ({ data }: { data: Competition }) => {
 
   return (
     <div className="flex items-center justify-center gap-2">
-      <DropdownMenu>
+      {/*<DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm" className="flex items-center">
             <MoreHorizontal className="h-4 w-4" />
@@ -134,7 +134,7 @@ const Actions = ({ data }: { data: Competition }) => {
             </DropdownMenuItem>
           </DropdownMenuLabel>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu>*/}
 
       <Link href={`/admin/versenyek/${data.id}`}>
         <Button

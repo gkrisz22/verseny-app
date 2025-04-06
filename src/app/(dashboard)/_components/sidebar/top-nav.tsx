@@ -36,6 +36,9 @@ const TopNav = ({ user }: { user: User | undefined }) => {
         <div className="flex items-center gap-2">
           <SidebarTrigger className="md:hidden -ml-1" />
           <Separator orientation="vertical" className="md:hidden mr-2 h-4 bg-muted-foreground/80" />
+
+          Breadcrumb
+          <Separator orientation="vertical" className="md:hidden mr-2 h-4 bg-muted-foreground/80" />
         </div>
 
         <div className="flex items-center gap-2">

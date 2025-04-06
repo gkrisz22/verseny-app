@@ -12,9 +12,15 @@ export const competitionSchema = z.object({
     startDate: z.string().min(3, "From is too short"),
     endDate: z.string().min(3, "To is too short"),
     typeId: z.string(),
-    
 });
 export type CompetitionDTO = z.infer<typeof competitionSchema>;
+
+export const competitionUpdateMetadataSchema = z.object({
+    title: z.string().min(3, "Túl rövid a verseny neve"),
+    description: z.string().min(3, "Túl rövid a verseny leírása"),
+    id: z.string(),
+});
+export type CompetitionUpdateMetadataDTO = z.infer<typeof competitionUpdateMetadataSchema>;
 
 export const signUpSchoolSkeletonSchema = z.object({
     name: z.string().nonempty("Iskolanév megadása kötelező!").min(3, "Iskolanév túl rövid!"),

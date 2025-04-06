@@ -3,11 +3,8 @@ import { getCategoriesByCompetitionId, getCompetitionById } from "@/app/_actions
 import React from "react";
 import { CreateCategoryDialog } from "./create-category-dialog";
 import CardTitle from "../../../../_components/common/card-title";
-import EditCompetitionCard from "./edit-competition-card";
 import { DataTable } from "../../../../_components/common/data-table";
 import { columns } from "./columns";
-import LocalVersenyMenu from "./local-verseny-menu";
-import { Separator } from "@/components/ui/separator";
 
 const VersenyDetailsPage = async ({
   params,

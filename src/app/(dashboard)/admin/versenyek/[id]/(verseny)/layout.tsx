@@ -2,6 +2,7 @@ import React from "react";
 import { Separator } from "@/components/ui/separator";
 import LocalVersenyMenu from "./local-verseny-menu";
 import { getCompetitionById } from "@/app/_actions/competition.action";
+import { CompetitionProvider } from "./competition-context";
 
 const VersenyTemplate = async ({
   params,
@@ -18,7 +19,7 @@ const VersenyTemplate = async ({
   }
 
   return (
-    <div>
+    <CompetitionProvider value={competition}>
       <div className='space-y-0.5'>
         <h1 className='text-2xl font-bold tracking-tight md:text-3xl'>
           {competition.title}
@@ -36,7 +37,7 @@ const VersenyTemplate = async ({
           {children}
         </div>
       </div>
-    </div>
+    </CompetitionProvider>
   );
 };
 
