@@ -34,12 +34,12 @@ const LocalSideMenu: LocalSideMenuComponent = ({
     const normalizedPathname = pathname.replace(/\/+$/, "");
 
     return (
-        <ScrollArea className="w-full">
+        <div className="w-full">
             <nav className="flex flex-col space-y-2">
                 {items
                     .sort((a, b) => a.title.localeCompare(b.title))
                     .map((item, index) => {
-                        const itemUrl = `${basePath}/${item.url}`.replace(
+                        const itemUrl = `${basePath}${item.url}`.replace(
                             /\/+$/,
                             ""
                         );
@@ -72,7 +72,7 @@ const LocalSideMenu: LocalSideMenuComponent = ({
                 <Separator className="my-4" />
                 {children}
             </nav>
-        </ScrollArea>
+        </div>
     );
 };
 

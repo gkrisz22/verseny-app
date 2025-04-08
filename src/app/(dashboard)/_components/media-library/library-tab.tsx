@@ -182,7 +182,7 @@ export function LibraryTab({ selectedFiles, onSelectionChange, getFileIcon }: Li
               >
                 {file.type.startsWith("image") ? (
                   <div className="aspect-square">
-                    <Image src={"/" + file.path || "/placeholder.svg"} alt={file.name} className="h-full w-full object-cover" width={300} height={300} />
+                    <Image src={file.path || "/placeholder.svg"} alt={file.name} className="h-full w-full object-cover" width={300} height={300} />
                   </div>
                 ) : (
                   <div className="aspect-square bg-muted flex items-center justify-center">

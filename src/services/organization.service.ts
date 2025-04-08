@@ -101,6 +101,10 @@ export class OrganizationService extends Service {
     async getAll() {
         return this.db.user.findMany(); 
     }
+
+    async assignUserRole(orgId: string, userId: string, roleId: string) {
+        
+    }
 }
 
 const orgService = new OrganizationService();

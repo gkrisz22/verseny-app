@@ -37,8 +37,6 @@ export function CreateStageDialog({ category }: { category: Category }) {
       setOpen(false);
       toast.success("Forduló sikeresen létrehozva!");
     }
-
-    console.log(state);
   }, [state.success, state]);
 
   return (

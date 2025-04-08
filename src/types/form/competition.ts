@@ -4,7 +4,6 @@ export interface CompetitionFormData {
   title: string;
   startDate: string;
   endDate: string;
-  typeId: string;
 }
 
 export interface CategoryFormData {

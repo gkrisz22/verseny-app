@@ -87,7 +87,7 @@ export default function ActiveCompetitions() {
                         <CardFooter className="flex justify-between border-t pt-4">
                             <Button variant="outline" asChild>
                                 <Link
-                                    href={`/organization/versenyek/aktualis/${competition.id}`}
+                                    href={`/org/versenyek/aktualis/${competition.id}`}
                                 >
                                     Részletek
                                 </Link>

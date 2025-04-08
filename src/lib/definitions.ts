@@ -9,9 +9,8 @@ export type SignUpStepOneDTO = z.infer<typeof signUpStepOneSchema>;
 
 export const competitionSchema = z.object({
     title: z.string().min(3, "Túl rövid a verseny neve"),
-    startDate: z.string().min(3, "From is too short"),
-    endDate: z.string().min(3, "To is too short"),
-    typeId: z.string(),
+    startDate: z.string().min(3, ""),
+    endDate: z.string().min(3, ""),
 });
 export type CompetitionDTO = z.infer<typeof competitionSchema>;
 

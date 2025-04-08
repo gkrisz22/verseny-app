@@ -7,8 +7,8 @@ import React from 'react';
 
 const _MENU_ITEMS = [
   {
-    title: 'Alapadatok',
-    url: 'alapadatok',
+    title: 'Beállítások',
+    url: 'beallitasok',
     icon: BadgeInfoIcon,
   },
   {
@@ -20,17 +20,12 @@ const _MENU_ITEMS = [
     title: 'Résztvevők',
     url: 'resztvevok',
     icon: UsersIcon,
-  },
-  {
-    title: 'Tartalom',
-    url: 'tartalom',
-    icon: FileTextIcon,
-  },
+  }
 ];
 
-const LocalKategoriaMenu = ({ competitionId }: { competitionId: string }) => {
+const LocalKategoriaMenu = ({ competitionId, categoryId }: { competitionId: string, categoryId: string }) => {
   return (
-    <LocalSideMenu items={_MENU_ITEMS} basePath={`/admin/versenyek/${competitionId}/`}>
+    <LocalSideMenu items={_MENU_ITEMS} basePath={`/admin/versenyek/${competitionId}/kategoria/${categoryId}/`}>
       
       <LocalSideMenu.Footer>
         <Button variant="ghost" className="w-full inline-flex justify-start text-destructive">

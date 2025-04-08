@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { NotificationBell } from "../../_components/notifications/notification-bell";
 import { NavUser } from "../../_components/sidebar/nav-user";
 import { TeamSwitcher } from "../../_components/sidebar/team-switcher";
+import RoleSwitcher from "./role-switcher";
 
 const roleLabels = {
   admin: "Administrator",
@@ -39,39 +40,39 @@ export function TopNavbar({ children }: { children: React.ReactNode }) {
   const navItems:NavItem[] = [
     {
       label: "Összefoglaló",
-      href: "/organization",
+      href: "/org",
       icon: Trophy,
       roles: ["admin", "contact", "trusted", "teacher"],
     },
     {
       label: "Versenyek",
-      href: "/organization/versenyek",
+      href: "/org/versenyek",
       icon: Trophy,
       roles: ["admin", "contact", "trusted", "teacher"],
       children: [
         {
           label: "Aktuális versenyek",
-          href: "/organization/versenyek/aktualis",
+          href: "/org/versenyek/aktualis",
           roles: ["admin", "contact", "trusted", "teacher"],
         },
         {
           label: "Korábbi versenyek",
-          href: "/organization/versenyek/korabbi",
+          href: "/org/versenyek/korabbi",
           roles: ["admin", "contact", "trusted", "teacher"],
         },
       ],
     },
     {
       label: "Felhasználók",
-      href: "/organization/users",
+      href: "/org/users",
       icon: Users,
       roles: ["admin"],
     },
     {
       label: "Beállítások",
-      href: "/organization/settings",
+      href: "/org/settings",
       icon: Settings,
-      roles: ["admin", "contact"],
+      roles: ["admin"],
     },
   ];
 
@@ -91,13 +92,6 @@ export function TopNavbar({ children }: { children: React.ReactNode }) {
     <header className="border-b bg-background sticky top-0 z-10">
       <div className="container mx-auto px-4 flex h-16 items-center justify-between">
         <div className="flex items-center gap-6">
-          {/*<TeamSwitcher
-            teams={[
-              { name: "Szervezet 1", logo: Trophy, role: "Admin" },
-              { name: "Szervezet 2", logo: Users, role: "Tanár" },
-            ]}
-          />*/}
-
           <nav className="hidden md:flex items-center gap-4">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -164,7 +158,10 @@ export function TopNavbar({ children }: { children: React.ReactNode }) {
           </nav>
         </div>
 
-        <div className="flex items-center gap-4">{children}</div>
+        <div className="flex items-center gap-4">
+        <RoleSwitcher availableRoles={["Adminisztrátor", "Kapcsolattartó", "Megbízott", "Tanár"]} activeRole="Adminisztrátor" orgId="org_1" />
+        {children}
+        </div>
       </div>
 
       {/* Mobile Navigation */}

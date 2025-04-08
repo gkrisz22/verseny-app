@@ -6,9 +6,8 @@ import type { CategoryFormData, CompetitionFormData, StageFormData } from "@/typ
 import { db } from "@/lib/db";
 import { ActionResponse } from "@/types/form/action-response";
 import { actionHandler } from "@/lib/action.handler";
-import { CompetitionDTO, competitionSchema, CompetitionUpdateMetadataDTO, competitionUpdateMetadataSchema } from "@/lib/definitions";
+import { competitionSchema, CompetitionUpdateMetadataDTO, competitionUpdateMetadataSchema } from "@/lib/definitions";
 import { logger } from "@/lib/logger";
-import { Competition } from "@prisma/client";
 import competitionService from "@/services/competition.service";
 
 export async function createCompetition(prevState: ActionResponse<CompetitionFormData>, formData: FormData) : Promise<ActionResponse<CompetitionFormData>>
@@ -33,7 +32,6 @@ export async function createCompetition(prevState: ActionResponse<CompetitionFor
                 endDate: new Date(endDate),
                 status: "UPCOMING",
                 description: '',
-                typeId: "cm8pp336h0000bq0eg8n3prhb",
             }, 
         })
 
@@ -81,7 +79,7 @@ export async function updateCompetitionMetadata(prevState: ActionResponse<Compet
     });
 }
 
-
+/*
 export async function getCurrentCompetitions() {
    const res =  await db.competition.findMany({
     select: {
@@ -104,56 +102,10 @@ export async function getCompetitionById(id: string) {
     });
 
     return res;
-}
+}*/
 
 export async function updateCompetition(prevState: ActionResponse<CompetitionFormData>, formData: FormData, id: string): Promise<ActionResponse<CompetitionFormData>> {
     const rawData = Object.fromEntries(formData.entries());
-
-    /*const validatedData = competitionSchema.safeParse(rawData);
-
-    if(!validatedData.success){
-        return {
-            success: false,
-            message: "Validációs hibák történtek.",
-            errors: validatedData.error.flatten().fieldErrors,
-            inputs: validatedData.data
-        };
-    }
-
-    const { name, from, to, typeId } = validatedData.data;
-
-    if(new Date(from) > new Date(to)){
-        return {
-            success: false,
-            message: "A kezdő dátum nem lehet nagyobb, mint a befejező dátum.",
-            errors: {
-                from: ["A kezdő dátum nem lehet nagyobb, mint a befejező dátum."],
-                to: ["A befejezés dátuma nem lehet kisebb, mint a kezdő dátum."],
-            },
-        };
-    }
-
-    const res = await db.competition.update({
-        where: {
-            id,
-        },
-        data: {
-            title: name,
-            startDate: new Date(from),
-            endDate: new Date(to),
-            status: "UPCOMING",
-            description: ''
-        },
-    });
-
-    if(!res){
-        return {
-            success: false,
-            message: "Hiba történt a verseny frissítése közben.",
-        }
-    }
-
-    revalidatePath("/");*/
 
     return {
         success: true,

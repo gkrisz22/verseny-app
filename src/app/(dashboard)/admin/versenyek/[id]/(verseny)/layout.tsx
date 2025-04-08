@@ -1,8 +1,14 @@
 import React from "react";
 import { Separator } from "@/components/ui/separator";
 import LocalVersenyMenu from "./local-verseny-menu";
-import { getCompetitionById } from "@/app/_actions/competition.action";
 import { CompetitionProvider } from "./competition-context";
+import { getCompetitionById } from "@/app/_data/competition.data";
+import { Metadata } from "next";
+
+export const metadata:Metadata = {
+  title: "Versenyek",
+  description: "Versenyek részletei és beállításai",
+};
 
 const VersenyTemplate = async ({
   params,

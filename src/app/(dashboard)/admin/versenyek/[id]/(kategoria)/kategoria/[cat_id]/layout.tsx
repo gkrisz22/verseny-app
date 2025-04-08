@@ -1,6 +1,6 @@
 import React from "react";
 import { Separator } from "@/components/ui/separator";
-import { getCategoryById, getCompetitionById } from "@/app/_actions/competition.action";
+import { getCategoryById } from "@/app/_actions/competition.action";
 import LocalKategoriaMenu from "./local-category-menu";
 
 const VersenyKategoriaLayout = async ({
@@ -31,7 +31,7 @@ const VersenyKategoriaLayout = async ({
       <Separator className='my-4 lg:my-6' />
       <div className="grid md:grid-cols-6 gap-6">
         <aside className="md:col-span-1 col-span-1">
-          <LocalKategoriaMenu competitionId={id} />
+          <LocalKategoriaMenu competitionId={id} categoryId={cat_id} />
         </aside>
         <div className="md:col-span-5 col-span-1">
           {children}

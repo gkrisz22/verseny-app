@@ -1,7 +1,5 @@
-import { getCompetitionById } from "@/app/_actions/competition.action";
+import { getCompetitionById } from "@/app/_data/competition.data";
 import CompetitionContentForm from "./competition-content-form";
-
-
 
 const VersenyMetadataPage = async ({ params } : {
   params: Promise<{ id: string }>;

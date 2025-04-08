@@ -52,7 +52,6 @@ model Account {
   access_token      String?
   expires_at        Int?
   token_type        String?
-  scope             String?
   id_token          String?
   session_state     String?
  
@@ -178,17 +177,8 @@ model Competition {
 
   categories Category[]
   typeId     String
-  type       CompetitionType @relation(fields: [typeId], references: [id])
 }
 
-model CompetitionType {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  competitions Competition[]
-}
 
 enum CompetitionStatus {
   UPCOMING

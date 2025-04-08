@@ -14,6 +14,7 @@ import organizationService from "@/services/organization.service";
 import { v4 as uuid4 } from "uuid";
 import { accountMailer } from "@/lib/mailer.lib";
 import bcrypt from "bcryptjs";
+import roleService from "@/services/role.service";
 
 export const signUpFirstStep = async (prevState: ActionResponse<SignUpStepOneDTO>, formData: FormData) : Promise<ActionResponse<SignUpStepOneDTO>> => {
     
@@ -227,15 +228,19 @@ export const signUpEmail = async (prevState: ActionResponse<SignUpEmailDTO>, for
 
 export const signUpCompleteAction =  async (prevState: ActionResponse<SignUpSkeletonCompleteDTO>, formData: FormData) : Promise<ActionResponse<SignUpSkeletonCompleteDTO>> => {
     return actionHandler<SignUpSkeletonCompleteDTO>(signUpSkeletonComplete, formData, async (data) => {
-        if(data.orgId) {
-            const org = await organizationService.getWhere({ id: data.orgId });
+        if(!data.orgId) {
+            return {
+                success: false,
+                message: "Hiba történt a regisztráció során.",
+            }
+        }
+        const org = await organizationService.getWhere({ id: data.orgId });
             if (!org || org.length === 0) {
                 return {
                     success: false,
                     message: "Hiba történt a regisztráció során.",
                 };
             }
-        }
 
         const user = await authService.getWhere({ id: data.userId });
         if (!user) {
@@ -258,6 +263,22 @@ export const signUpCompleteAction =  async (prevState: ActionResponse<SignUpSkel
             };
         }
 
+        const adminRole = await roleService.getWhere({ name: "admin" });
+
+        if (!adminRole) {
+            return {
+                success: false,
+                message: "Hiba történt a regisztráció során.",
+            };
+        }
+        const role = await organizationService.assignRole(data.orgId, data.userId, adminRole.id);
+        if(!role) {
+            return {
+                success: false,
+                message: "Hiba történt a regisztráció során.",
+            };
+        }
+
         redirect(`/sign-up/completed/`);
 
         return {
@@ -273,14 +294,11 @@ export const signInAction = async (prevState: ActionResponse<SignInDTO>, formDat
         console.log("data", data);
 
         try {
-            const authjs = await signIn("credentials", {
+            await signIn("credentials", {
                 email,
                 password,
                 redirect: false
             });
-
-
-            
         }
         catch(e) {
             console.log("Hiba", e);
@@ -295,10 +313,5 @@ export const signInAction = async (prevState: ActionResponse<SignInDTO>, formDat
             };
         }
         redirect("/sign-in");
-        return {
-            success: true,
-            message: "Sikeres bejelentkezés"
-        };
-
     });
 };
