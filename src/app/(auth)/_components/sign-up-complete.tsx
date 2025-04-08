@@ -11,11 +11,9 @@ import { signUpCompleteAction } from "@/app/_actions/auth.action";
 const SignUpComplete = ({
     userId,
     email,
-    orgId,
 }: {
     userId: string,
     email: string,
-    orgId?: string,
 }) => {
     const [state, action, isPending] = useActionState(signUpCompleteAction, {
         message: "",
@@ -36,7 +34,6 @@ const SignUpComplete = ({
 
             <Input type="hidden" name="userId" value={userId} readOnly />
             <Input type="hidden" name="email" value={email} readOnly />
-            <Input type="hidden" name="orgId" value={orgId || ""} readOnly />
 
             <div className="grid gap-4">
                 <div className="grid gap-2">

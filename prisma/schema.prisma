@@ -26,6 +26,7 @@ model User {
   emailVerified DateTime?
   password      String?
   image         String?
+  superAdmin    Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   status        UserStatus @default(PENDING)
@@ -54,6 +55,7 @@ model Account {
   token_type        String?
   id_token          String?
   session_state     String?
+  scope             String?
  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -176,7 +178,6 @@ model Competition {
   updatedAt   DateTime          @updatedAt
 
   categories Category[]
-  typeId     String
 }
 
 

@@ -14,7 +14,6 @@ export async function actionHandler<T>(
   : Promise<ActionResponse<T>> {
 
     const rawData = Object.fromEntries(formData.entries()); 
-    logger.debug("FormData", rawData);
 
     if(middlewares) {
       for (const middleware of middlewares) {

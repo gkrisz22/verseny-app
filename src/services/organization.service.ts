@@ -102,8 +102,29 @@ export class OrganizationService extends Service {
         return this.db.user.findMany(); 
     }
 
-    async assignUserRole(orgId: string, userId: string, roleId: string) {
-        
+    async getUserOrgs(userId: string) {
+        return this.db.organization.findMany({
+            where: {
+                members: {
+                    some: {
+                        userId,
+                    },
+                },
+            },
+        }); 
+    }
+    async getUserOrgRoles(userId: string, orgId: string) {
+        return this.db.organizationRole.findMany({
+            where: {
+                organizationUser: {
+                    organizationId: orgId,
+                    userId,
+                },
+            }, 
+            include: {
+                role: true,
+            },
+        })
     }
 }
 

@@ -53,6 +53,19 @@ export default {
     signIn: "/sign-in",
   },
   callbacks: {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "github") {
+        const email = profile?.email as string;
+        const name = profile?.name as string;
+        const userExists = await authService.getWhere({ email });
+        
+        if (userExists.length === 0) {
+         console.log("Creating user")
+         return false;
+        }
+      }
+      return true;
+    }, 
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isOnDashboard = nextUrl.pathname.startsWith("/admin");

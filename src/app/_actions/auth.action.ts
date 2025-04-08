@@ -15,6 +15,7 @@ import { v4 as uuid4 } from "uuid";
 import { accountMailer } from "@/lib/mailer.lib";
 import bcrypt from "bcryptjs";
 import roleService from "@/services/role.service";
+import { cookies } from "next/headers";
 
 export const signUpFirstStep = async (prevState: ActionResponse<SignUpStepOneDTO>, formData: FormData) : Promise<ActionResponse<SignUpStepOneDTO>> => {
     
@@ -145,6 +146,7 @@ export const signUpSchoolAdminContact = async (prevState: ActionResponse<Organiz
     return actionHandler<OrganizationContactDTO>(organizationContactSchema, formData, async (data) => {
         const org = await organizationService.getWhere({ id: data.id });
         if (!org) {
+            console.log("org", org);
             return {
                 success: false,
                 message: "Hiba történt a regisztráció során.",
@@ -228,20 +230,14 @@ export const signUpEmail = async (prevState: ActionResponse<SignUpEmailDTO>, for
 
 export const signUpCompleteAction =  async (prevState: ActionResponse<SignUpSkeletonCompleteDTO>, formData: FormData) : Promise<ActionResponse<SignUpSkeletonCompleteDTO>> => {
     return actionHandler<SignUpSkeletonCompleteDTO>(signUpSkeletonComplete, formData, async (data) => {
-        if(!data.orgId) {
+
+        const { userId } = data;
+        if(!userId) {
             return {
                 success: false,
                 message: "Hiba történt a regisztráció során.",
-            }
+            }; 
         }
-        const org = await organizationService.getWhere({ id: data.orgId });
-            if (!org || org.length === 0) {
-                return {
-                    success: false,
-                    message: "Hiba történt a regisztráció során.",
-                };
-            }
-
         const user = await authService.getWhere({ id: data.userId });
         if (!user) {
             return {
@@ -249,9 +245,22 @@ export const signUpCompleteAction =  async (prevState: ActionResponse<SignUpSkel
                 message: "Hiba történt a regisztráció során.",
             };
         }
-
+        const userOrgs = await organizationService.getUserOrgs(userId);
+        if(!userOrgs || userOrgs.length === 0) {
+            return {
+                success: false,
+                message: "Hiba történt a regisztráció során.",
+            };
+        }
+        const userOrg = userOrgs[0].id;
+        const org = await organizationService.getWhere({ id: userOrg });
+            if (!org || org.length === 0) {
+                return {
+                    success: false,
+                    message: "Hiba történt a regisztráció során.",
+            };
+        }
         const password = await bcrypt.hash(data.password, 10);
-
         const updated = await authService.update(data.userId, {
             password
         });
@@ -271,7 +280,7 @@ export const signUpCompleteAction =  async (prevState: ActionResponse<SignUpSkel
                 message: "Hiba történt a regisztráció során.",
             };
         }
-        const role = await organizationService.assignRole(data.orgId, data.userId, adminRole.id);
+        const role = await organizationService.assignRole(userOrg, data.userId, adminRole.id);
         if(!role) {
             return {
                 success: false,
@@ -280,19 +289,12 @@ export const signUpCompleteAction =  async (prevState: ActionResponse<SignUpSkel
         }
 
         redirect(`/sign-up/completed/`);
-
-        return {
-            success: true,
-            message: "Sikeres regisztráció"
-        };
     });
 }
 
 export const signInAction = async (prevState: ActionResponse<SignInDTO>, formData: FormData) : Promise<ActionResponse<SignInDTO>> => {
     return actionHandler<SignInDTO>(signInSchema, formData, async (data) => {
         const { email, password } = data;
-        console.log("data", data);
-
         try {
             await signIn("credentials", {
                 email,
@@ -312,6 +314,50 @@ export const signInAction = async (prevState: ActionResponse<SignInDTO>, formDat
                 inputs: { email, password }
             };
         }
-        redirect("/sign-in");
+        const res = await authService.getWhere({ email });
+        if (!res || res.length === 0) {
+            return {
+                success: false,
+                message: "Hiba történt a bejelentkezés során.",
+            };
+        }
+        const user = res[0];
+
+        if(!user.superAdmin) {
+            const userOrgs = await organizationService.getUserOrgs(user.id);
+            if(!userOrgs || userOrgs.length === 0) {
+                return {
+                    success: false,
+                    message: "Hiba történt a bejelentkezés során.",
+                };
+            }
+            const userOrg = userOrgs[0].id;
+
+            const roles = await organizationService.getUserOrgRoles(user.id, userOrg);
+            if(!roles || roles.length === 0) {
+                return {
+                    success: false,
+                    message: "Hiba történt a bejelentkezés során.",
+                };
+            }
+            const role = roles[0];
+            const cookieStore = await cookies();
+            cookieStore.set("role", role.role.name, {
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict",
+                path: "/",
+            });
+            cookieStore.set("org", userOrg, {
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict",
+                path: "/",
+            });
+            
+            redirect(`/org`);
+        }
+        
+        redirect("/admin");
     });
 };

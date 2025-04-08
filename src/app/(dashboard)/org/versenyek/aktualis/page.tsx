@@ -9,22 +9,12 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Users } from "lucide-react";
 import Link from "next/link";
+import { getCurrentCompetitions } from "@/app/_data/competition.data";
+import { CompetitionRegistrationDialog } from "./[id]/registration-dialog";
 
-export default function ActiveCompetitions() {
-    const competitions = [
-        {
-            id: "1",
-            title: "Nemes Tihamér Országos Alkalmazói Tanulmányi Verseny",
-            description:
-                "Valami leírás",
-            registrationDeadline: "Március 21, 2025",
-            eventDate: "Április 15, 2025",
-            participants: 45,
-            status: "Nyitott",
-            category: "Informatika",
-        },
-      
-    ];
+export default async function ActiveCompetitions() {
+    const competitions = await getCurrentCompetitions();
+    
 
     return (
         <div className="space-y-6">
@@ -45,7 +35,6 @@ export default function ActiveCompetitions() {
                     <Card key={competition.id} className="flex flex-col">
                         <CardHeader>
                             <div className="flex justify-between items-start">
-                                <Badge>{competition.category}</Badge>
                                 <Badge variant="outline" className="ml-2">
                                     {competition.status}
                                 </Badge>
@@ -65,7 +54,7 @@ export default function ActiveCompetitions() {
                                         Jelentkezési határidő:
                                     </span>
                                     <span>
-                                        {competition.registrationDeadline}
+                                        {competition.startDate.toDateString()}
                                     </span>
                                 </div>
                                 <div className="flex items-center text-sm">
@@ -73,14 +62,13 @@ export default function ActiveCompetitions() {
                                     <span className="text-muted-foreground mr-1">
                                         Versenykezdés:
                                     </span>
-                                    <span>{competition.eventDate}</span>
+                                    <span>{competition.startDate.toDateString()}</span>
                                 </div>
                                 <div className="flex items-center text-sm">
                                     <Users className="mr-2 h-4 w-4 text-muted-foreground" />
                                     <span className="text-muted-foreground mr-1">
                                         Résztvevők:
                                     </span>
-                                    <span>{competition.participants}</span>
                                 </div>
                             </div>
                         </CardContent>
@@ -92,7 +80,7 @@ export default function ActiveCompetitions() {
                                     Részletek
                                 </Link>
                             </Button>
-                            <Button>Regisztráció</Button>
+                            <CompetitionRegistrationDialog />
                         </CardFooter>
                     </Card>
                 ))}

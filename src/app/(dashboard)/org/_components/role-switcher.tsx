@@ -21,7 +21,6 @@ export default function RoleSwitcher({ availableRoles, activeRole, orgId } : { a
     toast.promise(saveRolePreference(orgId, newRole), {
       loading: "Szerepkörváltás...",
       success: "Szerepkörváltás sikeres",
-      error: "Szerepkörváltás sikertelen",
     });
   };
   

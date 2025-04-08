@@ -16,7 +16,7 @@ const StatisticsSection = () => {
         <div className="text-3xl font-bold">3</div>
         <p className="text-xs text-muted-foreground">Jelenleg ennyi verseny elérhető</p>
         <Button asChild variant="ghost" className="mt-4 w-full justify-between">
-          <Link href="/organization/versenyek/aktualis">
+          <Link href="/org/versenyek/aktualis">
             Tekintse meg őket
             <ArrowRight className="h-4 w-4" />
           </Link>
@@ -33,7 +33,7 @@ const StatisticsSection = () => {
         <div className="text-3xl font-bold">12</div>
         <p className="text-xs text-muted-foreground">Verseny teljesítve</p>
         <Button asChild variant="ghost" className="mt-4 w-full justify-between">
-          <Link href="/organization/versenyek/korabbi">
+          <Link href="/org/versenyek/korabbi">
             Korábbi versenyek
             <ArrowRight className="h-4 w-4" />
           </Link>
@@ -50,7 +50,7 @@ const StatisticsSection = () => {
         <div className="text-3xl font-bold">24</div>
         <p className="text-xs text-muted-foreground">Aktív felhasználó a szervezétben</p>
         <Button asChild variant="ghost" className="mt-4 w-full justify-between">
-          <Link href="/organization/users">
+          <Link href="/org/users">
             Felhasználók kezelése
             <ArrowRight className="h-4 w-4" />
           </Link>

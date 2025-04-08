@@ -21,5 +21,6 @@ export const saveRolePreference = async (orgId: string, role: string) => {
         path: "/",
     });
 
-    redirect(`/organization/${orgId}`);
+
+    redirect(`/org`);
 }

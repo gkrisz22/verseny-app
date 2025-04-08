@@ -19,8 +19,10 @@ const CompletedRegPage = () => {
                 Köszönjük a regisztrációt!
             </h1>
             <p className="text-center text-sm text-gray-500">
-                Sikeresen regisztrált a rendszerünkbe! Kérjük, jelentkezzen be a
-                fiókjába:
+                Sikeresen regisztrált a rendszerünkbe!
+            </p>
+            <p className="text-center text-sm text-gray-500">
+                Kérjük, jelentkezzen be a fiókjába:
             </p>
 
             <Link href="/sign-in">
