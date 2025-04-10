@@ -24,9 +24,10 @@ interface DatePickerProps {
 export function DatePicker({ date, setDate, label }: DatePickerProps) {
 
   return (
-    <Popover>
+    <Popover modal>
       <PopoverTrigger asChild>
         <Button
+          type="button"
           variant={"outline"}
           className={cn(
             "w-full justify-start text-left font-normal",
@@ -42,7 +43,6 @@ export function DatePicker({ date, setDate, label }: DatePickerProps) {
           mode="single"
           selected={date}
           onSelect={setDate}
-          initialFocus
           lang="hu"
         />
       </PopoverContent>

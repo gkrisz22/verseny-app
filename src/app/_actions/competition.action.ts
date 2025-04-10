@@ -9,6 +9,10 @@ import { actionHandler } from "@/lib/action.handler";
 import { competitionSchema, CompetitionUpdateMetadataDTO, competitionUpdateMetadataSchema } from "@/lib/definitions";
 import { logger } from "@/lib/logger";
 import competitionService from "@/services/competition.service";
+import { auth } from "@/auth";
+import { cookies } from "next/headers";
+import userService from "@/services/user.service";
+import { connect } from "http2";
 
 export async function createCompetition(prevState: ActionResponse<CompetitionFormData>, formData: FormData) : Promise<ActionResponse<CompetitionFormData>>
 {
@@ -233,5 +237,52 @@ export async function getStageById(id: string) {
         }
     });
 
+    return res;
+}
+
+
+
+
+
+
+
+export async function registerAsOrganization(competitionId: string) {
+    const session = await auth();
+    console.log(session);
+    if (!session || !session.user) {
+        throw new Error("Unauthorized");
+    }
+    const user = await userService.getWhere({ email:  session.user.email as string});
+    if(!user || user.length === 0){
+        throw new Error("User not found");
+    }
+
+    const cookieStore = await  cookies();
+    const organizationId = cookieStore.get("org")?.value as string;
+    console.log(organizationId);
+    if(!organizationId){
+        throw new Error("Organization not found");
+    }
+
+    const res = await db.organizationCompetitionParticipation.create({
+        data: {
+          competitionId,
+          organizationId,
+          userId: user[0].id
+        }
+    });
+
+    return res !== null;
+}
+
+export async function getRegisteredOrganizations(competitionId: string) {
+    const res = await db.organizationCompetitionParticipation.findMany({
+        where: {
+            competitionId,
+        },
+        include: {
+            organization: true,
+        }
+    });
     return res;
 }

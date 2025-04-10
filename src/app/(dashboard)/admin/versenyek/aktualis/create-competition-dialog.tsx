@@ -14,16 +14,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Plus } from "lucide-react"
 import { DatePicker } from "../../../_components/common/date-picker";
-
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import React, { useActionState } from "react";
 import { createCompetition } from "@/app/_actions/competition.action";
 import { CompetitionFormData } from "@/types/form/competition";
@@ -89,24 +79,6 @@ export function CreateCompetitionDialog() {
             <Input type="hidden" name="endDate" value={toDate?.toISOString()} />
             {
               state?.errors?.endDate && <p className="text-red-500 text-sm">{state.errors.endDate}</p>
-            }
-          </div>
-          <div className="flex flex-col space-y-2">
-            <Label htmlFor="type">Verseny típusa</Label>
-            <Select  name="typeId">
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Válasszon egy típust!" />
-              </SelectTrigger>
-              <SelectContent id="type">
-                <SelectGroup>
-                  <SelectLabel>Informatika</SelectLabel>
-                  <SelectItem value="grafika">Grafika</SelectItem>
-                  <SelectItem value="oktv">OKTV</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            {
-              state?.errors?.typeId && <p className="text-red-500 text-sm">{state.errors.typeId}</p>
             }
           </div>
           {

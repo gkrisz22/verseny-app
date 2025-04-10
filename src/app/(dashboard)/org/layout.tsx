@@ -44,6 +44,7 @@ export default async function RootLayout({
     return <div>Loading...</div>
   }
 
+  console.log(session.user);
   return (
     <html lang="hu">
       <body

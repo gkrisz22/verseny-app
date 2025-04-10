@@ -22,8 +22,10 @@ import {
     DrawerTitle,
     DrawerTrigger,
 } from "@/components/ui/drawer"
+import { toast } from "sonner";
+import { registerAsOrganization } from "@/app/_actions/competition.action";
 
-export function CompetitionRegistrationDialog() {
+export function CompetitionRegistrationDialog({ competitionId }: { competitionId: string }) {
     const [open, setOpen] = React.useState(false)
     const isDesktop = useMediaQuery("(min-width: 768px)")
 
@@ -37,10 +39,10 @@ export function CompetitionRegistrationDialog() {
                     <DialogHeader>
                         <DialogTitle>Regisztráció a versenyre</DialogTitle>
                         <DialogDescription>
-                            Kérem erősítse meg az iskolája jelentkezési szándékát.
+                            Kérem erősítse meg iskolája jelentkezési szándékát.
                         </DialogDescription>
                     </DialogHeader>
-                    <CompetitionRegistrationConfirmation />
+                    <CompetitionRegistrationConfirmation competitionId={competitionId} />
                 </DialogContent>
             </Dialog>
         )
@@ -55,10 +57,10 @@ export function CompetitionRegistrationDialog() {
                 <DrawerHeader className="text-left">
                     <DrawerTitle>Regisztráció versenyre</DrawerTitle>
                     <DrawerDescription>
-                        Kérem erősítse meg az iskolája jelentkezési szándékát.
+                        Kérem erősítse meg iskolája jelentkezési szándékát.
                     </DrawerDescription>
                 </DrawerHeader>
-                <CompetitionRegistrationConfirmation className="px-4" />
+                <CompetitionRegistrationConfirmation className="px-4" competitionId={competitionId} />
                 <DrawerFooter className="pt-2">
                     <DrawerClose asChild>
                         <Button variant="outline">Mégsem</Button>
@@ -69,9 +71,21 @@ export function CompetitionRegistrationDialog() {
     )
 }
 
-function CompetitionRegistrationConfirmation({ className }: React.ComponentProps<"form">) {
+function CompetitionRegistrationConfirmation({ className, competitionId }: React.ComponentProps<"form"> & { competitionId: string }) {
+
+    const submitRegistration = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+
+        toast.promise(registerAsOrganization(competitionId),
+        {
+            success: "Sikeres regisztráció",
+            loading: "Regisztráció folyamatban",
+            error: "Regisztráció sikertelen",
+        });
+            
+    }
     return (
-        <form className={cn("grid items-start gap-4", className)}>
+        <form className={cn("grid items-start gap-4", className)} onSubmit={submitRegistration}>
             <h3 className="text-muted-foreground">
                 Ön elfogadja a versenyen való részvétel feltételeit
             </h3>

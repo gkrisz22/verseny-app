@@ -25,7 +25,7 @@ export default async function CompetitionDetails({
       <div className="space-y-6">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/organization/versenyek/aktualis">
+            <Link href="/org/versenyek/aktualis">
               <ArrowLeft className="h-4 w-4 mr-2" /> 
               Vissza az aktuális versenyekhez
             </Link>
@@ -108,7 +108,7 @@ export default async function CompetitionDetails({
         </div>
         <div className="flex gap-2 self-start">
 
-          <CompetitionRegistrationDialog />
+          <CompetitionRegistrationDialog competitionId={competitionId} />
         </div>
       </div>
 
@@ -117,8 +117,8 @@ export default async function CompetitionDetails({
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Key Deadlines</CardTitle>
-              <CardDescription>Important dates for this competition</CardDescription>
+              <CardTitle>Dátumok</CardTitle>
+              <CardDescription>Fontos dátumok</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid gap-6">

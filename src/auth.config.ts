@@ -1,8 +1,21 @@
 import GitHub from "next-auth/providers/github";
-import type { NextAuthConfig } from "next-auth";
+import type { NextAuthConfig, User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import authService from "./services/auth.service";
 import bcrypt from "bcryptjs";
+
+declare module "next-auth" {
+  interface User {
+    role?: string;
+    name?: string | null;
+    email?: string | null;
+    org?: string | null;
+  }
+
+  interface Session {
+    user: User;
+  }
+}
 
 export default {
   providers: [GitHub, 
@@ -66,6 +79,19 @@ export default {
       }
       return true;
     }, 
+    async jwt({ user, token}) {
+      if(user) {
+        token.role = "";
+        token.org = "";
+      }
+
+      return token;
+    },
+    async session({ session, token}) {
+      session.user.role = "";
+      token.org = "";
+      return session;
+    },
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isOnDashboard = nextUrl.pathname.startsWith("/admin");

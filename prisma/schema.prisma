@@ -78,6 +78,24 @@ model VerificationToken {
   @@unique([token])
 }
 
+model OrganizationCompetitionParticipation {
+  id             String    @id @default(cuid())
+  competitionId  String
+  organizationId String
+  userId         String
+  status         ParticipationStatus @default(PENDING)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  competition    Competition  @relation(fields: [competitionId], references: [id])
+}
+
+enum ParticipationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model Organization {
   id           String             @id @default(cuid())
   name         String
@@ -96,6 +114,8 @@ model Organization {
 
   members OrganizationUser[]
   school  School?
+
+  participations OrganizationCompetitionParticipation[]
 }
 
 enum OrganizationType {
@@ -178,6 +198,7 @@ model Competition {
   updatedAt   DateTime          @updatedAt
 
   categories Category[]
+  participants  OrganizationCompetitionParticipation[]
 }
 
 
