@@ -14,8 +14,7 @@ import { CompetitionRegistrationDialog } from "./[id]/registration-dialog";
 
 export default async function ActiveCompetitions() {
     const competitions = await getCurrentCompetitions();
-    
-
+    console.log(competitions[0]);
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -35,15 +34,23 @@ export default async function ActiveCompetitions() {
                     <Card key={competition.id} className="flex flex-col">
                         <CardHeader>
                             <div className="flex justify-between items-start">
-                                <Badge variant="outline" className="ml-2">
+                                <Badge variant="outline">
                                     {competition.status}
                                 </Badge>
                             </div>
-                            <CardTitle className="mt-2">
+                            <CardTitle className="mt-2 text-xl">
                                 {competition.title}
                             </CardTitle>
                             <p className="text-sm text-muted-foreground">
-                                {competition.description}
+                                {(() => {
+                                    if (competition.description.length > 160) {
+                                        const lastPeriod = competition.description.lastIndexOf('.', 160);
+                                        return lastPeriod > 0 
+                                            ? competition.description.slice(0, lastPeriod + 1)
+                                            : `${competition.description.slice(0, 160)}...`;
+                                    }
+                                    return competition.description;
+                                })()}
                             </p>
                         </CardHeader>
                         <CardContent className="flex-1">
@@ -69,6 +76,18 @@ export default async function ActiveCompetitions() {
                                     <span className="text-muted-foreground mr-1">
                                         Résztvevők:
                                     </span>
+                                    <span>{competition.participants.length > 0 ? competition.participants.length : "még nincs"}</span>
+
+                                </div>
+
+                                <div className="flex items-center text-sm pt-4">
+                                    <div className="flex flex-wrap gap-2">
+                                        {competition.categories.map((category) => (
+                                            <Badge key={category.id} variant="outline">
+                                                {category.name}
+                                            </Badge>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </CardContent>
@@ -80,7 +99,7 @@ export default async function ActiveCompetitions() {
                                     Részletek
                                 </Link>
                             </Button>
-                            <CompetitionRegistrationDialog />
+                            <CompetitionRegistrationDialog competitionId={competition.id} />
                         </CardFooter>
                     </Card>
                 ))}

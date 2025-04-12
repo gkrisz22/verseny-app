@@ -13,6 +13,10 @@ export class CompetitionService extends Service implements CrudService<Competiti
       where: {
         id,
       },
+      include: {
+        participants: true,
+        categories: true
+      }
     });
   }
 
@@ -30,6 +34,10 @@ export class CompetitionService extends Service implements CrudService<Competiti
             status: "ONGOING",
         }]
       },
+      include: {
+        participants: true,
+        categories: true
+      }
     });
   }
 

@@ -10,7 +10,6 @@ import {
 import Link from "next/link";
 import { getCompetitionById } from "@/app/_data/competition.data";
 import { CompetitionRegistrationDialog } from "./registration-dialog";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default async function CompetitionDetails({
   params,
@@ -20,13 +19,13 @@ export default async function CompetitionDetails({
   const competitionId = (await params).id;
   const competition = await getCompetitionById(competitionId);
 
-  if(!competition) {
+  if (!competition) {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" asChild>
             <Link href="/org/versenyek/aktualis">
-              <ArrowLeft className="h-4 w-4 mr-2" /> 
+              <ArrowLeft className="h-4 w-4 mr-2" />
               Vissza az aktuális versenyekhez
             </Link>
           </Button>
@@ -40,7 +39,7 @@ export default async function CompetitionDetails({
           </p>
         </div>
       </div>
-    ) 
+    )
   }
   const deadlinesData = {
     "math-olympiad-2025": {
@@ -87,7 +86,7 @@ export default async function CompetitionDetails({
     <div className="space-y-6">
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="sm" asChild>
-          <Link href="/organization/versenyek/aktualis">
+          <Link href="/org/versenyek/aktualis">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Vissza az aktuális versenyekhez
           </Link>
@@ -102,49 +101,56 @@ export default async function CompetitionDetails({
           <h1 className="text-3xl font-bold tracking-tight mt-2">
             {competition.title}
           </h1>
-          <p className="text-muted-foreground mt-2 max-w-3xl">
-            {competition.description}
-          </p>
         </div>
         <div className="flex gap-2 self-start">
-
           <CompetitionRegistrationDialog competitionId={competitionId} />
         </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
-        
+        <DeadlineCard
+          title="Jelentkezési határidő"
+          date={competition.startDate.toLocaleDateString()}
+          icon={<Clock className="h-5 w-5 text-muted-foreground" />}
+          variant="warning"
+        />
+        <DeadlineCard
+          title="Verseny kezdete"
+          date={competition.startDate.toLocaleDateString()}
+          icon={<CalendarIcon className="h-5 w-5 text-muted-foreground" />}
+          variant="default"
+        />
+        <DeadlineCard
+          title="Verseny tervezett vége"
+          date={competition.endDate ? competition.endDate.toLocaleDateString() : "nincs meghatározva"}
+          icon={<CalendarIcon className="h-5 w-5 text-muted-foreground" />}
+          variant="default"
+        />
+      </div>
+      <div className="grid gap-6 md:grid-cols-3">
+
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Dátumok</CardTitle>
-              <CardDescription>Fontos dátumok</CardDescription>
+              <CardTitle>Kategóriák</CardTitle>
+              <CardDescription>Az alábbi kategóriákban versenyezhetnek a diákok.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid gap-6">
-                <DeadlineCard
-                  title="Application Deadline"
-                  date={deadlinesData?.applicationDeadline}
-                  icon={<Clock className="h-5 w-5 text-muted-foreground" />}
-                  variant="warning"
-                />
-                <DeadlineCard
-                  title="Competition Start"
-                  date={deadlinesData?.startDate}
-                  icon={<CalendarIcon className="h-5 w-5 text-muted-foreground" />}
-                  variant="default"
-                />
-                <DeadlineCard
-                  title="Competition End"
-                  date={deadlinesData?.endDate}
-                  icon={<CalendarIcon className="h-5 w-5 text-muted-foreground" />}
-                  variant="default"
-                />
+                {competition.categories.map((category) => (
+                  <div key={category.id} className="flex flex-col gap-2">
+                    <Badge variant="outline" className="py-2">
+                      {category.name}
+                    </Badge>
+                    <small className="px-2">
+                      {category.eligibleGrades.length > 0 ? <>{category.eligibleGrades.join(". osztály, ")}. osztály</> : "Minden osztály."}
+                    </small>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
-
-          </div>
+        </div>
 
         <div className="md:col-span-2">
 
@@ -159,19 +165,7 @@ export default async function CompetitionDetails({
 
         </div>
       </div>
-      <Tabs defaultValue="content" className="w-full">
-          <TabsList>
-            <TabsTrigger value="content" asChild>
-              <Link href={`/competitions/${competition.id}`}>Általános adatok</Link>
-            </TabsTrigger>
-            <TabsTrigger value="deadlines" asChild>
-              <Link href={`/competitions/${competition.id}/deadlines`}>Határidők</Link>
-            </TabsTrigger>
-            <TabsTrigger value="categories" asChild>
-              <Link href={`/competitions/${competition.id}/categories`}>Kategóriák</Link>
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+
     </div>
   );
 }
@@ -189,25 +183,24 @@ function DeadlineCard({
 }) {
   if (!date) return null
 
-  const formattedDate = new Date(date).toLocaleDateString("en-US", {
+  const formattedDate = new Date(date).toLocaleDateString("hu-HU", {
     month: "long",
     day: "numeric",
     year: "numeric",
   })
 
-  const formattedTime = new Date(date).toLocaleTimeString("en-US", {
+  /*const formattedTime = new Date(date).toLocaleTimeString("hu-HU", {
     hour: "numeric",
     minute: "numeric",
-  })
+  })*/
 
   return (
-    <div className={`rounded-lg border p-4 ${variant === "warning" ? "border-orange-200 bg-orange-50" : ""}`}>
+    <div className={`rounded-lg border p-4 ${variant === "warning" ? "border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950" : ""}`}>
       <div className="flex items-center gap-2 mb-2">
         {icon}
         <h3 className="font-medium">{title}</h3>
       </div>
       <p className="text-lg font-semibold">{formattedDate}</p>
-      <p className="text-sm text-muted-foreground">{formattedTime}</p>
     </div>
   )
 }
