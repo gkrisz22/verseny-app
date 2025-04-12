@@ -128,7 +128,19 @@ export default async function CompetitionDetails({
         />
       </div>
       <div className="grid gap-6 md:grid-cols-3">
-
+        <div className="md:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Versenyleírás</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div 
+                dangerouslySetInnerHTML={{ __html: competition.description }}
+                className="prose dark:prose-invert max-w-none"
+              />
+            </CardContent>
+          </Card>
+        </div>
         <div className="space-y-6">
           <Card>
             <CardHeader>
@@ -150,19 +162,6 @@ export default async function CompetitionDetails({
               </div>
             </CardContent>
           </Card>
-        </div>
-
-        <div className="md:col-span-2">
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Versenyleírás</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">{competition.description}</p>
-            </CardContent>
-          </Card>
-
         </div>
       </div>
 

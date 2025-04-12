@@ -12,6 +12,7 @@ import { TopNavbar } from "./_components/top-navbar";
 import { NotificationProvider } from "../_components/notifications/notification-provider";
 import { NotificationBell } from "../_components/notifications/notification-bell";
 import { NavUser } from "../_components/sidebar/nav-user";
+import { BackToTop } from "@/components/shared/back-to-top";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -69,6 +70,7 @@ export default async function RootLayout({
                 <main className="flex-1 container mx-auto p-4">{children}</main>
               </NotificationProvider>
           </SessionProvider>
+          <BackToTop />
         </ThemeProvider>
       </body>
     </html>
