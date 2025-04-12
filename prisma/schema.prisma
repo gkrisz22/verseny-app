@@ -31,6 +31,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   status        UserStatus @default(PENDING)
   files         File[]
+  sessions      Session[]
 
   memberships OrganizationUser[]
   accounts    Account[]
@@ -42,6 +43,16 @@ enum UserStatus {
   ACTIVE 
   INACTIVE
   PENDING
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Account {
@@ -145,7 +156,7 @@ model OrganizationUser {
   @@unique([organizationId, userId])
 }
 
-// Many-to-Many: Role - OrganizationUser
+// Many-to-Many: Rolenpm  - OrganizationUser
 model OrganizationRole {
   id                 String           @id @default(cuid())
   roleId             String
@@ -154,6 +165,62 @@ model OrganizationRole {
   organizationUserId String
   organizationUser   OrganizationUser @relation(fields: [organizationUserId], references: [id])
   role               Role             @relation(fields: [roleId], references: [id])
+}
+
+model Competition {
+  id          String            @id @default(cuid())
+  title       String
+  description String            @db.Text
+  startDate   DateTime
+  endDate     DateTime?
+  status      CompetitionStatus @default(UPCOMING)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  categories Category[]
+  participants  OrganizationCompetitionParticipation[]
+}
+
+
+enum CompetitionStatus {
+  UPCOMING
+  ONGOING
+  FINISHED
+}
+
+model Category {
+  id            String   @id @default(cuid())
+  name          String
+  description   String   @db.Text
+  competitionId String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  eligibleGrades Int[]
+
+  competition Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  stages      Stage[]
+}
+
+
+model Stage {
+  id          String      @id @default(cuid())
+  name        String
+  description String
+  status      StageStatus @default(UPCOMING)
+  startDate   DateTime
+  endDate     DateTime?
+  categoryId  String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  files    File[]
+}
+
+enum StageStatus {
+  UPCOMING
+  ONGOING
+  FINISHED
 }
 
 model School {
@@ -185,60 +252,6 @@ model SchoolStudent {
   student    Student   @relation(fields: [studentId], references: [id])
   school     School    @relation(fields: [schoolId], references: [id])
   @@unique([studentId, schoolId])
-}
-
-model Competition {
-  id          String            @id @default(cuid())
-  title       String
-  description String            @db.Text
-  startDate   DateTime
-  endDate     DateTime?
-  status      CompetitionStatus @default(UPCOMING)
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-
-  categories Category[]
-  participants  OrganizationCompetitionParticipation[]
-}
-
-
-enum CompetitionStatus {
-  UPCOMING
-  ONGOING
-  FINISHED
-}
-
-model Category {
-  id            String   @id @default(cuid())
-  name          String
-  description   String   @db.Text
-  competitionId String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  competition Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
-  stages      Stage[]
-}
-
-model Stage {
-  id          String      @id @default(cuid())
-  name        String
-  description String
-  status      StageStatus @default(UPCOMING)
-  startDate   DateTime
-  endDate     DateTime?
-  categoryId  String
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  files    File[]
-}
-
-enum StageStatus {
-  UPCOMING
-  ONGOING
-  FINISHED
 }
 
 model File {

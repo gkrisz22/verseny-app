@@ -84,3 +84,15 @@ export const signInSchema = z.object({
     remember: z.boolean().optional(),
 });
 export type SignInDTO = z.infer<typeof signInSchema>;
+
+
+export const categoryEligibilitySchema = z.object({
+  categoryId: z.string({
+    required_error: "Kategória azonosító megadása kötelező!",
+  }),
+  grades: z.string()
+}).refine((val) => {
+  const grades = val.grades.split(",").map((grade) => parseInt(grade));
+  return grades.length > 0;
+})
+export type CategoryEligibilityDTO = z.infer<typeof categoryEligibilitySchema>;

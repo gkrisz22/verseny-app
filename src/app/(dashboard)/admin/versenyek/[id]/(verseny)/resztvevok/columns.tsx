@@ -7,14 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import DataTableSortableHeader from "@/app/(dashboard)/_components/common/data-table-sortable-header";
+import { Organization } from "@prisma/client";
 
-
-interface School {
-  id: string;
-  name: string;
-  address: string;
-}
-export const columns: ColumnDef<School>[] = [
+export const columns: ColumnDef<Organization>[] = [
   {
     id: "select",
     header: ({ table }) => (
