@@ -10,6 +10,7 @@ declare module "next-auth" {
     name?: string | null;
     email?: string | null;
     org?: string | null;
+    isSuperAdmin?: boolean;
   }
 
   interface Session {
@@ -79,17 +80,19 @@ export default {
       }
       return true;
     }, 
-    async jwt({ user, token}) {
+    async jwt({ user, token}) { // on login
       if(user) {
         token.role = "";
         token.org = "";
+        token.isSuperAdmin = false;
       }
 
       return token;
     },
-    async session({ session, token}) {
+    async session({ session, token}) { // on every request
       session.user.role = "";
       token.org = "";
+      console.log("Session")
       return session;
     },
     authorized({ auth, request: { nextUrl } }) {

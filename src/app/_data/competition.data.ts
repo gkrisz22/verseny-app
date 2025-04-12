@@ -8,7 +8,13 @@ export const getCurrentCompetitions = cache(async () => {
  });
  
 
- export const getCompetitionById = cache(async (id:string) => {
+export const getCompetitionById = cache(async (id:string) => {
     const res = await competitionService.get(id);
     return res || null;
 });
+
+export const getCompetitionParticipants = cache(async (competitionId: string) => {
+    const res = await competitionService.getOrganizations(competitionId);
+    return res || null;
+});
+

@@ -1,6 +1,5 @@
 import { Competition } from "@prisma/client";
 import { CrudService, Service } from "./service";
-import { CompetitionDTO } from "@/lib/definitions";
 
 export class CompetitionService extends Service implements CrudService<Competition> {
   create(data: Competition): Promise<Competition> {
@@ -49,6 +48,17 @@ export class CompetitionService extends Service implements CrudService<Competiti
         id,
       },
     }).then(() => true).catch(() => false);
+  }
+
+  getOrganizations(id: string) {
+    return this.db.organizationCompetitionParticipation.findMany({
+      where: {
+        competitionId: id,
+      },
+      include: {
+        organization: true,
+      }
+    });
   }
 }
 

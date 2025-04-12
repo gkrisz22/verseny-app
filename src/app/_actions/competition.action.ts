@@ -12,7 +12,6 @@ import competitionService from "@/services/competition.service";
 import { auth } from "@/auth";
 import { cookies } from "next/headers";
 import userService from "@/services/user.service";
-import { connect } from "http2";
 
 export async function createCompetition(prevState: ActionResponse<CompetitionFormData>, formData: FormData) : Promise<ActionResponse<CompetitionFormData>>
 {
@@ -82,31 +81,6 @@ export async function updateCompetitionMetadata(prevState: ActionResponse<Compet
       };
     });
 }
-
-/*
-export async function getCurrentCompetitions() {
-   const res =  await db.competition.findMany({
-    select: {
-        id: true,
-        title: true,
-        startDate: true,
-        endDate: true,
-        status: true,
-    }
-   });
-
-    return res;
-}
-
-export async function getCompetitionById(id: string) {
-    const res = await db.competition.findUnique({
-        where: {
-            id,
-        },
-    });
-
-    return res;
-}*/
 
 export async function updateCompetition(prevState: ActionResponse<CompetitionFormData>, formData: FormData, id: string): Promise<ActionResponse<CompetitionFormData>> {
     const rawData = Object.fromEntries(formData.entries());
@@ -247,32 +221,50 @@ export async function getStageById(id: string) {
 
 
 export async function registerAsOrganization(competitionId: string) {
-    const session = await auth();
-    console.log(session);
-    if (!session || !session.user) {
-        throw new Error("Unauthorized");
-    }
-    const user = await userService.getWhere({ email:  session.user.email as string});
-    if(!user || user.length === 0){
-        throw new Error("User not found");
-    }
-
-    const cookieStore = await  cookies();
-    const organizationId = cookieStore.get("org")?.value as string;
-    console.log(organizationId);
-    if(!organizationId){
-        throw new Error("Organization not found");
-    }
-
-    const res = await db.organizationCompetitionParticipation.create({
-        data: {
-          competitionId,
-          organizationId,
-          userId: user[0].id
+    try {
+        const session = await auth();
+        if (!session || !session.user) {
+            throw new Error("Unauthorized");
         }
-    });
-
-    return res !== null;
+        const user = await userService.getWhere({ email:  session.user.email as string});
+        if(!user || user.length === 0){
+            throw new Error("User not found");
+        }
+    
+        const cookieStore = await  cookies();
+        const organizationId = cookieStore.get("org")?.value as string;
+    
+        if(!organizationId){
+            throw new Error("Organization not found");
+        }
+    
+        const alreadyRegistered = await db.organizationCompetitionParticipation.findFirst({
+            where: {
+                competitionId,
+                organizationId,
+            }
+        });
+        if(alreadyRegistered){
+            throw new Error("Already registered");
+        }
+    
+        const res = await db.organizationCompetitionParticipation.create({
+            data: {
+              competitionId,
+              organizationId,
+              userId: user[0].id
+            }
+        });
+    }
+    catch(err) {
+        if (err instanceof Error) {
+            throw new Error(err.message || "Regisztráció sikertelen");
+        }
+    }
+    return {
+        success: true,
+        message: "Sikeres regisztráció",
+    }
 }
 
 export async function getRegisteredOrganizations(competitionId: string) {
