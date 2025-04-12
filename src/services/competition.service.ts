@@ -68,6 +68,15 @@ export class CompetitionService extends Service implements CrudService<Competiti
       }
     });
   }
+
+  hasOrganization(id: string, organizationId: string) {
+    return this.db.organizationCompetitionParticipation.findMany({
+      where: {
+        competitionId: id,
+        organizationId,
+      },
+    }).then((participations) => participations.length > 0);
+  }
 }
 
 const competitionService = new CompetitionService();

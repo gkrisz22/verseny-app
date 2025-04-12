@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { getCompetitionById } from "@/app/_data/competition.data";
 import { CompetitionRegistrationDialog } from "./registration-dialog";
+import { signedUpForCompetition } from "@/app/_actions/organization.action";
 
 export default async function CompetitionDetails({
   params,
@@ -18,6 +19,7 @@ export default async function CompetitionDetails({
 }) {
   const competitionId = (await params).id;
   const competition = await getCompetitionById(competitionId);
+  const signedUp = await signedUpForCompetition(competitionId);
 
   if (!competition) {
     return (
@@ -103,7 +105,7 @@ export default async function CompetitionDetails({
           </h1>
         </div>
         <div className="flex gap-2 self-start">
-          <CompetitionRegistrationDialog competitionId={competitionId} />
+          {!signedUp && <CompetitionRegistrationDialog competitionId={competitionId} />}
         </div>
       </div>
 
