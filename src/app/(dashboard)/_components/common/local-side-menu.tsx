@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -35,7 +34,7 @@ const LocalSideMenu: LocalSideMenuComponent = ({
 
     return (
         <div className="w-full">
-            <nav className="flex flex-col space-y-2">
+            <nav className="flex flex-col md:flex-row">
                 {items
                     .sort((a, b) => a.title.localeCompare(b.title))
                     .map((item, index) => {
@@ -46,6 +45,7 @@ const LocalSideMenu: LocalSideMenuComponent = ({
                         const isActive = normalizedPathname === itemUrl;
 
                         return (
+                            <div className="flex items-center" key={index}>
                             <Link key={index} href={itemUrl}>
                                 <Button
                                     variant="ghost"
@@ -59,17 +59,18 @@ const LocalSideMenu: LocalSideMenuComponent = ({
                                         }
                                     )}
                                 >
-                                    <span className="inline-flex items-center justify-center w-10 h-10 rounded-full">
+                                    <span className="inline-flex items-center justify-center w-5 h-10 rounded-full">
                                         {item.icon && (
                                             <item.icon className="w-5 h-5" />
                                         )}
                                     </span>
-                                    <span className="ml-2">{item.title}</span>
+                                    <span className="ml-1">{item.title}</span>
                                 </Button>
                             </Link>
+                            <Separator orientation="vertical" className=" mx-2 h-4 bg-muted-foreground/80" />
+                            </div>
                         );
                     })}
-                <Separator className="my-4" />
                 {children}
             </nav>
         </div>
@@ -91,7 +92,7 @@ LocalSideMenu.Previous = ({ children, href }: { children: React.ReactNode, href:
 LocalSideMenu.Previous.displayName = "LocalSideMenu.Previous";
 
 LocalSideMenu.Footer = ({ children }: { children: React.ReactNode }) => {
-    return <div className="mt-4">{children}</div>;
+    return <div className="">{children}</div>;
 };
 LocalSideMenu.Footer.displayName = "LocalSideMenu.Footer";
 

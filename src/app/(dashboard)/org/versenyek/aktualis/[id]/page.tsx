@@ -15,7 +15,7 @@ import { signedUpForCompetition } from "@/app/_actions/organization.action";
 export default async function CompetitionDetails({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>,
 }) {
   const competitionId = (await params).id;
   const competition = await getCompetitionById(competitionId);

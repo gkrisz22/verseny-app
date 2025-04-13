@@ -10,7 +10,8 @@ import {
   useReactTable,
   getPaginationRowModel,
   getSortedRowModel,
-  getFilteredRowModel
+  getFilteredRowModel,
+  RowSelectionState
 } from "@tanstack/react-table";
 
 import {
@@ -34,19 +35,26 @@ interface DataTableProps<TData, TValue> {
   searchParams?: {
     column: string;
     placeholder: string;
-  }
+  },
+  selectedRows?: RowSelectionState;
+  onRowSelectionChange?: (rowSelection: RowSelectionState) => void;
+  getRowId?: (row: TData) => string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
-    searchParams,
+  searchParams,
+  selectedRows,
+  onRowSelectionChange,
+  getRowId
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
-  const [rowSelection, setRowSelection] = React.useState({})
+  const [internalRowSelection, setInternalRowSelection] = React.useState<RowSelectionState>({});
+  const rowSelection = selectedRows !== undefined ? selectedRows : internalRowSelection;
 
   const table = useReactTable({
     data,
@@ -57,8 +65,15 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
-    onRowSelectionChange: setRowSelection,
-    state: {
+    onRowSelectionChange: (updater) => {
+      const newSelection = typeof updater === 'function' ? updater(rowSelection) : updater;
+      if (onRowSelectionChange) {
+        onRowSelectionChange(newSelection);
+      } else {
+        setInternalRowSelection(newSelection);
+      }
+    },
+    getRowId, state: {
       sorting,
       columnFilters,
       rowSelection
@@ -68,16 +83,16 @@ export function DataTable<TData, TValue>({
   return (
     <div>
       <div className="flex items-center justify-between py-4 w-full">
-        { searchParams && <div className="relative flex items-center">
-            <Search className="absolute top-1/2 left-2 transform -translate-y-1/2 size-4" />
-            <Input
-          placeholder={searchParams.placeholder}
-          value={(table.getColumn(searchParams.column)?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn(searchParams.column)?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm pl-8 w-full min-w-[250px]"
-        /></div>}
+        {searchParams && <div className="relative flex items-center">
+          <Search className="absolute top-1/2 left-2 transform -translate-y-1/2 size-4" />
+          <Input
+            placeholder={searchParams.placeholder}
+            value={(table.getColumn(searchParams.column)?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn(searchParams.column)?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm pl-8 w-full min-w-[250px]"
+          /></div>}
 
         <ExportToXLSX data={table.getRowModel().rows.map(row => row.original)} />
       </div>
@@ -92,9 +107,9 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}

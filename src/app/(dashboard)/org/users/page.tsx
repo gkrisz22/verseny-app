@@ -15,15 +15,16 @@ import {
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { DataTable } from "../../_components/common/data-table"
-import { columns } from "./columns"
+import { columns, User } from "./columns"
 import { Plus } from "lucide-react"
 
 export default function UserManagement() {
-  const [users, setUsers] = useState([
+  const [users, setUsers] = useState<User[]>([
     {
       id: "1",
       name: "Géczy Krisztián",
       email: "mf5m7s@inf.elte.hu",
+
       roles: ["admin", "teacher"],
       status: "active",
       joinedDate: "Jan 15, 2024",

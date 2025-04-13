@@ -80,7 +80,7 @@ export default {
       }
       return true;
     }, 
-    async jwt({ user, token}) { // on login
+    /*async jwt({ user, token}) { // on login
       if(user) {
         token.role = "";
         token.org = "";
@@ -94,7 +94,7 @@ export default {
       token.org = "";
       console.log("Session")
       return session;
-    },
+    },*/
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isOnDashboard = nextUrl.pathname.startsWith("/admin");

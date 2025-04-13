@@ -35,11 +35,11 @@ const VersenyTemplate = async ({
         </p>
       </div>
       <Separator className='my-4 lg:my-6' />
-      <div className="grid md:grid-cols-6 gap-6">
-        <aside className="md:col-span-1 col-span-1">
+      <div className="flex flex-col w-full space-y-4">
+        <aside className="">
           <LocalVersenyMenu competitionId={id} />
         </aside>
-        <div className="md:col-span-5 col-span-1">
+        <div >
           {children}
         </div>
       </div>
