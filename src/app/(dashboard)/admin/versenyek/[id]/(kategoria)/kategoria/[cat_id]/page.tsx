@@ -1,12 +1,11 @@
-import CardTitle from '@/app/(dashboard)/_components/common/card-title';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { getCategoryById } from '@/app/_actions/competition.action';
-import Link from 'next/link';
 import React from 'react'
-import { CreateStageDialog } from './create-stage-dialog';
-import { DataTable } from '@/app/(dashboard)/_components/common/data-table';
-import { columns } from './columns';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import FordulokListing from '@/app/(dashboard)/_components/competition/fordulok-listing';
+import { getEligibleGrades } from '@/app/_data/category.data';
+import EligibilityForm from './beallitasok/eligibility-form';
+import { ChartColumnIcon, LayersIcon, Settings, SettingsIcon, UsersIcon } from 'lucide-react';
 
 const VersenyKategoriaDetailsPage = async ({
     params,
@@ -19,24 +18,37 @@ const VersenyKategoriaDetailsPage = async ({
     if(!category){
         return <div>Loading...</div>
     }
+    const eligibleGrades = await getEligibleGrades(id);
 
     return (
-        <div>
-          <Link href={`/admin/versenyek/${category.competitionId}/`}>
-            <Button variant="link" size="sm">
-              Vissza a kategóriákhoz
-            </Button>
-          </Link>
-            <Card>
-              <CardHeader className='flex flex-row items-center justify-between'>
-                <CardTitle> {category.name} - fordulók</CardTitle>
-                <CreateStageDialog category={category} />
-              </CardHeader>
-
-              <CardContent>
-                <DataTable columns={columns} data={category.stages} searchParams={{ column: "name", placeholder: "Keresés forduló név alapján" }} />
-              </CardContent>
-            </Card>
+      <div className='flex flex-col gap-2'>
+            <h1 className='text-2xl font-bold tracking-tight md:text-3xl'>
+                {category.name}
+            </h1>
+            <p className='text-muted-foreground'>
+                {category.eligibleGrades.join(', ')} osztályok
+            </p>
+            <Separator className='mb-6' />
+            <Tabs defaultValue="fordulok" className="space-y-4">
+                <TabsList>
+                    <TabsTrigger value="beallitasok"><SettingsIcon className='size-4 mr-1' /> Beállítások</TabsTrigger>
+                    <TabsTrigger value="fordulok"><LayersIcon className='size-4 mr-1' /> Fordulók</TabsTrigger>
+                    <TabsTrigger value="diakok"><UsersIcon className='size-4 mr-1' /> Diákok</TabsTrigger>
+                    <TabsTrigger value="statisztika"><ChartColumnIcon className='size-4 mr-1' /> Statisztika</TabsTrigger>
+                </TabsList>
+                <TabsContent value="beallitasok">
+                    <EligibilityForm categoryId={id} eligibleGrades={eligibleGrades} />
+                </TabsContent>
+                <TabsContent value="fordulok">
+                    <FordulokListing category={category} stages={category.stages} isAdmin={true} />
+                </TabsContent>
+                <TabsContent value="diakok">
+                    Diákok
+                </TabsContent>
+                <TabsContent value="statisztika">
+                    Statisztika
+                </TabsContent>
+            </Tabs>
         </div>
     );
 

@@ -43,6 +43,16 @@ export class StageService extends Service {
       },
     });
   }
+
+  getCategoryStages(categoryId: string) {
+    return this.db.stage.findMany({
+      where: {
+        categoryId,
+      },
+    });
+  }
+
+
 }
 
 const stageService = new StageService();

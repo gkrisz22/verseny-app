@@ -155,7 +155,11 @@ export async function getCategoryById(id: string) {
             id,
         },
         include: {
-            stages: true,
+            stages: {
+                include: {
+                    files: true
+                }
+            }
         }
     });
 

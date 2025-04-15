@@ -19,28 +19,29 @@ datasource db {
  * ============================
  */
 model User {
-  id            String    @id @default(cuid())
+  id            String     @id @default(cuid())
   name          String?
-  username      String?   @unique
-  email         String?   @unique
+  username      String?    @unique
+  email         String?    @unique
   emailVerified DateTime?
   password      String?
   image         String?
-  superAdmin    Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  superAdmin    Boolean    @default(false)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
   status        UserStatus @default(PENDING)
   files         File[]
   sessions      Session[]
 
-  memberships OrganizationUser[]
-  accounts    Account[]
+  memberships  OrganizationUser[]
+  accounts     Account[]
   verification VerificationToken?
+
   @@unique([email, username])
 }
 
 enum UserStatus {
-  ACTIVE 
+  ACTIVE
   INACTIVE
   PENDING
 }
@@ -50,7 +51,7 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -67,38 +68,38 @@ model Account {
   id_token          String?
   session_state     String?
   scope             String?
- 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
- 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
-  @@id([provider, providerAccountId])
-}
- 
-model VerificationToken {
-  identifier String @id @default(cuid()) 
-  token      String 
-  expires    DateTime
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  userId String @unique
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model VerificationToken {
+  identifier String   @id @default(cuid())
+  token      String
+  expires    DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
 }
 
 model OrganizationCompetitionParticipation {
-  id             String    @id @default(cuid())
+  id             String              @id @default(cuid())
   competitionId  String
   organizationId String
   userId         String
   status         ParticipationStatus @default(PENDING)
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  competition    Competition  @relation(fields: [competitionId], references: [id])
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  organization   Organization        @relation(fields: [organizationId], references: [id])
+  competition    Competition         @relation(fields: [competitionId], references: [id])
 }
 
 enum ParticipationStatus {
@@ -123,10 +124,9 @@ model Organization {
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
 
-  members OrganizationUser[]
-  school  School?
-
+  members        OrganizationUser[]
   participations OrganizationCompetitionParticipation[]
+  students       SchoolStudent[]
 }
 
 enum OrganizationType {
@@ -156,7 +156,7 @@ model OrganizationUser {
   @@unique([organizationId, userId])
 }
 
-// Many-to-Many: Rolenpm  - OrganizationUser
+// Many-to-Many: Role - OrganizationUser
 model OrganizationRole {
   id                 String           @id @default(cuid())
   roleId             String
@@ -177,10 +177,9 @@ model Competition {
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
 
-  categories Category[]
-  participants  OrganizationCompetitionParticipation[]
+  categories   Category[]
+  participants OrganizationCompetitionParticipation[]
 }
-
 
 enum CompetitionStatus {
   UPCOMING
@@ -189,18 +188,27 @@ enum CompetitionStatus {
 }
 
 model Category {
-  id            String   @id @default(cuid())
-  name          String
-  description   String   @db.Text
-  competitionId String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id             String            @id @default(cuid())
+  name           String
+  description    String            @db.Text
+  competitionId  String
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
   eligibleGrades Int[]
-
-  competition Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
-  stages      Stage[]
+  competition    Competition       @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  stages         Stage[]
+  students       StudentCategory[]
 }
 
+model StudentCategory {
+  id         String   @id @default(cuid())
+  categoryId String
+  studentId  String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  category   Category @relation(fields: [categoryId], references: [id])
+  student    Student  @relation(fields: [studentId], references: [id])
+}
 
 model Stage {
   id          String      @id @default(cuid())
@@ -213,8 +221,10 @@ model Stage {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   files    File[]
+  tasks    Task[]
+  students StudentStage[]
 }
 
 enum StageStatus {
@@ -223,34 +233,38 @@ enum StageStatus {
   FINISHED
 }
 
-model School {
-  id             String       @id @default(cuid())
-  name           String       @unique
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
-  students SchoolStudent[]
-  @@unique([organizationId])
+model Student {
+  id            String                @id @default(cuid())
+  name          String
+  uniqueId      String                @unique
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  schools       SchoolStudent[]
+  categories    StudentCategory[]
+  stages        StudentStage[]
+  academicYears StudentAcademicYear[]
 }
 
-model Student {
-  id             String       @id @default(cuid())
-  name           String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  schools SchoolStudent[]
+model StudentStage {
+  id        String   @id @default(cuid())
+  studentId String
+  stageId   String
+  custom    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  student   Student  @relation(fields: [studentId], references: [id])
+  stage     Stage    @relation(fields: [stageId], references: [id])
 }
 
 model SchoolStudent {
-  id          String    @id @default(cuid())
-  studentId   String    @unique
-  schoolId    String    @unique
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  student    Student   @relation(fields: [studentId], references: [id])
-  school     School    @relation(fields: [schoolId], references: [id])
+  id        String       @id @default(cuid())
+  studentId String
+  schoolId  String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  student   Student      @relation(fields: [studentId], references: [id])
+  school    Organization @relation(fields: [schoolId], references: [id])
+
   @@unique([studentId, schoolId])
 }
 
@@ -268,6 +282,35 @@ model File {
 
   stage   Stage?  @relation(fields: [stageId], references: [id])
   stageId String?
+}
+
+model TaskGroup {
+  id      String @id @default(cuid())
+  stageId String
+  tasks   Task[]
+}
+
+model Task {
+  id        String    @id @default(cuid())
+  title     String
+  type      TaskType  @default(NUMERIC)
+  points    Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  groupId   String
+  group     TaskGroup @relation(fields: [groupId], references: [id])
+
+  parentId String?
+  parent   Task?   @relation("TaskToTask", fields: [parentId], references: [id])
+  subtasks Task[]  @relation("TaskToTask")
+  stageId  String
+  stage    Stage   @relation(fields: [stageId], references: [id])
+}
+
+enum TaskType {
+  NUMERIC
+  BINARY
+  TEXT
 }
 
 model Role {
@@ -290,4 +333,27 @@ model Permission {
   description String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model AcademicYear {
+  id        String   @id @default(cuid())
+  name      String
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  students StudentAcademicYear[]
+}
+
+model StudentAcademicYear {
+  id             String       @id @default(cuid())
+  studentId      String
+  academicYearId String
+  grade          Int
+  gradeString    String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  student        Student      @relation(fields: [studentId], references: [id])
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
 }

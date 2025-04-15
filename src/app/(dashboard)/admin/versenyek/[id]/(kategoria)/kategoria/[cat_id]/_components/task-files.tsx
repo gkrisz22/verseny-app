@@ -19,8 +19,8 @@ const TaskFiles = ({ stageId, files }: { stageId: string; files: File[] }) => {
           >
             <div className="text-muted-foreground">
               <p title={file.name} className="uppercase text-sm">
-                {file.name.length > 14
-                  ? file.name.substring(0, 14) + "..."
+                {file.name.length > 100
+                  ? file.name.substring(0, 100) + "..."
                   : file.name}
               </p>
               <p className="text-xs">
@@ -28,7 +28,7 @@ const TaskFiles = ({ stageId, files }: { stageId: string; files: File[] }) => {
               </p>
             </div>
             <Button
-              variant="ghost"
+              variant="outline"
               onClick={() => handleDownload(file.id)}
               disabled={isPending}
             >

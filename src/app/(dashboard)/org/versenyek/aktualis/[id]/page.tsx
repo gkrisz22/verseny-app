@@ -43,47 +43,7 @@ export default async function CompetitionDetails({
       </div>
     )
   }
-  const deadlinesData = {
-    "math-olympiad-2025": {
-      applicationDeadline: "2025-05-15T23:59:59",
-      startDate: "2025-06-15T09:00:00",
-      endDate: "2025-07-30T18:00:00",
-      keyDates: [
-        { name: "Registration Opens", date: "2025-03-01T09:00:00" },
-        { name: "Preliminary Round", date: "2025-06-15T09:00:00" },
-        { name: "Semi-Finals", date: "2025-07-01T09:00:00" },
-        { name: "Finals", date: "2025-07-30T09:00:00" },
-        { name: "Awards Ceremony", date: "2025-08-15T14:00:00" },
-      ],
-    },
-    "cm98tfn7w0000t5q8cy1kn8by": {
-      applicationDeadline: "2025-04-10T23:59:59",
-      startDate: "2025-05-10T09:00:00",
-      endDate: "2025-05-12T18:00:00",
-      keyDates: [
-        { name: "Registration Opens", date: "2025-02-01T09:00:00" },
-        { name: "Project Proposal Due", date: "2025-03-15T23:59:59" },
-        { name: "Project Setup", date: "2025-05-09T14:00:00" },
-        { name: "Judging Day 1", date: "2025-05-10T09:00:00" },
-        { name: "Judging Day 2", date: "2025-05-11T09:00:00" },
-        { name: "Public Viewing", date: "2025-05-12T10:00:00" },
-        { name: "Awards Ceremony", date: "2025-05-12T16:00:00" },
-      ],
-    },
-  }[competition.id]
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return new Intl.DateTimeFormat("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      timeZoneName: "short",
-    }).format(date)
-  }
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
@@ -106,6 +66,11 @@ export default async function CompetitionDetails({
         </div>
         <div className="flex gap-2 self-start">
           {!signedUp && <CompetitionRegistrationDialog competitionId={competitionId} />}
+          {signedUp && <Link href={`/org/versenyek/aktualis/${competitionId}/reszletek`}>
+            <Button variant="default" size="sm" asChild>
+              <span>Verseny részletei</span>
+            </Button>
+          </Link>}
         </div>
       </div>
 

@@ -19,12 +19,18 @@ import { StageFormData } from "@/types/form/competition";
 import { toast } from "sonner";
 import { Category } from "@prisma/client";
 import { ActionResponse } from "@/types/form/action-response";
+import { cn } from "@/lib/utils";
 
 const initialState: ActionResponse<StageFormData> = {
   success: false,
   message: "",
 };
-export function CreateStageDialog({ category }: { category: Category }) {
+export function CreateStageDialog({ category, trigger }: { category: Category, trigger: {
+  variant: "default" | "outline",
+  size?: "sm" | "md" | "lg" | "xl",
+  className?: string,
+  icon?: React.ReactNode,
+} }) {
   const [state, action, isPending] = useActionState(
     createStage,
     initialState
@@ -43,11 +49,11 @@ export function CreateStageDialog({ category }: { category: Category }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          variant="default"
-          className="w-fit"
+          variant={trigger.variant}
+          className={trigger.className}
           onClick={() => setOpen(true)}
         >
-          <Plus /> Új forduló
+          {trigger.icon ? trigger.icon : <Plus />} Új forduló létrehozása
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
