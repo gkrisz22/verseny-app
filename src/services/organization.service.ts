@@ -126,6 +126,22 @@ export class OrganizationService extends Service {
             },
         })
     }
+
+    async getUsers(orgId: string) {
+        return this.db.organizationUser.findMany({
+            where: {
+                organizationId: orgId,
+            },
+            include: {
+                user: true,
+                roles: {
+                    include: {
+                        role: true,
+                    },
+                },
+            },
+        });
+    }
 }
 
 const orgService = new OrganizationService();

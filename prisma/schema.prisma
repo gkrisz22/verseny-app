@@ -36,6 +36,7 @@ model User {
   memberships  OrganizationUser[]
   accounts     Account[]
   verification VerificationToken?
+  evaluations  StudentStage[]
 
   @@unique([email, username])
 }
@@ -98,8 +99,8 @@ model OrganizationCompetitionParticipation {
   status         ParticipationStatus @default(PENDING)
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
-  organization   Organization        @relation(fields: [organizationId], references: [id])
-  competition    Competition         @relation(fields: [competitionId], references: [id])
+  organization   Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  competition    Competition         @relation(fields: [competitionId], references: [id], onDelete: Cascade)
 }
 
 enum ParticipationStatus {
@@ -163,19 +164,21 @@ model OrganizationRole {
   assignedAt         DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
   organizationUserId String
-  organizationUser   OrganizationUser @relation(fields: [organizationUserId], references: [id])
+  organizationUser   OrganizationUser @relation(fields: [organizationUserId], references: [id], onDelete: Cascade)
   role               Role             @relation(fields: [roleId], references: [id])
 }
 
 model Competition {
-  id          String            @id @default(cuid())
-  title       String
-  description String            @db.Text
-  startDate   DateTime
-  endDate     DateTime?
-  status      CompetitionStatus @default(UPCOMING)
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  id               String            @id @default(cuid())
+  title            String
+  shortDescription String?
+  description      String            @db.Text
+  startDate        DateTime
+  endDate          DateTime?
+  status           CompetitionStatus @default(UPCOMING)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  published        Boolean           @default(false)
 
   categories   Category[]
   participants OrganizationCompetitionParticipation[]
@@ -192,6 +195,7 @@ model Category {
   name           String
   description    String            @db.Text
   competitionId  String
+  published      Boolean           @default(false)
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
   eligibleGrades Int[]
@@ -217,13 +221,21 @@ model Stage {
   status      StageStatus @default(UPCOMING)
   startDate   DateTime
   endDate     DateTime?
-  categoryId  String
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+
+  accessStartDate     DateTime?
+  evaluationStartDate DateTime?
+  evaluationEndDate   DateTime?
+
+  categoryId String
+  published  Boolean  @default(false)
+  order      Int      @default(0)
+  minPoints  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   category Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   files    File[]
-  tasks    Task[]
+  tasks    TaskGroup[]
   students StudentStage[]
 }
 
@@ -243,17 +255,35 @@ model Student {
   categories    StudentCategory[]
   stages        StudentStage[]
   academicYears StudentAcademicYear[]
+  grade         Int?
+  gradeString   String?
 }
 
 model StudentStage {
-  id        String   @id @default(cuid())
-  studentId String
-  stageId   String
-  custom    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  student   Student  @relation(fields: [studentId], references: [id])
-  stage     Stage    @relation(fields: [stageId], references: [id])
+  id          String             @id @default(cuid())
+  studentId   String
+  stageId     String
+  custom      String?
+  totalPoints Int                @default(-1)
+  evaluatorId String?
+  status      StudentStageStatus @default(NOT_SUBMITTED)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  student     Student            @relation(fields: [studentId], references: [id])
+  stage       Stage              @relation(fields: [stageId], references: [id])
+  evaluator   User?              @relation(fields: [evaluatorId], references: [id])
+
+  @@unique([studentId, stageId])
+  @@index([studentId])
+  @@index([stageId])
+  @@index([evaluatorId])
+}
+
+enum StudentStageStatus {
+  NOT_SUBMITTED
+  SUBMITTED
+  EVALUATED
+  RE_EVALUATED
 }
 
 model SchoolStudent {
@@ -285,14 +315,18 @@ model File {
 }
 
 model TaskGroup {
-  id      String @id @default(cuid())
-  stageId String
-  tasks   Task[]
+  id        String   @id @default(cuid())
+  title     String   @default("Feladatcsoport")
+  stageId   String
+  tasks     Task[]
+  stage     Stage    @relation(fields: [stageId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Task {
   id        String    @id @default(cuid())
-  title     String
+  title     String    @default("Feladat")
   type      TaskType  @default(NUMERIC)
   points    Int       @default(0)
   createdAt DateTime  @default(now())
@@ -303,8 +337,6 @@ model Task {
   parentId String?
   parent   Task?   @relation("TaskToTask", fields: [parentId], references: [id])
   subtasks Task[]  @relation("TaskToTask")
-  stageId  String
-  stage    Stage   @relation(fields: [stageId], references: [id])
 }
 
 enum TaskType {

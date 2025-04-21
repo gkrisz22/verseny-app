@@ -3,6 +3,7 @@ import React from 'react'
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import FordulokListing from '@/app/(dashboard)/_components/competition/fordulok-listing';
+import CategoryStudentTable from './category-student-table';
 
 const VersenyKategoriaFordulokPage = async ({ params }: { params: Promise<{ cat_id: string }> }) => {
     const cat_id = (await params).cat_id;
@@ -37,10 +38,10 @@ const VersenyKategoriaFordulokPage = async ({ params }: { params: Promise<{ cat_
                     <TabsTrigger value="statisztika">Statisztika</TabsTrigger>
                 </TabsList>
                 <TabsContent value="fordulok">
-                    <FordulokListing category={category} stages={category.stages} isAdmin={false} />
+                    <FordulokListing category={category} stages={category.stages} isAdmin={false} students={category.students} />
                 </TabsContent>
                 <TabsContent value="diakok">
-                    Diákok
+                    <CategoryStudentTable students={category.students} categoryId={cat_id} />
                 </TabsContent>
                 <TabsContent value="statisztika">
                     Statisztika

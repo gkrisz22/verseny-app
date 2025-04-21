@@ -1,22 +1,12 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowRight, ArrowUpDown , MoreHorizontal, Trash2Icon } from "lucide-react";
+import { ArrowRight} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Competition } from "./page";
 import Link from "next/link";
-import { deleteCompetition } from "@/app/_actions/competition.action";
-import { toast } from "sonner";
-import { ConfirmDialog } from "../../../_components/common/confirm-dialog";
 import React from "react";
 import DataTableSortableHeader from "@/app/(dashboard)/_components/common/data-table-sortable-header";
 
@@ -92,50 +82,8 @@ export const columns: ColumnDef<Competition>[] = [
 ];
 
 const Actions = ({ data }: { data: Competition }) => {
-
-  const [isOpen, setOpen] = React.useState(false);
-
-  const handleDelete = async () => {
-    try {
-      await deleteCompetition(data.id);
-      toast.success("Verseny törölve.");
-    } catch (error) {
-      console.error(error);
-      toast.error("Hiba történt a verseny törlése közben.");
-    }
-  };
-
   return (
     <div className="flex items-center justify-center gap-2">
-      {/*<DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="flex items-center">
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent sideOffset={4} align="end">
-          <DropdownMenuLabel className="p-0 font-normal">
-            <DropdownMenuItem>Szerkesztés</DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <ConfirmDialog
-                setOpen={setOpen}
-                open={isOpen}
-                title="Biztosan törölni szeretné a versenyt?"
-                description="A művelet nem visszavonható. Ezzel törlődnek a versenyhez rendelt kategóriák (és fordulók), nevezések és eredmények is."
-                confirmButton={
-                  <Button variant="destructive" onClick={handleDelete}>
-                    Törlés
-                  </Button>
-                }
-              >
-                <Trash2Icon className="h-4 w-4" />
-                Törlés
-              </ConfirmDialog>
-            </DropdownMenuItem>
-          </DropdownMenuLabel>
-        </DropdownMenuContent>
-      </DropdownMenu>*/}
-
       <Link href={`/admin/versenyek/${data.id}`}>
         <Button
           variant="secondary"

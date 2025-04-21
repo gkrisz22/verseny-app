@@ -53,7 +53,7 @@ export default async function RootLayout({
       <body
         className={`${fonts
           .map((font) => font.variable)
-          .join(" ")} antialiased font-primary bg-background text-foreground`}
+          .join(" ")} antialiased font-primary bg-background text-foreground relative`}
       >
         <ThemeProvider
           attribute="class"

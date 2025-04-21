@@ -10,21 +10,11 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
 import { createStudent, updateStudent } from "@/app/_actions/student.action"
-import type { Student } from "@/types/student"
 import { Loader2 } from "lucide-react"
+import { Student } from "@prisma/client"
+import { useActionForm } from "@/hooks/use-action-form"
+import { Label } from "@/components/ui/label"
 
-const formSchema = z.object({
-  id: z.string().optional(),
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  grade: z.string().min(1, {
-    message: "Please select a grade.",
-  }),
-})
 
 interface StudentUploadFormProps {
   student?: Student
@@ -32,133 +22,39 @@ interface StudentUploadFormProps {
 }
 
 export function StudentUploadForm({ student, onSuccess }: StudentUploadFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      id: student?.id || undefined,
-      name: student?.name || "",
-      email: student?.email || "",
-      grade: student?.grade || "",
-    },
-  })
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsSubmitting(true)
-    try {
-      if (values.id) {
-        await updateStudent({
-          ...values,
-          id: values.id,
-          addedAt: student?.addedAt || new Date().toISOString(),
-        })
-        toast("Diák frissítve");
-      } else {
-        await createStudent({
-          ...values,
-          id: crypto.randomUUID(),
-          addedAt: new Date().toISOString(),
-        })
-        toast("Diák hozzáadva");
-      }
-
-      form.reset({
-        id: undefined,
-        name: "",
-        email: "",
-        grade: "",
-      })
-
-      if (onSuccess) {
-        onSuccess()
-      }
-    } catch (error) {
-      toast("Hiba", {
-        description: "Failed to save student. Please try again.",
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
+  const [state, action, isPending] = useActionForm(createStudent);
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid gap-6 sm:grid-cols-2">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Teljes név</FormLabel>
-                <FormControl>
-                  <Input placeholder="John Doe" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+    <form action={action} className="grid md:grid-cols-2 gap-4 w-full">
+      <div className="grid gap-6">
+        <Input name="name" type="text" placeholder="Név" />
+      </div>
 
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="john.doe@example.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+      <div className="grid gap-6">
+        <Select name="grade" defaultValue="">
+          <SelectTrigger>
+            <SelectValue placeholder="Osztály" />
+          </SelectTrigger>
+          <SelectContent>
+            {[4, 5, 6, 7, 8, 9, 10, 11, 12].map((grade, index) => (
+              <SelectItem key={index} value={grade.toString()}>
+                {grade}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
-        <FormField
-          control={form.control}
-          name="grade"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Osztály</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Osztály" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="A">7</SelectItem>
-                  <SelectItem value="B">8</SelectItem>
-                  <SelectItem value="C">9</SelectItem>
-                  <SelectItem value="D">10</SelectItem>
-                  <SelectItem value="F">11</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormDescription>Jelenlegi osztály</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="flex justify-end gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => {
-              form.reset()
-            }}
-            disabled={isSubmitting}
-          >
-            Mégsem
-          </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {student ? "Módosítás" : "Hozzáadás"}
-          </Button>
-        </div>
-      </form>
-    </Form>
+      <div className="w-full col-span-2  flex justify-end gap-2">
+        <Button type="button" variant="outline">
+          Mégsem
+        </Button>
+        <Button type="submit" disabled={isPending}>
+          {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {student ? "Módosítás" : "Hozzáadás"}
+        </Button>
+      </div>
+    </form>
   )
 }
 

@@ -63,14 +63,8 @@ export function TopNavbar({ children }: { children: React.ReactNode }) {
       ],
     },
     {
-      label: "Felhasználók",
-      href: "/org/users",
-      icon: Users,
-      roles: ["admin"],
-    },
-    {
       label: "Beállítások",
-      href: "/org/settings",
+      href: "/org/beallitasok",
       icon: Settings,
       roles: ["admin"],
     },

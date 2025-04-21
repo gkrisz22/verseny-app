@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, GraduationCap, Mail, MoreHorizontal, User, UserCheck } from "lucide-react";
+import { ArrowUpDown, GraduationCap, Mail, MoreHorizontal, UserIcon, UserCheck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,17 +14,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { User } from "@prisma/client";
 
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  roles: string[];
-  status: "active" | "inactive";
-  joinedDate: string;
-};
 
-export const columns: ColumnDef<User>[] = [
+export const columns: ColumnDef<User & {roles: string[]}>[] = [
+
   {
     id: "select",
     header: ({ table }) => (
@@ -84,7 +78,7 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const roles = row.getValue("roles") as string[];
       const roleIcons: Record<string, React.JSX.Element> = {
-        admin: <User className="h-4 w-4" />,
+        admin: <UserIcon className="h-4 w-4" />,
         contact: <Mail className="h-4 w-4" />,
         trusted: <UserCheck className="h-4 w-4" />,
         teacher: <GraduationCap className="h-4 w-4" />,
@@ -124,7 +118,7 @@ export const columns: ColumnDef<User>[] = [
     },
   },
   {
-    accessorKey: "joinedDate",
+    accessorKey: "createdAt",
     header: ({ column }) => {
       return (
         <Button
@@ -137,6 +131,18 @@ export const columns: ColumnDef<User>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("createdAt") as string);
+      return (
+        <div className="text-sm text-muted-foreground">
+          {date.toLocaleDateString("hu-HU", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          })}
+        </div>
+      );
+    }
   },
   {
     id: "actions",

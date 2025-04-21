@@ -43,7 +43,7 @@ const SignUpOrganizationForm = () => {
                     Kérjük, adja meg az iskola adatait.
                 </p>
             </div>
-
+            
             <h3 className="text-sm text-muted-foreground font-medium">
                 Szervezeti adatok
             </h3>
@@ -223,14 +223,14 @@ const SignUpOrganizationForm = () => {
                        <MailIcon /> Folytatás e-mail címmel
                        {(isPending && auth === 'email') && <RotateCwIcon className="animate-spin" />}
                     </Button>
-
+                    {/*
                     <Button type="button" onClick={() => handleSubmit("google")}  variant="outline" className="w-full mt-2" disabled={isPending}>
                         <Icons.google /> Folytatás Google-fiókkal {(isPending && auth === "google") && <RotateCwIcon className="animate-spin" />}
                         </Button>
                     <Button type="button"  onClick={() => handleSubmit("github")} variant="outline" className="w-full mt-2" disabled={isPending}>
                         <Icons.github /> Folytatás GitHub-fiókkal
                         {(isPending && auth === "github") && <RotateCwIcon className="animate-spin" />}
-                    </Button>
+                    </Button>*/}
                 </div>
 
             </div>

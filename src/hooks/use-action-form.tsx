@@ -9,6 +9,10 @@ export function useActionForm<T>(
   initialValue: ActionResponse<T> = {
     message: '',
     success: false
+  },
+  options?: {
+    onSuccess?: (data: ActionResponse<T>) => void;
+    onError?: (error: Partial<ActionResponse<T>>) => void;
   }
 ) {
   const [state, formAction, isPending] = useActionState<ActionResponse<T>, FormData>(
@@ -19,10 +23,12 @@ export function useActionForm<T>(
   useEffect(() => {
     if (state?.success) {
       toast.success(state?.message);
+      options?.onSuccess?.(state);
     } else if (state?.errors) {
       toast.error(state?.message);
+      options?.onError?.(state.errors);
     }
-  }, [state]);
+  }, [state, options]);
 
   return [state, formAction, isPending] as const;
 }

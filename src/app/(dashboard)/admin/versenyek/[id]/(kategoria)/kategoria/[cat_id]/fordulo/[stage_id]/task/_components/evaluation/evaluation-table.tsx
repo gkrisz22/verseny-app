@@ -5,148 +5,185 @@ import type React from "react"
 import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
-import { Plus, Trash2 } from "lucide-react"
+import { Trash2 } from "lucide-react"
 import TaskContent from "./task-content"
 import { v4 as uuidv4 } from "uuid"
+import EvaluationSaveTrigger from "./save-button"
+import { deleteTaskGroup, saveTasks, updateTaskGroup } from "@/app/_actions/task.action"
+import CreateTaskGroupDialog from "./create-task-group-dialog"
+import { ConfirmDialog } from "@/app/(dashboard)/_components/common/confirm-dialog"
+import { toast } from "sonner"
 
-export type TaskType = "numerical" | "checkbox"
-
-export interface Subtask {
-  id: string
-  name: string
-  parentId: string | null
-  points: number
-  taskType: TaskType
-}
+export type TaskType = "NUMERIC" | "BINARY" | "TEXT";
 
 export interface Task {
-  id: string
-  name: string
-  subtasks: Subtask[]
+  id: string;
+  title: string;
+  type: TaskType;
+  points: number;
+  parentId: string | null;
 }
 
-export default function EvaluationTable() {
+export interface TaskGroup {
+  id: string;
+  title: string;
+  stageId: string;
+  tasks: Task[];
+}
 
-    const [tasks, setTasks] = useState<Task[]>([
-        {
-          id: uuidv4(),
-          name: "1. feladat",
-          subtasks: []
-        }
-    ]);
+export default function EvaluationTable({ stageId, initialGroups }: { stageId: string
+, initialGroups: TaskGroup[] }) {
+  const [taskGroups, setTaskGroups] = useState<TaskGroup[]>(initialGroups);
+  const [activeTab, setActiveTab] = useState(taskGroups[0]?.id || "");
+  const [selectedGroup, setSelectedGroup] = useState<string>("");
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-    const [activeTab, setActiveTab] = useState(tasks[0]?.id || "")
-
-    const addTask = () => {
-        const newTaskId = uuidv4()
-        const newTask: Task = {
-            id: newTaskId,
-            name: `${tasks.length + 1}. feladat`,
-            subtasks: [],
-        }
-
-    setTasks([...tasks, newTask])
-    setActiveTab(newTaskId)
-  }
-
-  const removeTask = (taskId: string) => {
-    const updatedTasks = tasks.filter((task) => task.id !== taskId)
-    setTasks(updatedTasks)
-
-    if (activeTab === taskId && updatedTasks.length > 0) {
-      setActiveTab(updatedTasks[0].id)
+  const addTaskGroup = ({ id, title, stageId}: { id: string, title: string, stageId: string }) => {
+    const newTaskGroup ={
+      id,
+      title,
+      stageId,
+      tasks: [],
     }
-  }
 
-  const updateTaskName = (taskId: string, newName: string) => {
-    setTasks(tasks.map((task) => (task.id === taskId ? { ...task, name: newName } : task)))
-  }
+    setTaskGroups([...taskGroups, newTaskGroup]);
+    setActiveTab(newTaskGroup.id);
+  };
 
-  const addSubtask = (taskId: string, parentId: string | null) => {
-    const newSubtaskId = uuidv4()
-    const parentSubtask = tasks.find((task) => task.id === taskId)?.subtasks.find((subtask) => subtask.id === parentId)
+  const removeTaskGroup = async (taskGroupId: string) => {
+    const res = await deleteTaskGroup(taskGroupId);
+    if(!res) {
+      toast.error("Nem sikerült törölni a feladatcsoportot.");
+      return;
+    }
 
-    setTasks(
-      tasks.map((task) => {
-        if (task.id === taskId) {
+    const updatedTaskGroups = taskGroups.filter((group) => group.id !== taskGroupId);
+    setTaskGroups(updatedTaskGroups);
+
+    if (activeTab === taskGroupId && updatedTaskGroups.length > 0) {
+      setActiveTab(updatedTaskGroups[0].id);
+    }
+  };
+
+  const updateTaskGroupTitle = async (taskGroupId: string, newTitle: string) => {
+    const res = await updateTaskGroup(taskGroupId, { title: newTitle });
+    if(!res) {
+      toast.error("Nem sikerült frissíteni a feladatcsoport nevét.");
+      return;
+    }
+    setTaskGroups(
+      taskGroups.map((group) =>
+        group.id === taskGroupId ? { ...group, title: newTitle } : group
+      )
+    );
+  };
+
+  const addTask = (taskGroupId: string, parentId: string | null) => {
+    const newTaskId = uuidv4();
+    const parentTask = taskGroups
+      .find((group) => group.id === taskGroupId)
+      ?.tasks.find((task) => task.id === parentId);
+
+    setTaskGroups(
+      taskGroups.map((group) => {
+        if (group.id === taskGroupId) {
           return {
-            ...task,
-            subtasks: [
-              ...task.subtasks,
+            ...group,
+            tasks: [
+              ...group.tasks,
               {
-                id: newSubtaskId,
-                name: "Feladat",
-                parentId,
+                id: newTaskId,
+                title: "Feladat",
+                type: parentTask?.type || "NUMERIC",
                 points: 1,
-                taskType: parentSubtask?.taskType || "numerical",
+                parentId,
+                subtasks: [],
               },
             ],
-          }
+          };
         }
-        return task
-      }),
-    )
-    return newSubtaskId
-  }
+        return group;
+      })
+    );
+    return newTaskId;
+  };
 
-  const updateSubtask = (taskId: string, subtaskId: string, updates: Partial<Subtask>) => {
-    setTasks(
-      tasks.map((task) => {
-        if (task.id === taskId) {
+  const updateTask = (taskGroupId: string, taskId: string, updates: Partial<Task>) => {
+    setTaskGroups(
+      taskGroups.map((group) => {
+        if (group.id === taskGroupId) {
           return {
-            ...task,
-            subtasks: task.subtasks.map((subtask) => (subtask.id === subtaskId ? { ...subtask, ...updates } : subtask)),
-          }
+            ...group,
+            tasks: group.tasks.map((task) =>
+              task.id === taskId ? { ...task, ...updates } : task
+            ),
+          };
         }
-        return task
-      }),
-    )
-  }
+        return group;
+      })
+    );
+  };
 
-  const removeSubtask = (taskId: string, subtaskId: string) => {
-    setTasks(
-      tasks.map((task) => {
-        if (task.id === taskId) {
-          const updatedSubtasks = task.subtasks.filter(
-            (subtask) => subtask.id !== subtaskId && subtask.parentId !== subtaskId,
-          )
-          return { ...task, subtasks: updatedSubtasks }
+  const removeTask = (taskGroupId: string, taskId: string) => {
+    setTaskGroups(
+      taskGroups.map((group) => {
+        if (group.id === taskGroupId) {
+          const updatedTasks = group.tasks.filter(
+            (task) => task.id !== taskId && task.parentId !== taskId
+          );
+          return { ...group, tasks: updatedTasks };
         }
-        return task
-      }),
-    )
-  }
+        return group;
+      })
+    );
+  };
 
-  const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
-    if (e.key === "ArrowRight" && index < tasks.length - 1) {
-      setActiveTab(tasks[index + 1].id)
-    } else if (e.key === "ArrowLeft" && index > 0) {
-      setActiveTab(tasks[index - 1].id)
+  const handleSave = async () => {
+    console.log("Saving tasks:", taskGroups);
+    const res = await saveTasks(taskGroups);
+    if (!res) {
+      toast.error("Nem sikerült menteni a feladatokat.");
+      return;
     }
-  }
+    toast.success("Feladatok sikeresen mentve!");
+    const toSave = taskGroups.map((group) => ({
+      id: group.id,
+      title: group.title,
+      stageId: group.stageId,
+      tasks: group.tasks.map((task) => ({
+        id: task.id,
+        title: task.title,
+        type: task.type,
+        points: task.points,
+        parentId: task.parentId,
+      })),
+    }));
+
+    setTaskGroups(toSave);
+  };
 
   return (
     <div className="space-y-4 mt-8">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="flex items-center justify-between mb-4 bg-background rounded-lg">
-          <TabsList className="overflow-x-auto bg-background rounded-lg">
-            {tasks.map((task, index) => (
+          <TabsList className="overflow-x-auto rounded-lg">
+            {taskGroups.map((group, index) => (
               <TabsTrigger
-                key={task.id}
-                value={task.id}
+                key={group.id}
+                value={group.id}
                 className="flex items-center gap-2"
-                onKeyDown={(e) => handleKeyDown(e, index)}
               >
-                {task.name}
-                {tasks.length > 1 && (
+                {group.title}
+                {taskGroups.length > 1 && (
                   <Button
-                  asChild
+                    asChild
                     variant="ghost"
                     size="icon"
                     className="h-5 w-5 rounded-full"
                     onClick={(e) => {
-                      e.stopPropagation()
-                      removeTask(task.id)
+                      e.stopPropagation();
+                      setSelectedGroup(group.id);
+                      setIsDeleteOpen(true);
                     }}
                   >
                     <Trash2 className="h-3 w-3" />
@@ -155,24 +192,34 @@ export default function EvaluationTable() {
               </TabsTrigger>
             ))}
           </TabsList>
-          <Button onClick={addTask} size="sm" className="ml-2">
-            <Plus className="h-4 w-4 mr-1" /> Új feladatcsoport
-          </Button>
+          <CreateTaskGroupDialog stageId={stageId} onAdded={addTaskGroup} />
         </div>
 
-        {tasks.map((task) => (
-          <TabsContent key={task.id} value={task.id} className="border rounded-lg p-4">
+        {taskGroups.map((group) => (
+          <TabsContent key={group.id} value={group.id} className="border rounded-lg p-4">
             <TaskContent
-              task={task}
-              updateTaskName={updateTaskName}
-              addSubtask={addSubtask}
-              updateSubtask={updateSubtask}
-              removeSubtask={removeSubtask}
+              taskGroup={group}
+              updateTaskGroupTitle={updateTaskGroupTitle}
+              addTask={addTask}
+              updateTask={updateTask}
+              removeTask={removeTask}
             />
           </TabsContent>
         ))}
       </Tabs>
+      <EvaluationSaveTrigger onSave={handleSave} disabled={false} />
+      <ConfirmDialog
+        title="A feladatcsoport törlésével a hozzátartozó ÖSSZES feladat is törlődik!"
+        description="Biztosan törölni szeretné a feladatcsoportot?"
+        open={isDeleteOpen}
+        setOpen={setIsDeleteOpen}
+        confirmButton={
+          <Button variant="destructive" onClick={() => {removeTaskGroup(selectedGroup || ""); setIsDeleteOpen(false);}}>
+            Törlés
+          </Button>
+        }
+      >
+      </ConfirmDialog>
     </div>
-  )
+  );
 }
-

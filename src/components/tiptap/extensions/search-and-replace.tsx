@@ -216,8 +216,6 @@ const selectNext = (editor: CoreEditor) => {
   if (view) {
     view
       .domAtPos(from)
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       .node.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 };
@@ -244,8 +242,6 @@ const selectPrevious = (editor: CoreEditor) => {
   if (view) {
     view
       .domAtPos(from)
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       .node.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 };

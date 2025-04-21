@@ -28,7 +28,7 @@ export async function actionHandler<T>(
     if (!validatedData.success) {
       return {
         success: false,
-        message: "Validációs hiba történt",
+        message: "Validációs hiba történt!",
         errors: validatedData.error.flatten().fieldErrors as { [K in keyof T]?: string[] },
         inputs: rawData as T,
       };

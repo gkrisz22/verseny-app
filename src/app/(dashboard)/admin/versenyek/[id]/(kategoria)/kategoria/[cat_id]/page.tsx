@@ -18,6 +18,7 @@ const VersenyKategoriaDetailsPage = async ({
     if(!category){
         return <div>Loading...</div>
     }
+    
     const eligibleGrades = await getEligibleGrades(id);
 
     return (
@@ -40,7 +41,7 @@ const VersenyKategoriaDetailsPage = async ({
                     <EligibilityForm categoryId={id} eligibleGrades={eligibleGrades} />
                 </TabsContent>
                 <TabsContent value="fordulok">
-                    <FordulokListing category={category} stages={category.stages} isAdmin={true} />
+                    <FordulokListing category={category} stages={category.stages} isAdmin={true} students={category.students} />
                 </TabsContent>
                 <TabsContent value="diakok">
                     Diákok

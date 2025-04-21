@@ -150,6 +150,13 @@ export async function getCategoriesByCompetitionId(competitionId: string) {
 }
 
 export async function getCategoryById(id: string) {
+
+    const session = await auth();
+    if(!session || !session.user){
+        return null;
+    }
+    const cookieStore = await  cookies();
+    const schoolId = cookieStore.get("org")?.value as string;
     const res = await db.category.findUnique({
         where: {
             id,
@@ -157,7 +164,31 @@ export async function getCategoryById(id: string) {
         include: {
             stages: {
                 include: {
-                    files: true
+                    files: true,
+                    students: {
+                        include: {
+                            student: true,
+                        }
+                    }
+                },
+                orderBy: {
+                    startDate: "asc"
+                }
+            },
+            students: {
+                include: {
+                    student: true,
+                },
+                where: {
+                    student: {
+                        schools: {
+                            some: {
+                                schoolId: {
+                                    equals: schoolId,
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -211,7 +242,8 @@ export async function getStageById(id: string) {
             id,
         },
         include: {
-            files: true
+            files: true,
+            tasks: true,
         }
     });
 
@@ -249,7 +281,7 @@ export async function registerAsOrganization(competitionId: string) {
             }
         });
         if(alreadyRegistered){
-            throw new Error("Already registered");
+            throw new Error("Már regisztrált");
         }
     
         const res = await db.organizationCompetitionParticipation.create({
@@ -259,6 +291,8 @@ export async function registerAsOrganization(competitionId: string) {
               userId: user[0].id
             }
         });
+
+        revalidatePath("/org");
     }
     catch(err) {
         if (err instanceof Error) {

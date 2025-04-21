@@ -11,11 +11,19 @@ export class CompetitionService extends Service implements CrudService<Competiti
   get(id: string) {
     return this.db.competition.findUnique({
       where: {
-        id,
+      id,
       },
       include: {
-        participants: true,
-        categories: true
+      participants: true,
+      categories: {
+        include: {
+          _count: {
+            select: {
+              students: true,
+            }
+          }
+        }
+      }
       }
     });
   }
@@ -33,6 +41,18 @@ export class CompetitionService extends Service implements CrudService<Competiti
         {
             status: "ONGOING",
         }]
+      },
+      include: {
+        participants: true,
+        categories: true
+      }
+    });
+  }
+
+  getPast() {
+    return this.db.competition.findMany({
+      where: {
+        status: "FINISHED"
       },
       include: {
         participants: true,

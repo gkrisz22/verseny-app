@@ -65,7 +65,7 @@ export function SignUpForm({
                             <Label>Regisztrálás, mint:</Label>
                             <RadioGroup
                                 name="role"
-                                className="grid grid-cols-3 gap-4"
+                                className="grid grid-cols-2 gap-4"
                                 required
                                 defaultValue={state.inputs?.role}
                             >
@@ -93,18 +93,7 @@ export function SignUpForm({
                                     <UserIcon className="mb-3 h-6 w-6" />
                                     Tanár
                                 </Label>
-                                <Label
-                                    htmlFor="student"
-                                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary"
-                                >
-                                    <RadioGroupItem
-                                        value="student"
-                                        id="student"
-                                        className="sr-only"
-                                    />
-                                    <GraduationCap className="mb-3 h-6 w-6" />
-                                    Diák
-                                </Label>
+                                
                             </RadioGroup>
                             {state.errors?.role && (
                                 <div className="text-red-500 text-sm">

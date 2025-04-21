@@ -1,17 +1,9 @@
-"use client";
-import { signUpEmail } from "@/app/_actions/auth.action";
 import Icons from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import React, { useActionState } from "react";
+import React from "react";
 
 const CompletedRegPage = () => {
-
-
     return (
         <div className="w-full max-w-lg mx-auto border rounded-xl flex flex-col gap-4 p-4 lg:p-6 shadow bg-background">
             <Icons.logo className="size-8 mx-auto" />

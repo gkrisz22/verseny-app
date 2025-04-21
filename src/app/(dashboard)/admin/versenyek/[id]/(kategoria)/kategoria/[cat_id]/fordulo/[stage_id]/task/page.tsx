@@ -1,8 +1,9 @@
 import { getStageById } from '@/app/_actions/competition.action';
 import React from 'react'
-import EvaluatorBuilder from './_components/evaulator-builder';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { getTaskGroups } from '@/app/_data/task.data';
+import EvaluationTable from './_components/evaluation/evaluation-table';
 
 const ForduloFeladatErtekelo = async ({
   params,
@@ -16,12 +17,14 @@ const ForduloFeladatErtekelo = async ({
   if (!stage) {
     return <div>Loading...</div>;
   }
+  const taskGroups = await getTaskGroups(stage_id) || [];
+  console.log("taskGroups", taskGroups);
   return (
     <div>
       <h1 className="text-2xl font-semibold">{stage.name} forduló értékelő</h1>
       <Link href={`/admin/versenyek/${competitionId}/kategoria/${stage.categoryId}`} className="text-sm text-primary">
         <Button variant="link">Vissza a kategóriahoz</Button></Link>
-      <EvaluatorBuilder stageId={stage_id} />
+      <EvaluationTable stageId={stage_id} initialGroups={taskGroups} />
     </div>
   )
 }

@@ -5,7 +5,8 @@ import {
   Calendar,
   ArrowLeft,
   Clock,
-  CalendarIcon
+  CalendarIcon,
+  ArrowRightIcon
 } from "lucide-react";
 import Link from "next/link";
 import { getCompetitionById } from "@/app/_data/competition.data";
@@ -47,9 +48,9 @@ export default async function CompetitionDetails({
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="sm" asChild>
+        <Button variant="ghost" asChild>
           <Link href="/org/versenyek/aktualis">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <ArrowLeft className="h-4 w-4 mr-1" />
             Vissza az aktuális versenyekhez
           </Link>
         </Button>
@@ -67,8 +68,9 @@ export default async function CompetitionDetails({
         <div className="flex gap-2 self-start">
           {!signedUp && <CompetitionRegistrationDialog competitionId={competitionId} />}
           {signedUp && <Link href={`/org/versenyek/aktualis/${competitionId}/reszletek`}>
-            <Button variant="default" size="sm" asChild>
+            <Button variant="default" >
               <span>Verseny részletei</span>
+              <ArrowRightIcon />
             </Button>
           </Link>}
         </div>

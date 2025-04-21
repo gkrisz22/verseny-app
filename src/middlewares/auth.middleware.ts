@@ -1,10 +1,11 @@
-import { Session } from "next-auth";
 import { Middleware } from "./middleware";
 import userService from "@/services/user.service";
 import { logger } from "@/lib/logger";
+import { auth } from "@/auth";
 
 class AuthMiddleware<T> implements Middleware<T> {
-    public async handle(_: FormData, session?: Session) {
+    public async handle(_: FormData) {
+        const session = await auth();
         if (!session) {
             logger.error("Nincs bejelentkezve.");
             return {
@@ -30,9 +31,9 @@ class AuthMiddleware<T> implements Middleware<T> {
     }
 
     private async isUserValid(id: string) {
-        const user = userService.get(id);
+        const user = await userService.get(id);
 
-        if (!user) {
+        if (!user || user.status == "INACTIVE") {
             return false;
         }
     }

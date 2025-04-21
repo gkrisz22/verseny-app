@@ -9,7 +9,7 @@ interface EvaluatorBuilderProps {
 
 const EvaluatorBuilder = ({ stageId }: EvaluatorBuilderProps) => {
   return (
-    <EvaluationTable />
+    <EvaluationTable stageId={stageId} />
   );
 };
 

@@ -5,7 +5,12 @@ import { cache } from "react";
 export const getCurrentCompetitions = cache(async () => {
     const res =  await competitionService.getActive();
     return res;
- });
+});
+
+export const getPastCompetitions = cache(async () => {
+    const res = await competitionService.getPast();
+    return res;
+});
  
 
 export const getCompetitionById = cache(async (id:string) => {

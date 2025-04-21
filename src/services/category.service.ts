@@ -55,6 +55,21 @@ export class CategoryService extends Service implements CrudService<Category> {
             }
         });
     }
+
+    addStudentsToCategory(categoryId: string, studentIds: string[]) {
+        return this.db.category.update({
+            where: {
+                id: categoryId,
+            },
+            data: {
+                students: {
+                    create: studentIds.map((studentId) => ({
+                        studentId,
+                    })),
+                },
+            },
+        });
+    }
 }
 
 const categoryService = new CategoryService();

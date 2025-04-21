@@ -89,7 +89,7 @@ const VersenyReszletekPage = async ({params} : {
                                             <span className="text-muted-foreground mr-1">
                                                 Résztvevők:
                                             </span>
-                                            <span>{"18"}</span>
+                                            <span>{category._count.students}</span>
                                         </div>
                                     </div>
                                 </CardContent>

@@ -75,7 +75,11 @@ export default {
         
         if (userExists.length === 0) {
          console.log("Creating user")
-         return false;
+          const newUser = await authService.create({
+            name,
+            email,
+          });
+          user.id = newUser.id;
         }
       }
       return true;

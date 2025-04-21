@@ -1,9 +1,8 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
-import type { Task, Subtask } from "./evaluation-table"
+import type { Task, TaskGroup } from "./evaluation-table"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -11,173 +10,171 @@ import { Plus, Edit, SaveIcon, XIcon, SigmaIcon } from "lucide-react"
 import TaskItem from "./task-item"
 
 interface TaskContentProps {
-  task: Task
-  updateTaskName: (taskId: string, newName: string) => void
-  addSubtask: (taskId: string, parentId: string | null) => string
-  updateSubtask: (taskId: string, subtaskId: string, updates: Partial<Subtask>) => void
-  removeSubtask: (taskId: string, subtaskId: string) => void
+  taskGroup: TaskGroup
+  updateTaskGroupTitle: (taskGroupId: string, newTitle: string) => void
+  addTask: (taskGroupId: string, parentId: string | null) => string
+  updateTask: (taskGroupId: string, taskId: string, updates: Partial<Task>) => void
+  removeTask: (taskGroupId: string, taskId: string) => void
 }
 
-interface HierarchicalSubtask extends Subtask {
-  children: HierarchicalSubtask[]
+interface HierarchicalTask extends Task {
+  children: HierarchicalTask[]
   totalPoints: number
 }
 
 export default function TaskContent({
-  task,
-  updateTaskName,
-  addSubtask,
-  updateSubtask,
-  removeSubtask,
+  taskGroup,
+  updateTaskGroupTitle,
+  addTask,
+  updateTask,
+  removeTask,
 }: TaskContentProps) {
-  const [editingTaskName, setEditingTaskName] = useState(false)
-  const [newTaskName, setNewTaskName] = useState(task.name)
-  const [expandedSubtasks, setExpandedSubtasks] = useState<Record<string, boolean>>({})
-  const [hierarchicalSubtasks, setHierarchicalSubtasks] = useState<HierarchicalSubtask[]>([])
+  const [editingGroupTitle, setEditingGroupTitle] = useState(false)
+  const [newGroupTitle, setNewGroupTitle] = useState(taskGroup.title)
+  const [expandedTasks, setExpandedTasks] = useState<Record<string, boolean>>({})
+  const [hierarchicalTasks, setHierarchicalTasks] = useState<HierarchicalTask[]>([])
   const [totalPoints, setTotalPoints] = useState(0)
-
-  const [newlyCreatedSubtask, setNewlyCreatedSubtask] = useState<string | null>(null)
+  const [newlyCreatedTask, setNewlyCreatedTask] = useState<string | null>(null)
 
   useEffect(() => {
     const buildHierarchy = () => {
-      const subtaskMap: Record<string, HierarchicalSubtask> = {}
-      const rootSubtasks: HierarchicalSubtask[] = []
+      const taskMap: Record<string, HierarchicalTask> = {}
+      const rootTasks: HierarchicalTask[] = []
 
-      task.subtasks.forEach((subtask) => {
-        subtaskMap[subtask.id] = {
-          ...subtask,
+      taskGroup.tasks.forEach((task) => {
+        taskMap[task.id] = {
+          ...task,
           children: [],
-          totalPoints: subtask.points,
+          totalPoints: task.points,
         }
       })
 
-      task.subtasks.forEach((subtask) => {
-        if (subtask.parentId === null) {
-          rootSubtasks.push(subtaskMap[subtask.id])
-        } else if (subtaskMap[subtask.parentId]) {
-          subtaskMap[subtask.parentId].children.push(subtaskMap[subtask.id])
+      taskGroup.tasks.forEach((task) => {
+        if (task.parentId === null) {
+          rootTasks.push(taskMap[task.id])
+        } else if (taskMap[task.parentId]) {
+          taskMap[task.parentId].children.push(taskMap[task.id])
         }
       })
 
-      const calculateTotalPoints = (subtask: HierarchicalSubtask): number => {
-        if (subtask.children.length === 0) {
-          return subtask.points
+      const calculateTotalPoints = (task: HierarchicalTask): number => {
+        if (task.children.length === 0) {
+          return task.points
         }
 
-        const childrenPoints = subtask.children.reduce((sum, child) => sum + calculateTotalPoints(child), 0)
+        const childrenPoints = task.children.reduce((sum, child) => sum + calculateTotalPoints(child), 0)
 
-        subtask.totalPoints = subtask.points + childrenPoints
-        return subtask.totalPoints
+        task.totalPoints = task.points + childrenPoints
+        return task.totalPoints
       }
 
       let total = 0
-      rootSubtasks.forEach((subtask) => {
-        total += calculateTotalPoints(subtask)
+      rootTasks.forEach((task) => {
+        total += calculateTotalPoints(task)
       })
 
       setTotalPoints(total)
-      return rootSubtasks
+      return rootTasks
     }
 
-    setHierarchicalSubtasks(buildHierarchy())
-  }, [task.subtasks])
+    setHierarchicalTasks(buildHierarchy())
+  }, [taskGroup.tasks])
 
-  const toggleExpanded = (subtaskId: string) => {
-    setExpandedSubtasks((prev) => ({
+  const toggleExpanded = (taskId: string) => {
+    setExpandedTasks((prev) => ({
       ...prev,
-      [subtaskId]: !prev[subtaskId],
+      [taskId]: !prev[taskId],
     }))
   }
 
-  const saveTaskNameEdits = () => {
-    if (newTaskName.trim()) {
-      updateTaskName(task.id, newTaskName)
-      setEditingTaskName(false)
+  const saveGroupTitleEdits = () => {
+    if (newGroupTitle.trim()) {
+      updateTaskGroupTitle(taskGroup.id, newGroupTitle)
+      setEditingGroupTitle(false)
     }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && editingTaskName) {
-      saveTaskNameEdits()
-    } else if (e.key === "Escape" && editingTaskName) {
-      setEditingTaskName(false)
+    if (e.key === "Enter" && editingGroupTitle) {
+      saveGroupTitleEdits()
+    } else if (e.key === "Escape" && editingGroupTitle) {
+      setEditingGroupTitle(false)
     }
   }
 
-  const handleAddSubtask = (parentId: string | null) => {
-    const newSubtaskId = addSubtask(task.id, parentId)
+  const handleAddTask = (parentId: string | null) => {
+    const newTaskId = addTask(taskGroup.id, parentId)
 
     if (parentId) {
-      setExpandedSubtasks((prev) => ({
+      setExpandedTasks((prev) => ({
         ...prev,
         [parentId]: true,
       }))
     }
-    setNewlyCreatedSubtask(newSubtaskId)
+    setNewlyCreatedTask(newTaskId)
 
-    setExpandedSubtasks((prev) => ({
+    setExpandedTasks((prev) => ({
       ...prev,
-      [newSubtaskId]: true,
+      [newTaskId]: true,
     }))
   }
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        {editingTaskName ? (
+        {editingGroupTitle ? (
           <div className="flex items-center gap-2">
             <Input
-              value={newTaskName}
-              onChange={(e) => setNewTaskName(e.target.value)}
+              value={newGroupTitle}
+              onChange={(e) => setNewGroupTitle(e.target.value)}
               onKeyDown={handleKeyDown}
               className="w-full max-w-[300px] bg-background"
               autoFocus
             />
-            <Button size="sm" onClick={saveTaskNameEdits}>
+            <Button size="sm" onClick={saveGroupTitleEdits}>
               <SaveIcon /> <span className="sr-only">Mentés</span>
             </Button>
-            <Button size="sm" variant="outline" onClick={() => setEditingTaskName(false)}>
+            <Button size="sm" variant="outline" onClick={() => setEditingGroupTitle(false)}>
               <XIcon className="h-4 w-4" />
               <span className="sr-only">Mégsem</span>
             </Button>
           </div>
         ) : (
           <div className="flex items-center gap-2 w-full mr-4">
-            <h2 className="text-xl font-semibold">{task.name}</h2>
-            <Button variant="ghost" size="icon" onClick={() => setEditingTaskName(true)}>
+            <h2 className="text-xl font-semibold">{taskGroup.title}</h2>
+            <Button variant="ghost" size="icon" onClick={() => setEditingGroupTitle(true)}>
               <Edit className="h-4 w-4" />
             </Button>
             <Badge variant="outline" className="ml-auto bg-background px-2">
-              <SigmaIcon />{totalPoints} pont
+              <SigmaIcon /> {totalPoints} pont
             </Badge>
           </div>
         )}
 
-        <Button size={"sm"} onClick={() => handleAddSubtask(null)}>
+        <Button size={"sm"} onClick={() => handleAddTask(null)}>
           <Plus className="h-4 w-4 mr-1" /> Új feladat
         </Button>
       </div>
 
       <div className="space-y-2">
-        {hierarchicalSubtasks.map((subtask) => (
+        {hierarchicalTasks.map((task) => (
           <TaskItem
-            key={subtask.id}
-            subtask={subtask}
-            taskId={task.id}
+            key={task.id}
+            task={task}
+            taskGroupId={taskGroup.id}
             level={0}
-            expanded={expandedSubtasks[subtask.id] || false}
-            expandedSubtasks={expandedSubtasks}
+            expanded={expandedTasks[task.id] || false}
+            expandedTasks={expandedTasks}
             toggleExpanded={toggleExpanded}
-            updateSubtask={updateSubtask}
-            removeSubtask={removeSubtask}
-            addSubtask={handleAddSubtask}
-            isNewlyCreated={subtask.id === newlyCreatedSubtask}
-            onFinishEditing={() => setNewlyCreatedSubtask(null)}
-            newlyCreatedId={newlyCreatedSubtask}
+            updateTask={updateTask}
+            removeTask={removeTask}
+            addTask={handleAddTask}
+            isNewlyCreated={task.id === newlyCreatedTask}
+            onFinishEditing={() => setNewlyCreatedTask(null)}
+            newlyCreatedId={newlyCreatedTask}
           />
         ))}
       </div>
     </div>
   )
 }
-

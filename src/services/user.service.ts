@@ -6,7 +6,7 @@ export class UserService extends Service implements CrudService<User> {
         super();
     }
 
-    async create(data: User) {
+    async create(data: Partial<User>) {
         return this.db.user.create({
             data,
         }); 

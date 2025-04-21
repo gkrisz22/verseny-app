@@ -8,9 +8,9 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { StudentUploadForm } from "./student-upload-form"
 import { StudentLibrary } from "./student-library"
-import type { Student } from "@/types/student"
 import { Badge } from "@/components/ui/badge"
 import { PlusCircle, Users, X } from "lucide-react"
+import { Student } from "@prisma/client"
 
 interface StudentSelectorProps {
   onSelect?: (student: Student) => void
@@ -19,15 +19,19 @@ interface StudentSelectorProps {
   selectedStudent?: Student | null
   selectedStudents?: Student[]
   multipleSelection?: boolean
+  showSelected?: boolean
+  exclude?: string[]
 }
 
 export function StudentSelector({
   onSelect,
   onSelectMultiple,
-  buttonLabel = "Select Student",
+  buttonLabel = "Diákok kiválasztása",
   selectedStudent = null,
   selectedStudents = [],
   multipleSelection = false,
+  showSelected = true,
+  exclude = [],
 }: StudentSelectorProps) {
   const [open, setOpen] = useState(false)
   const [activeTab, setActiveTab] = useState("library")
@@ -70,8 +74,8 @@ export function StudentSelector({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full justify-start">
-          {multipleSelection ? (
+        <Button variant="outline" className="w-full justify-start" asChild>
+          {showSelected && multipleSelection ? (
             internalSelectedStudents.length > 0 ? (
               <div className="flex flex-wrap items-center gap-2 text-left">
                 <Users className="h-4 w-4 shrink-0" />
@@ -84,7 +88,7 @@ export function StudentSelector({
                         className="ml-1 rounded-full hover:bg-muted"
                       >
                         <X className="h-3 w-3" />
-                        <span className="sr-only">Remove {student.name}</span>
+                        <span className="sr-only">{student.name} törlése</span>
                       </button>
                     </Badge>
                   ))}
@@ -96,12 +100,12 @@ export function StudentSelector({
                 <span>{buttonLabel}</span>
               </div>
             )
-          ) : selectedStudent ? (
+          ) : showSelected && selectedStudent ? (
             <div className="flex items-center gap-2 text-left">
               <Users className="h-4 w-4" />
               <div className="flex-1 truncate">
                 <span className="font-medium">{selectedStudent.name}</span>
-                <span className="ml-2 text-muted-foreground">({selectedStudent.email})</span>
+                <span className="ml-2 text-muted-foreground">({selectedStudent.uniqueId})</span>
               </div>
             </div>
           ) : (
@@ -112,8 +116,8 @@ export function StudentSelector({
           )}
         </Button>
       </DialogTrigger>
-      <DialogTitle>Diákok</DialogTitle>
       <DialogContent className="sm:max-w-[900px]">
+        <DialogTitle>Diákok</DialogTitle>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex items-center justify-between">
             <TabsList>
@@ -136,6 +140,7 @@ export function StudentSelector({
               onSelectMultiple={handleMultipleSelect}
               selectedStudents={internalSelectedStudents}
               multipleSelection={multipleSelection}
+              exclude={exclude}
             />
             {multipleSelection && (
               <div className="mt-4 flex items-center justify-between">
