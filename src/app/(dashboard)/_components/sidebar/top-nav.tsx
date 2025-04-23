@@ -8,6 +8,8 @@ import { NavUser } from "./nav-user";
 import { User } from "next-auth";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
+import Breadcrumb from "./breadcrumb";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const TopNav = ({ user }: { user: User | undefined }) => {
   const pathname = usePathname();
@@ -37,7 +39,17 @@ const TopNav = ({ user }: { user: User | undefined }) => {
           <SidebarTrigger className="md:hidden -ml-1" />
           <Separator orientation="vertical" className="md:hidden mr-2 h-4 bg-muted-foreground/80" />
 
-          Breadcrumb
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" className="hidden md:block" onClick={() => window.history.back()}>
+              <ChevronLeft className="h-4 w-4" />
+              <span className="sr-only">Előző oldal</span>
+            </Button>
+            <Button size="sm" variant="outline" className="hidden md:block" onClick={() => window.history.forward()}>
+              <ChevronRight className="h-4 w-4" />
+              <span className="sr-only">Következő oldal</span>
+            </Button>
+          </div>
+          <Breadcrumb />
           <Separator orientation="vertical" className="md:hidden mr-2 h-4 bg-muted-foreground/80" />
         </div>
 

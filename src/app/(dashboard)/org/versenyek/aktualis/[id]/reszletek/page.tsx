@@ -37,7 +37,7 @@ const VersenyReszletekPage = async ({params} : {
             <div className="flex flex-col gap-2">
                 <h1 className="text-2xl font-medium tracking-tight">{competition.title} részletei</h1>
                 <p className="text-muted-foreground text-sm max-w-lg">
-                    Ez az oldal a verseny középpontja. Itt jelentkeztethet diákokat, tekintheti meg a feladatokat, valamint értékelheti a beadott megoldásokat.
+                    Ez az oldal a verseny központja. Itt jelentkeztethet diákokat, tekintheti meg a feladatokat, valamint értékelheti a beadott megoldásokat.
                 </p>
             </div>
             <Alert variant="default" className='w-fit'>

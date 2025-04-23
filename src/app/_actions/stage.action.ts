@@ -87,8 +87,6 @@ export async function updateStage(
     prevState: ActionResponse<EditStageDTO>,
     formData: FormData
 ): Promise<ActionResponse<EditStageDTO>> {
-    const rawData = Object.fromEntries(formData.entries());
-    logger.debug("updateStage", rawData);
     return actionHandler<EditStageDTO>(
         editStageSchema,
         formData,
@@ -113,7 +111,6 @@ export async function updateStage(
             return {
                 success: true,
                 message: "Forduló módosítva.",
-                inputs: data,
             };
         }
     );

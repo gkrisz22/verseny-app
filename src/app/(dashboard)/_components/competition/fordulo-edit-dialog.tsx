@@ -13,25 +13,28 @@ import { Textarea } from "@/components/ui/textarea";
 import { updateStage } from "@/app/_actions/stage.action";
 
 const ForduloEditDialog = ({ stage }: { stage: Stage }) => {
-    const [state, action, isPending] = useActionForm(updateStage);
+    const [state, action, isPending] = useActionForm(updateStage, {
+        onSuccess: () => {
+            setIsEditDialogOpen(false);
+            if(state.inputs?.startDate) {
+                setStartDate(new Date(state.inputs?.startDate));
+            }
+            if(state.inputs?.endDate) {
+                setEndDate(new Date(state.inputs?.endDate));
+            }
+            setIsEditDialogOpen(false);
+        },
+    });
     const [startDate, setStartDate] = React.useState<Date | undefined>(stage.startDate || undefined);
     const [endDate, setEndDate] = React.useState<Date | undefined>(stage.endDate || undefined);
     const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
 
-    React.useEffect(() => {
-        if (state.inputs?.startDate) setStartDate(new Date(state.inputs?.startDate));
-        if (state.inputs?.endDate) setEndDate(new Date(state.inputs?.endDate));
-    }, [state.inputs]);
-
-    React.useEffect(() => {
-        if (state?.success) setIsEditDialogOpen(false);
-    }, [state?.success]);
-
     return (
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} modal>
             <DialogTrigger asChild>
-                <Button variant="ghost" onClick={() => setIsEditDialogOpen(true)}>
+                <Button variant="ghost" size="sm" onClick={() => setIsEditDialogOpen(true)}>
                     <EditIcon className="h-4 w-4 mr-1" />
+                    Szerkesztés
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[550px]">

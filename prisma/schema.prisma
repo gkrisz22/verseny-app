@@ -175,6 +175,8 @@ model Competition {
   description      String            @db.Text
   startDate        DateTime
   endDate          DateTime?
+  signUpStartDate   DateTime?
+  signUpEndDate     DateTime?
   status           CompetitionStatus @default(UPCOMING)
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt

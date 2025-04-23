@@ -18,6 +18,7 @@ export const competitionUpdateMetadataSchema = z.object({
     title: z.string().min(3, "Túl rövid a verseny neve"),
     description: z.string().min(3, "Túl rövid a verseny leírása"),
     id: z.string(),
+    shortDescription: z.string().optional(),
 });
 export type CompetitionUpdateMetadataDTO = z.infer<typeof competitionUpdateMetadataSchema>;
 
@@ -177,3 +178,46 @@ export const createTaskGroupSchema = z.object({
     stageId: z.string().nonempty("Forduló azonosító megadása kötelező!")
 });
 export type CreateTaskGroupDTO = z.infer<typeof createTaskGroupSchema>;
+
+export const updateCompetitionSignUpDateSchema = z.object({
+    id: z.string().nonempty("Verseny azonosító megadása kötelező!"),
+    signUpStartDate: z.string().nonempty("Jelentkezési kezdő dátum megadása kötelező!"),
+    signUpEndDate: z.string().nonempty("Jelentkezési befejező dátum megadása kötelező!"),
+});
+export type UpdateCompetitionSignUpDateDTO = z.infer<typeof updateCompetitionSignUpDateSchema>;
+
+export const updateCompetitionDatesSchema = z.object({
+    id: z.string().nonempty("Verseny azonosító megadása kötelező!"),
+    competitionStartDate: z.string().nonempty("Verseny kezdődátumának megadása kötelező!"),
+    competitionEndDate: z.string().nonempty("Verseny végének dátuma megadása kötelező!"),
+});
+export type UpdateCompetitionDatesDTO = z.infer<typeof updateCompetitionDatesSchema>;
+
+
+export const updateCategoryMetadataSchema = z.object({
+    categoryId: z.string().nonempty("Kategória azonosító hiányzik!"),
+    name: z.string().nonempty("Kategórianév megadása kötelező!"),
+    description: z.string().optional(),
+    published: z.string()
+}).refine((val) => {
+    const published = val.published;
+    return published === "true" || published === "false";
+}, {
+    message: "Kategória láthatóságának megadása kötelező!",
+});
+export type UpdateCategoryMetadataDTO = z.infer<typeof updateCategoryMetadataSchema>;
+
+export const handleAcademicYearSchema = z.object({
+    id: z.string().optional(),
+    name: z.string().nonempty("Tanév megadása kötelező!"),
+    startDate: z.string().nonempty("Kezdő dátum megadása kötelező!"),
+    endDate: z.string().nonempty("Befejező dátum megadása kötelező!"),
+}).refine((val) => {
+    const startDate = new Date(val.startDate);
+    const endDate = new Date(val.endDate);
+    return startDate < endDate;
+}
+, {
+    message: "A kezdő dátumnak korábbinak kell lennie, mint a befejező dátum!",
+});
+export type HandleAcademicYearDTO = z.infer<typeof handleAcademicYearSchema>;

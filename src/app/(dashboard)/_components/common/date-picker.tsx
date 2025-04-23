@@ -24,7 +24,7 @@ interface DatePickerProps {
 export function DatePicker({ date, setDate, label }: DatePickerProps) {
 
   return (
-    <Popover modal>
+    <Popover>
       <PopoverTrigger asChild>
         <Button
           type="button"

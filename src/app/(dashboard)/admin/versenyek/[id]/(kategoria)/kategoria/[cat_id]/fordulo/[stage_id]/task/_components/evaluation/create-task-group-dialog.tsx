@@ -1,32 +1,28 @@
 "use client";
 
+import FormField from "@/app/(dashboard)/_components/common/form-field";
 import { createTaskGroup } from "@/app/_actions/task.action";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useActionForm } from "@/hooks/use-action-form";
-import { TaskGroup } from "@prisma/client";
-import { PlusIcon, SaveIcon, XIcon } from "lucide-react";
+import { LoaderIcon, PlusIcon, SaveIcon, XIcon } from "lucide-react";
 import React from "react";
 
+const CreateTaskGroupDialog = ({ stageId, onAdded }: { stageId: string, onAdded: (tg: { id: string, stageId: string, title: string}) => void }) => {
+    const [opened, setOpened] = React.useState(false);
 
+    const [state, action, isPending] = useActionForm(createTaskGroup, {
+        onSuccess: (data: { id: string, stageId: string, title: string}) => {
+            onAdded(data as { id: string, stageId: string, title: string});
+            setOpened(false);
 
-const CreateTaskGroupDialog = ({ stageId, onAdded }: { stageId: string, onAdded: (tg: TaskGroup) => void }) => {
-    const [state, action, isPending] = useActionForm(createTaskGroup);
-    const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
-
-    React.useEffect(() => {
-        if (state?.success) {
-            setIsEditDialogOpen(false);
-            if(state.data)  onAdded(state.data);
         }
-    }, [state?.success, onAdded, state?.data]);
+    });
 
     return (
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} modal>
+        <Dialog modal open={opened} onOpenChange={setOpened}>
             <DialogTrigger asChild>
-                <Button variant="default" size="sm" onClick={() => setIsEditDialogOpen(true)} className="w-fit">
+                <Button variant="default" size="sm" className="w-fit">
                     <PlusIcon className="h-4 w-4 mr-1" /> Új feladatcsoport létrehozása
                 </Button>
             </DialogTrigger>
@@ -38,20 +34,20 @@ const CreateTaskGroupDialog = ({ stageId, onAdded }: { stageId: string, onAdded:
                     </DialogDescription>
                 </DialogHeader>
                 <form className="grid gap-4 py-4" action={action}>
-                    <Input type="hidden" name="stageId" value={stageId} />
+                    <input type="hidden" name="stageId" value={stageId} />
                     <div className="grid gap-2">
-                        <Label htmlFor="title">Név</Label>
-                        <Input id="title" name="title" type="text" defaultValue={state?.inputs?.title} />
-                        {state?.errors?.title && <p className="text-red-500 text-sm">{state.errors.title}</p>}
+                        <FormField type="text" label="Név" id="title" name="title" errors={state?.errors?.title} defaultValue={state?.inputs?.title} />
                     </div>
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                        <DialogClose asChild>
+                        <Button type="button" variant="outline">
                             <XIcon className="h-4 w-4 mr-1" /> Mégsem
                         </Button>
+                        </DialogClose>
                         <Button type="submit" disabled={isPending}>
                             {isPending ? (
                                 <>
-                                    <div className="animate-spin h-4 w-4 mr-2 border-2 border-current border-t-transparent rounded-full" /> Mentés...
+                                    <LoaderIcon className="animate-spin h-4 w-4 mr-2" /> Mentés...
                                 </>
                             ) : (
                                 <>

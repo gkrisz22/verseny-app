@@ -48,7 +48,7 @@ const EligibilityForm = ({ categoryId, eligibleGrades } : { categoryId: string, 
                             </h3>
                             <div className="grid gap-4">
                                 {
-                                    [6, 7, 8].map((grade, index) => {
+                                    [4, 5, 6, 7, 8].map((grade, index) => {
                                         return (
                                             <GradeBox key={index} grade={grade} onChange={handleChange} checked={grades.includes(grade)} />
                                         )
@@ -62,7 +62,7 @@ const EligibilityForm = ({ categoryId, eligibleGrades } : { categoryId: string, 
                             </h3>
                             <div className="grid gap-4">
                                 {
-                                    [9, 10, 11, 12].map((grade, index) => {
+                                    [9, 10, 11, 12, 13].map((grade, index) => {
                                         return (
                                             <GradeBox key={index} grade={grade} onChange={handleChange} checked={grades.includes(grade)} />
                                         )

@@ -14,25 +14,17 @@ import { TrashIcon } from "lucide-react";
 import React from "react";
 import { toast } from "sonner";
 
-const ForduloDeleteDialog = ({
-    stageId
-}: {
-    stageId: string;
-}) => {
+const ForduloDeleteDialog = ({ stageId }: { stageId: string; }) => {
 
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
     const handleDelete = async () => {
-        setIsDeleteDialogOpen(true);
         toast.promise(
             deleteStage(stageId),
             {
                 loading: "Törlés folyamatban...",
                 success: () => {
-                    setIsDeleteDialogOpen(false);
                     return "Sikeresen törölve!";
                 },
                 error: (err) => {
-                    setIsDeleteDialogOpen(false);
                     return err.message || "Hiba történt a törlés során!";
                 },
             }
@@ -42,7 +34,7 @@ const ForduloDeleteDialog = ({
     return (
         <Dialog modal>
             <DialogTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="destructive" size="icon">
                     <TrashIcon className="h-4 w-4" />
                 </Button>
             </DialogTrigger>

@@ -38,17 +38,20 @@ export default function EvaluationTable({ stageId, initialGroups }: { stageId: s
   const [selectedGroup, setSelectedGroup] = useState<string>("");
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-  const addTaskGroup = ({ id, title, stageId}: { id: string, title: string, stageId: string }) => {
-    const newTaskGroup ={
+  const addTaskGroup = ({ id, title, stageId }: { id: string, title: string, stageId: string }) => {
+    const newTaskGroup = {
       id,
       title,
       stageId,
       tasks: [],
-    }
-
+    };
+  
     setTaskGroups([...taskGroups, newTaskGroup]);
-    setActiveTab(newTaskGroup.id);
+      if (newTaskGroup.id !== activeTab) {
+      setActiveTab(newTaskGroup.id);
+    }
   };
+  
 
   const removeTaskGroup = async (taskGroupId: string) => {
     const res = await deleteTaskGroup(taskGroupId);
@@ -169,7 +172,8 @@ export default function EvaluationTable({ stageId, initialGroups }: { stageId: s
           <TabsList className="overflow-x-auto rounded-lg">
             {taskGroups.map((group, index) => (
               <TabsTrigger
-                key={group.id}
+              title={group.id}
+                key={group.id + index}
                 value={group.id}
                 className="flex items-center gap-2"
               >
@@ -195,8 +199,8 @@ export default function EvaluationTable({ stageId, initialGroups }: { stageId: s
           <CreateTaskGroupDialog stageId={stageId} onAdded={addTaskGroup} />
         </div>
 
-        {taskGroups.map((group) => (
-          <TabsContent key={group.id} value={group.id} className="border rounded-lg p-4">
+        {taskGroups.map((group, index) => (
+          <TabsContent key={group.id + index} value={group.id} className="border rounded-lg p-4">
             <TaskContent
               taskGroup={group}
               updateTaskGroupTitle={updateTaskGroupTitle}

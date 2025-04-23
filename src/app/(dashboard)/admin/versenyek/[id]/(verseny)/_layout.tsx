@@ -1,9 +1,10 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Separator } from "@/components/ui/separator";
 import LocalVersenyMenu from "./local-verseny-menu";
 import { CompetitionProvider } from "./competition-context";
 import { getCompetitionById } from "@/app/_data/competition.data";
 import { Metadata } from "next";
+import { VersenyTabs } from "./_components/verseny-tabs";
 
 export const metadata:Metadata = {
   title: "Versenyek",
@@ -36,12 +37,11 @@ const VersenyTemplate = async ({
       </div>
       <Separator className='my-4 lg:my-6' />
       <div className="flex flex-col w-full space-y-4">
-        <aside className="">
-          <LocalVersenyMenu competitionId={id} />
-        </aside>
-        <div >
+      <VersenyTabs>
+        <Suspense fallback={<div>Betöltés...</div>}>
           {children}
-        </div>
+        </Suspense>
+      </VersenyTabs>
       </div>
     </CompetitionProvider>
   );

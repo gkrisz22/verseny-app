@@ -42,15 +42,7 @@ export default async function ActiveCompetitions() {
                                 {competition.title}
                             </CardTitle>
                             <p className="text-sm text-muted-foreground">
-                                {(() => {
-                                    if (competition.description.length > 160) {
-                                        const lastPeriod = competition.description.lastIndexOf('.', 160);
-                                        return lastPeriod > 0 
-                                            ? competition.description.slice(0, lastPeriod + 1)
-                                            : `${competition.description.slice(0, 160)}...`;
-                                    }
-                                    return competition.description;
-                                })()}
+                                {competition.shortDescription || ""}
                             </p>
                         </CardHeader>
                         <CardContent className="flex-1">

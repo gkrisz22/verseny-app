@@ -6,12 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/
 import CardTitle from '@/app/(dashboard)/_components/common/card-title';
 import RenderResztvevokTable from './render-table';
 
-const VersenyResztvevokPage = async ({ params }: { params: Promise<{ id: string }> }) => {
+const VersenyResztvevokPage = async ({id} : { id: string }) => {
 
-  const id = (await (params)).id;
-  if (!id) {
-    return null;
-  }
   const participants = await getCompetitionParticipants(id);
 
   return (

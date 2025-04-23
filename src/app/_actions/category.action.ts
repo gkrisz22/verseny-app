@@ -2,7 +2,7 @@
 
 import { ActionResponse } from "@/types/form/action-response";
 import { actionHandler } from "@/lib/action.handler";
-import { CategoryEligibilityDTO, categoryEligibilitySchema, competitionSchema} from "@/lib/definitions";
+import { CategoryEligibilityDTO, categoryEligibilitySchema, competitionSchema, UpdateCategoryMetadataDTO, updateCategoryMetadataSchema} from "@/lib/definitions";
 import { logger } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
 import categoryService from "@/services/category.service";
@@ -38,6 +38,36 @@ export async function setEligibleGrades(prevState: ActionResponse<CategoryEligib
             success: true,
             inputs: data,
             message: "Évfolyamok sikeresen beállítva.",
+        }
+    });
+}
+
+export async function updateCategoryMetadata(prevState: ActionResponse<UpdateCategoryMetadataDTO>, formData: FormData): Promise<ActionResponse<UpdateCategoryMetadataDTO>>
+{
+    const rawData = Object.fromEntries(formData.entries());
+    logger.info("Kategória adatai: ", rawData);
+    return actionHandler<UpdateCategoryMetadataDTO>(updateCategoryMetadataSchema, formData, async (data) => {
+        try {
+            logger.info("Kategória adatai: ", data);
+            await categoryService.update(data.categoryId, {
+                name: data.name,
+                description: data.description,
+                published: data.published === "true"
+            });
+        }
+        catch (_) {
+            logger.error("Hiba történt a kategória adatainak módosítása közben");
+            return {
+                success: false,
+                message: "Nem sikerült a kategória adatainak módosítása.",
+            }
+        }
+        
+        revalidatePath("/");
+        return {
+            success: true,
+            inputs: data,
+            message: "Kategória adatai sikeresen módosítva.",
         }
     });
 }

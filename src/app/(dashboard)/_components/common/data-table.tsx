@@ -39,6 +39,7 @@ interface DataTableProps<TData, TValue> {
   selectedRows?: RowSelectionState;
   onRowSelectionChange?: (rowSelection: RowSelectionState) => void;
   getRowId?: (row: TData) => string;
+  addButton?: React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
@@ -47,7 +48,8 @@ export function DataTable<TData, TValue>({
   searchParams,
   selectedRows,
   onRowSelectionChange,
-  getRowId
+  getRowId,
+  addButton,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -94,7 +96,10 @@ export function DataTable<TData, TValue>({
             className="max-w-sm pl-8 w-full min-w-[250px]"
           /></div>}
 
-        <ExportToXLSX data={table.getRowModel().rows.map(row => row.original)} />
+        <div className="flex items-center space-x-2">
+          <ExportToXLSX data={table.getRowModel().rows.map(row => row.original)} />
+          {addButton}
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>

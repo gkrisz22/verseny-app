@@ -11,6 +11,27 @@ export class SettingsService extends Service {
         });
     }
 
+    getAcademicYears() {
+        return this.db.academicYear.findMany({
+            orderBy: {
+                startDate: 'desc'
+            }
+        });
+    }
+
+    createAcademicYear(data: Prisma.AcademicYearCreateInput) {
+        return this.db.academicYear.create({
+            data
+        });
+    }
+    updateAcademicYear(id: string, data: Prisma.AcademicYearUpdateInput) {
+        return this.db.academicYear.update({
+            where: {
+                id
+            },
+            data
+        });
+    }
     
 }
 

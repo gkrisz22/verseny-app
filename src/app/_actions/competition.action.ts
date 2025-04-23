@@ -6,12 +6,13 @@ import type { CategoryFormData, CompetitionFormData, StageFormData } from "@/typ
 import { db } from "@/lib/db";
 import { ActionResponse } from "@/types/form/action-response";
 import { actionHandler } from "@/lib/action.handler";
-import { competitionSchema, CompetitionUpdateMetadataDTO, competitionUpdateMetadataSchema } from "@/lib/definitions";
+import { competitionSchema, CompetitionUpdateMetadataDTO, competitionUpdateMetadataSchema, UpdateCompetitionDatesDTO, updateCompetitionDatesSchema, UpdateCompetitionSignUpDateDTO, updateCompetitionSignUpDateSchema } from "@/lib/definitions";
 import { logger } from "@/lib/logger";
 import competitionService from "@/services/competition.service";
 import { auth } from "@/auth";
 import { cookies } from "next/headers";
 import userService from "@/services/user.service";
+import { isDateLessThan } from "@/lib/validations";
 
 export async function createCompetition(prevState: ActionResponse<CompetitionFormData>, formData: FormData) : Promise<ActionResponse<CompetitionFormData>>
 {
@@ -57,11 +58,12 @@ export async function createCompetition(prevState: ActionResponse<CompetitionFor
 export async function updateCompetitionMetadata(prevState: ActionResponse<CompetitionUpdateMetadataDTO>, formData: FormData): Promise<ActionResponse<CompetitionUpdateMetadataDTO>> {
     
     return actionHandler<CompetitionUpdateMetadataDTO>(competitionUpdateMetadataSchema, formData, async (validatedData) => {
-      const { id, title, description } = validatedData;
+      const { id, title, description, shortDescription } = validatedData;
 
       const res = await competitionService.update(id, {
         title,
         description,
+        shortDescription
       });
 
       if (!res) {
@@ -315,4 +317,63 @@ export async function getRegisteredOrganizations(competitionId: string) {
         }
     });
     return res;
+}
+
+export async function updateCompetitionSignUpDates(prevState: ActionResponse<UpdateCompetitionSignUpDateDTO>, formData: FormData): Promise<ActionResponse<UpdateCompetitionSignUpDateDTO>> {
+    
+    return actionHandler<UpdateCompetitionSignUpDateDTO>(updateCompetitionSignUpDateSchema, formData, async (validatedData) => {
+
+        const dateCheck = await isDateLessThan(validatedData.signUpStartDate, validatedData.signUpEndDate);
+        if(!dateCheck){
+            return {
+                success: false,
+                message: "A regisztráció kezdő dátuma nem lehet nagyobb, mint a regisztráció befejező dátuma.",
+            }
+        }
+
+        const res = await competitionService.update(validatedData.id, {
+            signUpStartDate: new Date(validatedData.signUpStartDate),
+            signUpEndDate: new Date(validatedData.signUpEndDate),
+        });
+        if (!res) {
+            return {
+                success: false,
+                message: "Hiba történt a verseny frissítése közben.",
+            }
+        }
+       return {
+            success: true,
+            message: "Verseny frissítve.",
+        };
+       
+    });
+}
+
+export async function updateCompetitionDates(prevState: ActionResponse<UpdateCompetitionDatesDTO>, formData: FormData): Promise<ActionResponse<UpdateCompetitionDatesDTO>> {
+    const rawData = Object.fromEntries(formData.entries());
+    console.log("asd");
+    console.log(rawData);
+    return actionHandler<UpdateCompetitionDatesDTO>(updateCompetitionDatesSchema, formData, async (validatedData) => {
+        const dateCheck = await isDateLessThan(validatedData.competitionStartDate, validatedData.competitionEndDate);
+        if(!dateCheck){
+            return {
+                success: false,
+                message: "A verseny kezdő dátuma nem lehet nagyobb, mint a verseny befejező dátuma.",
+            }
+        }
+        const res = await competitionService.update(validatedData.id, {
+            startDate: new Date(validatedData.competitionStartDate),
+            endDate: new Date(validatedData.competitionEndDate),
+        });
+        if (!res) {
+            return {
+                success: false,
+                message: "Hiba történt a verseny frissítése közben.",
+            }
+        }
+        return {
+            success: true,
+            message: "Verseny frissítve.",
+        };
+    });
 }

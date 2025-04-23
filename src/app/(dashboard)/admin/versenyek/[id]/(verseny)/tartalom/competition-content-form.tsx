@@ -41,9 +41,13 @@ const CompetitionContentForm = ({ competition }: { competition: Competition }) =
                     {state?.errors?.title ? <p className='text-xs text-destructive'>{state?.errors?.title[0]}</p> : null}
                 </div>
 
-                {/*<div className='flex flex-col gap-4'>
-                    <Textarea placeholder='Rövid leírás' name="short_desc" rows={10} defaultValue={state.inputs?.description ?? competition?.description} className={state?.errors?.description? 'border-red-500' : ''} />
-                </div>*/}
+                <div className='flex flex-col gap-4'>
+                    <Label>Rövid leírás</Label>
+                    <Textarea placeholder='Ez fog megjelenni a verseny listázásánál' name="shortDescription" rows={2} defaultValue={(state.inputs?.shortDescription ?? competition?.shortDescription) || ""} className={state?.errors?.shortDescription? 'border-red-500' : ''} />
+                    {
+                        state?.errors?.shortDescription? <p className='text-xs text-destructive'>{state?.errors?.shortDescription[0]}</p> : null
+                    }
+                </div>
 
 
                 <div className='flex flex-col gap-4 w-full'>

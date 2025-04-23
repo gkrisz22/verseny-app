@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Plus } from "lucide-react"
-import { DatePicker } from "../../../_components/common/date-picker";
+import { DatePicker } from "../../_components/common/date-picker";
 import React, { useActionState } from "react";
 import { createCompetition } from "@/app/_actions/competition.action";
 import { CompetitionFormData } from "@/types/form/competition";

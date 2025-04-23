@@ -54,7 +54,7 @@ export const data = {
       items: [
         {
           title: "Aktuális",
-          url: "/admin/versenyek/aktualis",
+          url: "/admin/versenyek",
         },
         {
           title: "Korábbi",
@@ -68,7 +68,7 @@ export const data = {
       icon: Bot,
       items: [
         {
-          title: "Összes",
+          title: "Szervezetek",
           url: "#",
         },
         {
@@ -76,34 +76,7 @@ export const data = {
           url: "#",
         },
         {
-          title: "Felügyelők",
-          url: "#",
-        },
-        {
-          title: "Iskolák",
-          url: "#",
-        },
-        {
-          title: "Tanárok",
-          url: "#",
-        },
-        {
-          title: "Diákok",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Publikus oldal",
-      url: "#",
-      icon: Globe,
-      items: [
-        {
-          title: "Blog",
-          url: "#",
-        },
-        {
-          title: "Oldalak",
+          title: "Összes felhasználó",
           url: "#",
         },
       ],
@@ -114,20 +87,12 @@ export const data = {
       icon: Settings2,
       items: [
         {
-          title: "General",
+          title: "Integrációk",
           url: "#",
         },
         {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
+          title: "Tanévek",
+          url: "/admin/beallitasok/tanevek",
         },
       ],
     },

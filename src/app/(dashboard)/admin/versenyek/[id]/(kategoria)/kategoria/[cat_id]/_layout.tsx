@@ -1,4 +1,4 @@
-import React from "react";
+  import React from "react";
 import { Separator } from "@/components/ui/separator";
 import { getCategoryById } from "@/app/_actions/competition.action";
 import LocalKategoriaMenu from "./local-category-menu";
