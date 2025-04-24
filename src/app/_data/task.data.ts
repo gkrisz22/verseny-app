@@ -1,3 +1,4 @@
+"use server";
 import taskService from "@/services/task.service";
 
 export async function getTaskGroups(stageId: string) {
