@@ -14,22 +14,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 const TopNav = ({ user }: { user: User | undefined }) => {
   const pathname = usePathname();
 
-  const findPageTitle = (url: string): string | null => {
-    for (const item of NavData.navMain) {
-      if (item.url === url) return item.title;
-      if (item.items) {
-        const subItem = item.items.find((sub) => sub.url === url);
-        if (subItem) return subItem.title;
-      }
-    }
-    return null;
-  };
-
-  const currentPage = useMemo(
-    () => findPageTitle(pathname) || "Versenyek",
-    [pathname]
-  );
-
   if (!user) return null;
 
   return (
@@ -49,7 +33,7 @@ const TopNav = ({ user }: { user: User | undefined }) => {
               <span className="sr-only">Következő oldal</span>
             </Button>
           </div>
-          <Breadcrumb />
+          {/* <Breadcrumb /> */}
           <Separator orientation="vertical" className="md:hidden mr-2 h-4 bg-muted-foreground/80" />
         </div>
 

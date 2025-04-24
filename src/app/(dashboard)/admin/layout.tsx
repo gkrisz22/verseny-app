@@ -26,14 +26,7 @@ const poppins = Poppins({
   display: "swap",
   weight: ["400", "500", "600", "700"],
 });
-/*
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "500", "600", "700"],
-});
-*/
+
 const fonts = [inter, poppins];
 
 export const metadata: Metadata = {
@@ -63,11 +56,15 @@ export default async function RootLayout({
           <WebVitals />
           <Toaster />
           <SessionProvider>
-            <SidebarProvider className="bg-background">
+            <SidebarProvider className="bg-background flex-1">
               <AppSidebar variant="floating" />
-              <SidebarInset>
-                <TopNav user={session?.user} />
-                <main className="flex-1 container mx-auto p-4 bg-background">{children}</main>
+              <SidebarInset className="w-full flex-1 min-w-0 overflow-x-auto">
+                <div className="container mx-auto p-4 box-border">
+                  <TopNav user={session?.user} />
+                  <main className="w-full min-w-0">
+                    {children}
+                  </main>
+                </div>
               </SidebarInset>
             </SidebarProvider>
           </SessionProvider>
