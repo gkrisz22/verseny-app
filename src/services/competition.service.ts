@@ -1,4 +1,4 @@
-import { Competition } from "@prisma/client";
+import { Competition, Prisma } from "@prisma/client";
 import { CrudService, Service } from "./service";
 
 export class CompetitionService extends Service implements CrudService<Competition> {
@@ -70,6 +70,12 @@ export class CompetitionService extends Service implements CrudService<Competiti
     }); 
   }
 
+  getWhere(where: Prisma.CompetitionWhereInput, include?: Prisma.CompetitionInclude) {
+    return this.db.competition.findMany({
+      where,
+      include,
+    });
+  }
   delete(id: string) {
     return this.db.competition.delete({
       where: {

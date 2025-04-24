@@ -92,14 +92,23 @@ export class OrganizationService extends Service {
         });
     }
 
-    async getWhere(params: Prisma.OrganizationWhereInput) {
+    async getWhere(params: Prisma.OrganizationWhereInput, include?: Prisma.OrganizationInclude) {
         return this.db.organization.findMany({
             where: params,
+            include,
         });
     }
 
     async getAll() {
-        return this.db.user.findMany(); 
+        return this.db.organization.findMany({
+            include: {
+                _count: {
+                    select: {
+                        members: true,
+                    },
+                }
+            }
+        }); 
     }
 
     async getUserOrgs(userId: string) {
@@ -141,6 +150,33 @@ export class OrganizationService extends Service {
                 },
             },
         });
+    }
+
+    async getUserOrgsWithRoles(userId: string) {
+        return this.db.organization.findMany({
+            where: {
+                members: {
+                    some: {
+                        userId,
+                    },
+                },
+            },
+            include: {
+                members: {
+                    include: {
+                        roles: {
+                            include: {
+                                role: {
+                                    select: {
+                                        name: true,
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        })
     }
 }
 

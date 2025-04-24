@@ -221,3 +221,35 @@ export const handleAcademicYearSchema = z.object({
     message: "A kezdő dátumnak korábbinak kell lennie, mint a befejező dátum!",
 });
 export type HandleAcademicYearDTO = z.infer<typeof handleAcademicYearSchema>;
+
+export const inviteUserSchema = z.object({
+    email: z.string().email("Hibás e-mail cím formátum!"),
+    name: z.string().nonempty("Név megadása kötelező!"),
+    superAdmin: z.string().optional(),
+}).refine((val) => {
+    const superAdmin = val.superAdmin;
+    return superAdmin === "true" || superAdmin === "false";
+}
+, {
+    message: "Szerepkör megadása kötelező!",
+});
+export type InviteUserDTO = z.infer<typeof inviteUserSchema>;
+
+export const updateUserSchema = z.object({
+    id: z.string().nonempty("Felhasználói azonosító megadása kötelező!"),
+    name: z.string().nonempty("Név megadása kötelező!"),
+    email: z.string().email("Hibás e-mail cím formátum!"),
+    superAdmin: z.string().optional(),
+    isActive: z.string().optional(),
+}).refine((val) => {
+    const superAdmin = val.superAdmin;
+    return superAdmin === "true" || superAdmin === "false";
+}, {
+    message: "Szerepkör megadása kötelező!",
+}).refine((val) => {
+    const isActive = val.isActive;
+    return isActive === "true" || isActive === "false";
+}, {
+    message: "A felhasználó aktiválása kötelező!",
+});
+export type UpdateUserDTO = z.infer<typeof updateUserSchema>;

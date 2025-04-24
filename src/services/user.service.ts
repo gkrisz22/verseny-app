@@ -45,9 +45,10 @@ export class UserService extends Service implements CrudService<User> {
         });
     }
 
-    async getWhere(params: Prisma.UserWhereInput) {
+    async getWhere(params: Prisma.UserWhereInput, include: Prisma.UserInclude = {}) {
         return this.db.user.findMany({
             where: params,
+            include,
         });
     }
 

@@ -36,7 +36,7 @@ const FormField: React.FC<IFormField> = (
                 {field.errors && field.errors.length > 0 && (
                     <div className="flex flex-col gap-2 text-red-500 text-sm pl-2 mt-2">
                         {field.errors.map((error, index) => (
-                                <p key={index}>{error}</p>
+                            <p key={index}>{error}</p>
                         ))}
                     </div>
                 )}

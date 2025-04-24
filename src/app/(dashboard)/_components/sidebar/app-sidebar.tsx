@@ -5,10 +5,14 @@ import {
   AudioWaveform,
   Bot,
   Globe,
+  History,
   LayoutGrid,
   PieChart,
   Settings2,
+  ShieldCheck,
+  University,
   UniversityIcon,
+  Users2,
 } from "lucide-react"
 
 import { NavMain } from "./nav-main"
@@ -47,67 +51,56 @@ export const data = {
       url: "/admin",
       icon: PieChart,
     },
+  ],
+  navCompetitions: [
     {
-      title: "Versenyek",
-      url: "/versenyek",
+      title: "Aktuális",
+      url: "/admin/versenyek",
       icon: LayoutGrid,
-      items: [
-        {
-          title: "Aktuális",
-          url: "/admin/versenyek",
-        },
-        {
-          title: "Korábbi",
-          url: "/admin/versenyek/korabbi",
-        },
-      ],
     },
     {
-      title: "Felhasználók",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Szervezetek",
-          url: "#",
-        },
-        {
-          title: "Adminisztrátorok",
-          url: "#",
-        },
-        {
-          title: "Összes felhasználó",
-          url: "#",
-        },
-      ],
+      title: "Korábbi",
+      url: "/admin/versenyek/korabbi",
+      icon: History,
+    }
+  ],
+  navUserManagement: [
+    {
+      title: "Szervezetek",
+      url: "/admin/felhasznalok/szervezetek",
+      icon: University,
     },
     {
-      title: "Beállítások",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "Integrációk",
-          url: "#",
-        },
-        {
-          title: "Tanévek",
-          url: "/admin/beallitasok/tanevek",
-        },
-      ],
+      title: "Adminisztrátorok",
+      url: "/admin/felhasznalok/adminisztratorok",
+      icon: ShieldCheck,
     },
+    {
+      title: "Összes felhasználó",
+      url: "/admin/felhasznalok",
+      icon: Users2,
+    },
+  ],
+  navSettings: [
+    {
+      title: "Tanévek",
+      url: "/admin/beallitasok/tanevek",
+      icon: Globe,
+    }
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const sidebar = useSidebar();
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={data.navMain} label="Platform" />
+        <NavMain items={data.navCompetitions} label="Versenyek" />
+        <NavMain items={data.navUserManagement} label="Felhasználók" />
+        <NavMain items={data.navSettings} label="Beállítások" />
       </SidebarContent>
      <SidebarFooter className="flex items-end justify-between">
         <SidebarTrigger>

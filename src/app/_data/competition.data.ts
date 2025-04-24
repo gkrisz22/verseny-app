@@ -1,5 +1,6 @@
 "use server";
 import competitionService from "@/services/competition.service";
+import { AcademicYear } from "@prisma/client";
 import { cache } from "react";
 
 export const getCurrentCompetitions = cache(async () => {
@@ -23,3 +24,14 @@ export const getCompetitionParticipants = cache(async (competitionId: string) =>
     return res || null;
 });
 
+export const getCompetitionsByAcademicYear = cache(async (academicYear:AcademicYear) => {
+    const res = await competitionService.getWhere({
+        startDate: {
+            gte: new Date(academicYear.startDate),
+        },
+        endDate: {
+            lte: new Date(academicYear.endDate),
+        },
+    });
+    return res || null;
+});

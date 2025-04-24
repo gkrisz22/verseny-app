@@ -4,6 +4,11 @@ import { CrudService, Service } from "./service";
 export class SettingsService extends Service {
     getCurrentAcademicYear() {
         return this.db.academicYear.findFirst({
+            where: {
+                startDate: {
+                    gte: new Date()
+                }
+            },
             orderBy: {
                 startDate: 'desc'
             },

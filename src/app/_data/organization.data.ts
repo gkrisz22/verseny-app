@@ -14,3 +14,8 @@ export const getOrganizationUsers = cache(async (orgId?:string) => {
     const users = await organizationService.getUsers(orgId);
     return users;
 });
+
+export const getOrganizations = cache(async () => {
+    const organizations = await organizationService.getAll();
+    return organizations;
+});
