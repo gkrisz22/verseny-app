@@ -40,7 +40,7 @@ export const saveRolePreference = async (role: string) => {
         await setSecureCookie({
             name: "org",
             value: JSON.stringify({ ...orgData, role }),
-            days: 30,
+            time: { days: 30 },
         });
     } catch (e) {
         throw new Error("Kérjük, jelentkezzen be újra!");

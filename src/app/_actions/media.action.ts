@@ -56,10 +56,7 @@ export async function uploadFiles(
 export async function getMediaFiles() {
     const session = await auth();
     if (!session || !session.user || !session.user.id) {
-        return {
-            success: false,
-            message: "Érvénytelen munkamenet. Kérem jelentkezzen be újra!",
-        };
+        return [];
     }
     if (session.user.superAdmin) {
         return await mediaService.getAllFiles();
@@ -68,8 +65,6 @@ export async function getMediaFiles() {
 }
 
 export async function downloadFile(fileId: string) {
-    const secret = process.env.JWT_DOWNLOAD_SECRET || "secret";
-
     await setSecureCookie({
         name: "downloadToken",
         value: fileId,

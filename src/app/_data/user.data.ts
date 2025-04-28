@@ -14,7 +14,7 @@ export const getUserById = async (id: string) => {
     if(res.length === 0) {
         return null;
     }
-    return { user: res[0], organizations: res[0].memberships.map((membership) => membership.organization) };
+    return { user: res[0], organizations: res[0].memberships.map((membership) => membership.organizationId) };
 };
 
 export const getNormalUsers = async () => {

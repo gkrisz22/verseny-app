@@ -2,7 +2,6 @@ import { getCategoryById } from '@/app/_actions/competition.action';
 import React from 'react'
 import { Separator } from '@/components/ui/separator';
 import { TabsContent } from '@/components/ui/tabs';
-import FordulokListing from '@/app/(dashboard)/_components/competition/fordulok-listing';
 import { getEligibleGrades } from '@/app/_data/category.data';
 import EligibilityForm from './beallitasok/eligibility-form';
 import { EyeIcon, EyeOffIcon} from 'lucide-react';
