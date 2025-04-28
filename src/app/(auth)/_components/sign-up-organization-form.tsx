@@ -13,14 +13,11 @@ import {
 } from "@/components/ui/select";
 import regions from "@/lib/regions.json";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowRightIcon, CheckCircle2Icon, InfoIcon, MailIcon, RotateCwIcon } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { MailIcon, RotateCwIcon } from "lucide-react";
 import { signUpSchoolSkeleton } from "@/app/_actions/auth.action";
-import { FormField } from "@/components/ui/form";
 import Icons from "@/components/icons";
 
 
@@ -30,10 +27,13 @@ const SignUpOrganizationForm = () => {
     const [auth, setAuth] = React.useState<string>('email');
     const formRef = React.useRef<HTMLFormElement>(null);
 
-    const handleSubmit = (auth: string) => {
-        setAuth(auth);
+    const handleSubmit = (authMethod: string) => {
+        const authInput = formRef.current?.querySelector('input[name="auth"]') as HTMLInputElement;
+        if (authInput) {
+            authInput.value = authMethod;
+        }
         formRef.current?.requestSubmit();
-    }
+    };
 
     return (
         <form ref={formRef} action={action} className="w-full max-w-lg mx-auto border rounded-xl flex flex-col gap-4 p-4 lg:p-6 shadow bg-background">
@@ -212,9 +212,8 @@ const SignUpOrganizationForm = () => {
                 <h3 className="text-sm text-muted-foreground font-medium">
                     Adminisztrátori fiók létrehozása
                 </h3>
-                <Input type="hidden" name="auth" value={auth} readOnly />
+                <Input type="hidden" name="auth" readOnly />
                 <div className="flex flex-col items-center justify-between ">
-
                     <Button
                         type="button"
                         className="w-full"
@@ -223,14 +222,14 @@ const SignUpOrganizationForm = () => {
                        <MailIcon /> Folytatás e-mail címmel
                        {(isPending && auth === 'email') && <RotateCwIcon className="animate-spin" />}
                     </Button>
-                    {/*
+                    
                     <Button type="button" onClick={() => handleSubmit("google")}  variant="outline" className="w-full mt-2" disabled={isPending}>
                         <Icons.google /> Folytatás Google-fiókkal {(isPending && auth === "google") && <RotateCwIcon className="animate-spin" />}
                         </Button>
                     <Button type="button"  onClick={() => handleSubmit("github")} variant="outline" className="w-full mt-2" disabled={isPending}>
                         <Icons.github /> Folytatás GitHub-fiókkal
                         {(isPending && auth === "github") && <RotateCwIcon className="animate-spin" />}
-                    </Button>*/}
+                    </Button>
                 </div>
 
             </div>

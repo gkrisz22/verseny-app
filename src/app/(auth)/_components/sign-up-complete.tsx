@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useActionState } from "react";
 import { signUpCompleteAction } from "@/app/_actions/auth.action";
+import { useActionForm } from "@/hooks/use-action-form";
 
 const SignUpComplete = ({
     userId,
@@ -15,10 +16,7 @@ const SignUpComplete = ({
     userId: string,
     email: string,
 }) => {
-    const [state, action, isPending] = useActionState(signUpCompleteAction, {
-        message: "",
-        success: false,
-    });
+    const [state, action, isPending] = useActionForm(signUpCompleteAction);
 
     return (
         <form

@@ -4,10 +4,11 @@ import { auth } from "@/auth";
 import mediaService from "@/services/media.service";
 import { ActionResponse } from "@/types/form/action-response";
 import { revalidatePath } from "next/cache";
-import jwt, { SignOptions } from "jsonwebtoken";
+import * as jose from "jose"
 import { actionHandler } from "@/lib/action.handler";
 import { MediaUploadDTO, mediaUploadSchema } from "@/lib/definitions";
 import authMiddleware from "@/middlewares/auth.middleware";
+import { setSecureCookie } from "@/lib/utilities";
 
 export async function uploadFiles(
     prevState: ActionResponse<MediaUploadDTO>,
@@ -60,7 +61,7 @@ export async function getMediaFiles() {
             message: "Érvénytelen munkamenet. Kérem jelentkezzen be újra!",
         };
     }
-    if (session.user.isSuperAdmin) {
+    if (session.user.superAdmin) {
         return await mediaService.getAllFiles();
     }
     return await mediaService.getUserFiles(session.user.id);
@@ -68,13 +69,15 @@ export async function getMediaFiles() {
 
 export async function downloadFile(fileId: string) {
     const secret = process.env.JWT_DOWNLOAD_SECRET || "secret";
-    const expiresIn = process.env.JWT_DOWNLOAD_EXPIRES || "2m";
 
-    const token = jwt.sign({ fileId }, secret, {
-        expiresIn: expiresIn as SignOptions["expiresIn"],
+    await setSecureCookie({
+        name: "downloadToken",
+        value: fileId,
+        time: {
+            minutes: 2,
+        },
     });
-
-    const url = `/api/download?token=${token}`;
+    const url = `/api/download`;
 
     return {
         success: true,

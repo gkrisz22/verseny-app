@@ -1,10 +1,9 @@
 "use server";
 
-import { z, ZodSchema } from "zod";
+import { ZodSchema } from "zod";
 import { ActionResponse } from "@/types/form/action-response";
 import { Middleware } from "@/middlewares/middleware";
 import { logger } from "./logger";
-import authMiddleware from "@/middlewares/auth.middleware";
 
 export async function actionHandler<T>(
   schema: ZodSchema<T>,
@@ -47,14 +46,14 @@ export async function actionHandler<T>(
     }
   }
   const validatedData = schema.safeParse(formData);
-
   if (!validatedData.success) {
-    const msgObj = JSON.parse(validatedData.error.message);
+    const { fieldErrors, formErrors } = validatedData.error.flatten();
+    const globalMessage = formErrors.length > 0 ? formErrors[0] : null;
 
     return {
       success: false,
-      message: msgObj.length > 0 ? msgObj[0].message : "Validációs hiba történt!",
-      errors: validatedData.error.flatten().fieldErrors as { [K in keyof T]?: string[] },
+      message: globalMessage || "Validációs hiba történt!",
+      errors: fieldErrors as { [K in keyof T]?: string[] },
       inputs: formData as T,
     };
   }

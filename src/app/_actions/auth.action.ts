@@ -30,8 +30,10 @@ import { v4 as uuid4 } from "uuid";
 import { accountMailer } from "@/lib/mailer.lib";
 import bcrypt from "bcryptjs";
 import roleService from "@/services/role.service";
-import { setSecureCookie } from "@/lib/utilities";
+import { deleteSecureCookie, getSecureCookie, setSecureCookie } from "@/lib/utilities";
 import { getUserOrganizationData } from "../_data/user.data";
+import orgService from "@/services/organization.service";
+import { cookies } from "next/headers";
 
 export const signUpFirstStep = async (
     prevState: ActionResponse<SignUpStepOneDTO>,
@@ -102,22 +104,38 @@ export const signUpSchoolSkeleton = async (
                 };
             }
 
-            const { auth } = data;
+            const { auth: authType } = data;
+            console.log("auth", authType);
 
-            switch (auth) {
+            await setSecureCookie({
+                name: "reg",
+                value: JSON.stringify({
+                    auth: authType,
+                    org: org.id,
+                    email: ""
+                }),
+                time: { minutes: 15 },
+            });
+
+            switch (authType) {
                 case "google":
                     await signIn("google", {
-                        redirectTo: `/sign-up/organization/complete/${org.id}`,
+                        redirectTo: `/sign-up/completed/?oauth=google`,
                     });
                     break;
                 case "github":
-                    await signIn("github", {
-                        redirectTo: `/sign-up/organization/complete/${org.id}`,
-                    });
+                        await signIn("github", {
+                            redirectTo: `/sign-up/completed/?oauth=github`,
+                        });
                     break;
+                default:
+                    redirect( `/sign-up/email?org=${org.id}`);
             }
 
-            redirect(`/sign-up/email?org=${org.id}`);
+            return {
+                success: true,
+                message: "Sikeres regisztráció",
+            };
         }
     );
 };
@@ -164,64 +182,62 @@ export const signUpEmail = async (
         signUpEmailSchema,
         formData,
         async (data) => {
-            const { email, name, orgId } = data;
+            const { email, name } = data;
+            try {
+                const existing = await authService.getWhere({ email });
 
-            const org = await organizationService.getWhere({ id: orgId });
-            if (!org || org.length === 0) {
-                return {
-                    success: false,
-                    message: "Hiba történt a regisztráció során.",
-                };
-            }
-
-            const existing = await authService.getWhere({ email });
-
-            if (existing && existing.length > 0) {
-                return {
-                    success: false,
-                    message: "Validációs hibák történtek.",
-                    errors: {
-                        email: ["Ezzel az e-mail címmel már regisztráltak."],
-                    },
-                    inputs: { email, name, orgId },
-                };
-            }
-
-            const res = await authService.create({ email, name });
-
-            if (!res) {
-                return {
-                    success: false,
-                    message: "Hiba történt a regisztráció során.",
-                };
-            }
-
-            if (orgId) {
-                const assignToOrg = await organizationService.assignUser(
-                    orgId,
-                    res.id
-                );
-                if (!assignToOrg) {
+                if (existing && existing.length > 0) {
                     return {
                         success: false,
-                        message: "Hiba történt a regisztráció során.",
+                        message: "Validációs hibák történtek.",
+                        errors: {
+                            email: ["Ezzel az e-mail címmel már regisztráltak."],
+                        },
+                        inputs: { email, name },
                     };
                 }
-            }
 
-            const token = uuid4();
-            await authService.createToken(token, res.id);
-            const sent = await accountMailer.sendVerificationEmail(
-                email,
-                token
-            );
-            if (!sent) {
+                const res = await authService.create({ email, name, account: {
+                    provider: "email",
+                    type: "email",
+                    providerAccountId: email,
+                }});
+
+                if (!res) {
+                    throw new Error("Hiba történt a regisztráció során.");
+                }
+
+                const token = uuid4();
+                await authService.createToken(token, res.id);
+                const sent = await accountMailer.sendVerificationEmail(
+                    email,
+                    token
+                );
+                if (!sent) {
+                    throw new Error("Hiba történt az e-mail küldése során.");
+                }
+
+                const cookie = await getSecureCookie("reg");
+                if (!cookie) {
+                    throw new Error("Hiba történt a cookie beállítása során.");
+                }
+                await setSecureCookie({
+                    name: "reg",
+                    value: JSON.stringify({
+                        auth: "email",
+                        org: JSON.parse(cookie).org,
+                        email,
+                    }),
+                    time: { minutes: 15 },
+                });
+            }
+            catch (e) {
+                logger.error("[signUpEmail] " + (e instanceof Error && e.message));
                 return {
                     success: false,
                     message: "Hiba történt a regisztráció során.",
                 };
             }
-
             redirect(`/sign-up/sent/?email=${email}`);
         }
     );
@@ -236,63 +252,31 @@ export const signUpCompleteAction = async (
         formData,
         async (data) => {
             const { userId } = data;
-            if (!userId) {
-                return {
-                    success: false,
-                    message: "Hiba történt a regisztráció során.",
-                };
-            }
-            const user = await authService.getWhere({ id: data.userId });
-            if (!user) {
-                return {
-                    success: false,
-                    message: "Hiba történt a regisztráció során.",
-                };
-            }
-            const userOrgs = await organizationService.getUserOrgs(userId);
-            if (!userOrgs || userOrgs.length === 0) {
-                return {
-                    success: false,
-                    message: "Hiba történt a regisztráció során.",
-                };
-            }
-            const userOrg = userOrgs[0].id;
-            const org = await organizationService.getWhere({ id: userOrg });
-            if (!org || org.length === 0) {
-                return {
-                    success: false,
-                    message: "Hiba történt a regisztráció során.",
-                };
-            }
-            const password = await bcrypt.hash(data.password, 10);
-            const updated = await authService.update(data.userId, {
-                password,
-            });
+            try {
+                if (!userId) {
+                    throw new Error("Nem található a felhasználó-azonosító.");
+                }
+                const user = await authService.getWhere({ id: data.userId });
+                if (!user) {
+                    throw new Error("Felhasználó nem található.");
+                }
+                const password = await bcrypt.hash(data.password, 10);
+                const updated = await authService.update(data.userId, {
+                    password,
+                });
 
-            if (!updated) {
-                return {
-                    success: false,
-                    message: "Hiba történt a regisztráció során.",
-                };
+                if (!updated) {
+                    return {
+                        success: false,
+                        message: "Hiba történt a regisztráció során.",
+                    };
+                }
             }
-
-            const adminRole = await roleService.getWhere({ name: "admin" });
-
-            if (!adminRole) {
+            catch (e) {
+                logger.error("[signUpCompleteAction] " + (e instanceof Error && e.message));
                 return {
                     success: false,
-                    message: "Hiba történt a regisztráció során.",
-                };
-            }
-            const role = await organizationService.assignRole(
-                userOrg,
-                data.userId,
-                adminRole.id
-            );
-            if (!role) {
-                return {
-                    success: false,
-                    message: "Hiba történt a regisztráció során.",
+                    message: e instanceof Error ? e.message : "Hiba történt a regisztráció során.",
                 };
             }
 
@@ -318,10 +302,6 @@ export const signInAction = async (
             return {
                 success: false,
                 message: "Hibás e-mail cím vagy jelszó!",
-                errors: {
-                    email: ["Hibás e-mail cím vagy jelszó!"],
-                    password: ["Hibás e-mail cím vagy jelszó!"],
-                },
                 inputs: { email, password },
             };
         }
@@ -456,4 +436,78 @@ export const handleOrgRoleSelect = async (formData:FormData) => {
         }),
     });
     redirect("/org"); 
+}
+
+export const signUpAssignToOrganization = async () => {
+    const session = await auth();
+    const regData = await getSecureCookie("reg");
+    if(!regData) {
+        return null;
+    }
+
+    const { auth: authType, org: orgId, email } = JSON.parse(regData);
+    let userEmail = null;
+    if(authType !== "email") {
+        if(!session || !session.user || !session.user.id) {
+            return null;
+        }
+        userEmail = session.user.email;
+    }
+    else {
+        if(!email) {
+            return null;
+        }
+        userEmail = email;
+    }
+
+    if(!userEmail) {
+        return null;
+    }
+    console.log("userEmail", userEmail);
+    console.log("1.cccsignUpAssignToOrganization");
+
+    // Felhasználó létezik
+    const existingUser = await authService.getWhere({ email: userEmail });
+    if (!existingUser || existingUser.length === 0) {
+        return null;
+    }
+    const user = existingUser[0];
+
+    // Felhasználó már tagja egy szervezetnek
+    const userOrgs = await organizationService.getUserOrgs(user.id);
+    if (userOrgs && userOrgs.length > 0) {
+        return null;
+    }
+
+    // Szervezet létezik
+    console.log("orgId", orgId);
+    const existingOrg = await organizationService.getWhere({ id: orgId });
+    if (!existingOrg || existingOrg.length === 0) {
+        return null;
+    }
+
+    // A felhasználó már admin a szervezetben
+    const assign = await organizationService.assignUser(orgId, user.id);
+    if (!assign) {
+        return null;
+    }
+
+    // A felhasználó admin szerepkörének hozzárendelése
+    const adminRole = await roleService.getWhere({ name: "admin" });
+    if (!adminRole) {
+        return null;
+    }
+    const assignRole = await organizationService.assignRole(
+        orgId,
+        user.id,
+        adminRole.id
+    );
+    if (!assignRole) {
+        return null;
+    }
+
+    return {
+        success: true,
+        authType
+    }
 }

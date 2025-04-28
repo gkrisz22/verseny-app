@@ -30,23 +30,23 @@ export function TopNavbar({ children, role }: { children: React.ReactNode, role:
       label: "Összefoglaló",
       href: "/org",
       icon: Trophy,
-      roles: ["admin", "contact", "trusted", "teacher"],
+      roles: ["admin", "teacher"],
     },
     {
       label: "Versenyek",
       href: "/org/versenyek",
       icon: Trophy,
-      roles: ["admin", "contact", "trusted", "teacher"],
+      roles: ["admin", "teacher"],
       children: [
         {
           label: "Aktuális versenyek",
           href: "/org/versenyek/aktualis",
-          roles: ["admin", "contact", "trusted", "teacher"],
+          roles: ["admin", "teacher"],
         },
         {
           label: "Korábbi versenyek",
           href: "/org/versenyek/korabbi",
-          roles: ["admin", "contact", "trusted", "teacher"],
+          roles: ["admin", "teacher"],
         },
       ],
     },
@@ -76,8 +76,8 @@ export function TopNavbar({ children, role }: { children: React.ReactNode, role:
         <div className="flex items-center gap-6">
           <nav className="hidden md:flex items-center gap-4">
             {navItems.map((item) => {
+              if (!item.roles.includes(role)) return null;
               const Icon = item.icon;
-              
 
               if (item.children) {
                 return (
@@ -150,7 +150,7 @@ export function TopNavbar({ children, role }: { children: React.ReactNode, role:
         </div>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* Reszponzív navigáció: telefon, tablet */}
       <div className="md:hidden border-t">
         <nav className="flex overflow-x-auto">
           {navItems.map((item) => {

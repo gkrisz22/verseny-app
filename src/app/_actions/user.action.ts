@@ -4,6 +4,8 @@ import { actionHandler } from "@/lib/action.handler";
 import {
     InviteUserDTO,
     inviteUserSchema,
+    UpdateUserDTO,
+    updateUserSchema,
 } from "@/lib/definitions";
 import userService from "@/services/user.service";
 import { ActionResponse } from "@/types/form/action-response";
@@ -65,6 +67,49 @@ export async function inviteUser(
                     success: false,
                     message:
                         "Hiba történt a felhasználó létrehozása/frissítése során!",
+                };
+            }
+        }
+    );
+}
+
+// updateUser
+export async function updateUser(
+    prevState: ActionResponse<UpdateUserDTO>,
+    formData: FormData
+): Promise<ActionResponse<UpdateUserDTO>> {
+    return actionHandler<UpdateUserDTO>(
+        updateUserSchema,
+        formData,
+        async (data) => {
+            try {
+                const { name, email, superAdmin } = data;
+                const res = await userService.update(data.id, {
+                    name,
+                    email,
+                    superAdmin: superAdmin ? true : false,
+                    status: data.isActive ? "ACTIVE" : "INACTIVE",
+                });
+                if (res) {
+                    revalidatePath("/admin/felhasznalok");
+                    return {
+                        success: true,
+                        message: "Sikeresen frissítette a felhasználót!",
+                    };
+                }
+                return {
+                    success: false,
+                    message: "Hiba történt a felhasználó frissítése során!",
+                };
+            } catch (error) {
+                console.error(
+                    "Hiba történt a felhasználó frissítése során: ",
+                    error
+                );
+                return {
+                    success: false,
+                    message:
+                        "Hiba történt a felhasználó frissítése során!",
                 };
             }
         }

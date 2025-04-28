@@ -6,10 +6,19 @@ export class AuthService extends Service {
         super();
     }
 
-    async create(data: { email: string, name: string }) {
+    async create(data: { email: string, name: string, account: Prisma.AccountCreateWithoutUserInput}) {
         return this.db.user.create({
-            data,
-        }); 
+            data: {
+                email: data.email,
+                name: data.name,
+                accounts: {
+                    create: data.account,
+                },
+            },
+            include: {
+                accounts: true,
+            },
+        });
     }
 
     async createToken(token: string, userId: string) {

@@ -1,4 +1,4 @@
-"use server";
+"server-only";
 import { auth } from "@/auth";
 import authService from "@/services/auth.service";
 import { cookies } from "next/headers";
@@ -32,12 +32,12 @@ export const getSessionRole = async () => {
     }
     return role;
 }
-export async function setSecureCookie({ name, value, days = 30 }: { name: string, value: string, days?: number }) {
+export async function setSecureCookie({ name, value, time }: { name: string, value: string, time?: { minutes?: number, hours?: number, days?: number } }) {
     const secret = process.env.JWT_COOKIE_SECRET || "r34llys3cr3t";
     const token = new jose.SignJWT({ value })
         .setProtectedHeader({ alg: "HS256" })
         .setIssuedAt()
-        .setExpirationTime(`${days}d`)
+        .setExpirationTime(time?.minutes ? `${time.minutes}m` : time?.hours ? `${time.hours}h` : time?.days ? `${time.days}d` : "30d")
         .sign(new TextEncoder().encode(secret));
 
     const cookieOptions = {
@@ -45,7 +45,8 @@ export async function setSecureCookie({ name, value, days = 30 }: { name: string
         httpOnly: true,
         secure: true,
         sameSite: "strict" as "strict" | "lax" | "none",
-        maxAge: days * 24 * 60 * 60,
+        maxAge: time?.minutes ? time.minutes * 60 : time?.hours ? time.hours * 3600 : time?.days ? time.days * 86400 : 30 * 86400,
+        expires: new Date(Date.now() + (time?.minutes ? time.minutes * 60 * 1000 : time?.hours ? time.hours * 3600 * 1000 : time?.days ? time.days * 86400 * 1000 : 30 * 86400 * 1000)),
     };
 
     value = await token;
@@ -63,4 +64,9 @@ export const getSecureCookie = async (name: string): Promise<string | null> => {
     const secret = process.env.JWT_COOKIE_SECRET || "r34llys3cr3t";
     const { payload } = await jose.jwtVerify(cookie, new TextEncoder().encode(secret));
     return payload.value as string;
+}
+
+export const deleteSecureCookie = async (name: string) => {
+    const cookieStore = await cookies();
+    cookieStore.delete(name);
 }

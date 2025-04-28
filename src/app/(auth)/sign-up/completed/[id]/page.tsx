@@ -1,31 +1,21 @@
-import { signUpAssignToOrganization } from "@/app/_actions/auth.action";
+import { auth } from "@/auth";
 import Icons from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import React from "react";
 
-const CompletedRegPage = async () => {
-    
-    const assigned = await signUpAssignToOrganization();
-    if (!assigned) {
-        return (
-            <div className="w-full max-w-lg mx-auto border rounded-xl flex flex-col gap-4 p-4 lg:p-6 shadow bg-background">
-                <Icons.logo className="size-8 mx-auto" />
-                <h1 className="text-center text-2xl font-bold">
-                    Hiba történt!
-                </h1>
-                <p className="text-center text-sm text-gray-500">
-                    Kérjük, próbálja újra később!
-                </p>
-            </div>
-        );
-    }
+const CompletedRegOrgPage = async ({ params }: { params: Promise<{ id: string }> }) => {
+    const { id } = await params;
+
+    console.log("ID", id);
+    const session = await auth();
+    console.log("Session", session);
 
     return (
         <div className="w-full max-w-lg mx-auto border rounded-xl flex flex-col gap-4 p-4 lg:p-6 shadow bg-background">
             <Icons.logo className="size-8 mx-auto" />
             <h1 className="text-center text-2xl font-bold">
-                Köszönjük a regisztrációt!
+                Köszönjük a regisztrációt! (Szervezet)
             </h1>
             <p className="text-center text-sm text-gray-500">
                 Sikeresen regisztrált a rendszerünkbe!
@@ -43,4 +33,4 @@ const CompletedRegPage = async () => {
     );
 };
 
-export default CompletedRegPage;
+export default CompletedRegOrgPage;

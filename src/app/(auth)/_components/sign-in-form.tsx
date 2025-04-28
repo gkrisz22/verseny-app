@@ -11,13 +11,11 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import { InfoIcon } from "lucide-react"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import ThirdPartySignIn from "./third-party-login"
 import Link from "next/link"
 import { signInAction } from "@/app/_actions/auth.action";
 import { useActionState } from "react";
+import FormField from "@/app/(dashboard)/_components/common/form-field";
 
 export function SignInForm({
   className,
@@ -42,14 +40,8 @@ export function SignInForm({
             <div className="grid gap-6">
               <div className="grid gap-6">
                 <div className="grid gap-2">
-                  <Label htmlFor="email">E-mail cím</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    name="email"
-                    defaultValue={state?.inputs?.email}
-                    required
-                  />
+                 
+                  <FormField id="email" name="email" label="E-mail cím" type="email" defaultValue={state?.inputs?.email} required errors={state?.errors?.email} />
                 </div>
                 <div className="grid gap-2">
                   <div className="flex items-center">
@@ -61,31 +53,14 @@ export function SignInForm({
                       Elfelejtette a jelszavát?
                     </a>
                   </div>
-                  <Input id="password" type="password" name="password" required defaultValue={state?.inputs?.password} />
+                  <Input id="password" type="password" name="password" required defaultValue={state?.inputs?.password} className={state?.errors?.password ? "border-red-500" : ""} />
+                  {state?.errors?.password && (
+                    <div className="text-red-500 text-sm">
+                      {state?.errors?.password}
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="remember" className="rounded" name="remember" />
-                  <Label htmlFor="remember">Emlékezzen rám</Label>
-                  <Popover>
-                    <PopoverTrigger>
-                      <InfoIcon className="size-4" />
-                    </PopoverTrigger>
-                    <PopoverContent align="start" sideOffset={8}>
-                      <div className="text-sm flex flex-col gap-4">
-                        <h4 className="text-base font-bold">Kedves Felhasználó!</h4>
-
-                        <p className="text-muted-foreground">
-                          Ennek a funkciónak bepipálásával hosszabb idejű munkamenetet biztosítunk bejelentkezést követően.
-                        </p>
-
-                        <p className="text-muted-foreground">
-                          Kérjük, hogy csak <strong>saját eszközén</strong> használja ezt a funkciót.
-                        </p>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                {state?.errors && (
+                {!state?.success && (
                   <div className="text-red-500 text-sm">
                     {state?.message}
                   </div>
@@ -94,8 +69,8 @@ export function SignInForm({
                   Bejelentkezés {isPending && "Folyamatban..."}
                 </Button>
               </div>
-              <div className="text-center text-sm">
-                Még nincs fiókja?{" "}
+              <div className="text-center text-sm text-muted-foreground">
+                Még nem regisztrált?{" "}
                 <Link href="/sign-up" className="underline underline-offset-4">
                   Regisztráljon egy fiókot!
                 </Link>

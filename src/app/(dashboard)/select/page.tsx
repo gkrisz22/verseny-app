@@ -18,6 +18,8 @@ export default async function OrganizationsPage() {
     }
     const userOrganizations = await getUserOrganizationData(user.id);
 
+    console.log("session", session);
+
     return (
         <div className="min-h-screen p-4 md:p-8">
             <div className="max-w-6xl mx-auto">
@@ -33,7 +35,7 @@ export default async function OrganizationsPage() {
                     </div>
                 </div>
 
-                {user.isSuperAdmin && (
+                {user.superAdmin && (
                     <Card className="mb-8 border-primary/20 bg-primary/5">
                         <CardHeader>
                             <CardTitle className="flex items-center">

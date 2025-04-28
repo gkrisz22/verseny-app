@@ -1,20 +1,12 @@
 import fs from "fs";
 import path from "path";
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
 import mediaService from "@/services/media.service";
+import { getSecureCookie, setSecureCookie } from "@/lib/utilities";
 
 export async function GET(req: NextRequest) {
     try {
-        const { searchParams } = new URL(req.url);
-        const token = searchParams.get("token");
-        
-        if (!token) {
-            return NextResponse.json({ success: false, message: "Érvénytelen kérés."}, { status: 400 });
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_DOWNLOAD_SECRET || "secret");
-        const fileId = (decoded as jwt.JwtPayload)?.fileId;
+        const fileId = await getSecureCookie("downloadToken");
 
         if (!fileId) {
             return NextResponse.json({ success: false, message: "Érvénytelen kérés." }, { status: 400 });
@@ -40,7 +32,6 @@ export async function GET(req: NextRequest) {
         });
 
         const safeFileName = file.name.replace(/[^a-z0-9_.-]/gi, "_");
-
         return new NextResponse(stream, {
             status: 200,
             headers: {
@@ -51,5 +42,12 @@ export async function GET(req: NextRequest) {
     } catch (error) {
         console.error(error);
         return NextResponse.json({ success: false, message: "Lejárt a fájl kiszolgálási ideje." }, { status: 500 });
+    }
+    finally {
+        await setSecureCookie({
+            name: "downloadToken",
+            value: "",
+            time: { minutes: 0 },
+        });
     }
 }

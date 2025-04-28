@@ -68,8 +68,6 @@ export type OrganizationContactDTO = z.infer<typeof organizationContactSchema>;
 export const signUpEmailSchema = z.object({
     email: z.string().email("Hibás e-mail cím formátum!"),
     name: z.string().nonempty("Név megadása kötelező!"),
-    orgId: z.string().optional(),
-
 });
 export type SignUpEmailDTO = z.infer<typeof signUpEmailSchema>;
 
@@ -88,7 +86,6 @@ export type SignUpSkeletonCompleteDTO = z.infer<typeof signUpSkeletonComplete>;
 export const signInSchema = z.object({
     email: z.string().email("Hibás e-mail cím formátum!"),
     password: z.string().nonempty("Jelszó megadása kötelező!"),
-    remember: z.boolean().optional(),
 });
 export type SignInDTO = z.infer<typeof signInSchema>;
 
