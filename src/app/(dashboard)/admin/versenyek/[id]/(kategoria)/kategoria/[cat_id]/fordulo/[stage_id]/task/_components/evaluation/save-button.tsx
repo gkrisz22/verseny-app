@@ -1,27 +1,34 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { SaveIcon } from "lucide-react";
+import { Loader2Icon, SaveIcon } from "lucide-react";
 import React from "react";
 
 const EvaluationSaveTrigger = ({
     onSave,
-    disabled,
+    isLoading,
 }: {
     onSave: () => void;
-    disabled: boolean;
+    isLoading: boolean;
 }) => {
     return (
         <Button
             onClick={onSave}
-            disabled={disabled}
+            disabled={isLoading}
             size={"lg"}
-            variant={"destructive"}
+            variant={"default"}
             className="w-fit rounded-full p-4 pt-4 fixed bottom-4 right-4"
         >
-            <span className="flex items-center">
-                <SaveIcon className="h-4 w-4 mr-2" />
-                Mentés
-            </span>
+            {isLoading ? (
+                <span className="flex items-center">
+                    <Loader2Icon className="h-4 w-4 mr-2 animate-spin" />
+                    Mentés...
+                </span>
+            ) : (
+                <span className="flex items-center">
+                    <SaveIcon className="h-4 w-4 mr-2" />
+                    Mentés
+                </span>
+            )}
         </Button>
     );
 };

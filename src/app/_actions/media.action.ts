@@ -1,96 +1,83 @@
-"use server"
+"use server";
 
-import { auth }                 from "@/auth";
-import { db }                   from "@/lib/db";
+import { auth } from "@/auth";
 import mediaService from "@/services/media.service";
-import { ActionResponse }       from "@/types/form/action-response";
-import { MediaFormData }         from "@/types/form/mediaForm";
-import { revalidatePath }       from "next/cache";
-import { z }                    from "zod";
+import { ActionResponse } from "@/types/form/action-response";
+import { revalidatePath } from "next/cache";
 import jwt, { SignOptions } from "jsonwebtoken";
-import { logger } from "@/lib/logger";
+import { actionHandler } from "@/lib/action.handler";
+import { MediaUploadDTO, mediaUploadSchema } from "@/lib/definitions";
+import authMiddleware from "@/middlewares/auth.middleware";
 
-export async function uploadFiles(prevState: ActionResponse<MediaFormData>, formData: FormData): Promise<ActionResponse<MediaFormData>> {
+export async function uploadFiles(
+    prevState: ActionResponse<MediaUploadDTO>,
+    formData: FormData
+): Promise<ActionResponse<MediaUploadDTO>> {
     const rawData = Object.fromEntries(formData.entries());
+    console.log("Raw data:", rawData);
+    return actionHandler<MediaUploadDTO>(
+        mediaUploadSchema,
+        formData,
+        async (data) => {
+            const savedFiles = [];
+            try {
+                const files = formData.getAll("files") as File[];
+                const session = await auth();
+                if (!session || !session.user || !session.user.id) {
+                    throw new Error("Érvénytelen munkamenet. Kérem jelentkezzen be újra!");   
+                }
 
-    const filesSchema = z.object({
-        files: z.any()
-    });
+                console.log("Fájlok:", files);
+                for (let i = 0; i < files.length; i++) {
+                    savedFiles.push(
+                        await mediaService.uploadFile(files[i], session.user.id)
+                    );
+                }
+                    }
+            
+            catch (error) {
+                if (error instanceof Error) {
+                    return {
+                        success: false,
+                        message: error.message,
+                    };
+                }
+            }
 
-    const validatedData = filesSchema.safeParse(rawData);
-
-    if (!validatedData.success) {
-        return {
-            success: false,
-            message: "Validációs hiba történt.",
-            errors: validatedData.error.flatten().fieldErrors,
-            inputs: validatedData.data
-        };
-    }
-
-
-    const session = await auth();
-    if (!session || !session.user) {
-        return {
-            success: false,
-            message: "Érvénytelen munkamenet. Kérem jelentkezzen be újra!"
-        };
-    }
-
-
-    const user = await db.user.findUnique({
-        where: {
-            email: session.user.email as string,
-        },
-        select: {
-            id: true,
-        }
-    });
-
-    if(!user){
-        return {
-            success: false,
-            message: "Felhasználó nem található."
-        }
-    }
-
-    const files = formData.getAll("files") as File[];
-    const savedFiles = [];
-
-    console.log("Fájlok:", files);
-    for (let i = 0; i < files.length; i++) {
-        savedFiles.push(
-            (await mediaService.uploadFile(files[i], user.id))
-        );
-    }
-
-    revalidatePath("/");
-
-    return {
-        success: true,
-        message: savedFiles.length + " fájl feltöltve.",
-    }
+            revalidatePath("/");
+            return {
+                success: true,
+                message: savedFiles.length + " fájl feltöltve.",
+            };
+            
+        }, [authMiddleware]);
 }
-
 export async function getMediaFiles() {
-    logger.debug("getMediaFiles");
-    return await mediaService.getAllFiles();
+    const session = await auth();
+    if (!session || !session.user || !session.user.id) {
+        return {
+            success: false,
+            message: "Érvénytelen munkamenet. Kérem jelentkezzen be újra!",
+        };
+    }
+    if (session.user.isSuperAdmin) {
+        return await mediaService.getAllFiles();
+    }
+    return await mediaService.getUserFiles(session.user.id);
 }
 
-
-export async function downloadFile(formData: FormData) {
-    const fileId = formData.get("fileId") as string;
+export async function downloadFile(fileId: string) {
     const secret = process.env.JWT_DOWNLOAD_SECRET || "secret";
     const expiresIn = process.env.JWT_DOWNLOAD_EXPIRES || "2m";
 
     const token = jwt.sign({ fileId }, secret, {
-        expiresIn: expiresIn as SignOptions["expiresIn"]
+        expiresIn: expiresIn as SignOptions["expiresIn"],
     });
 
     const url = `/api/download?token=${token}`;
 
     return {
         success: true,
-        url: url.toString()
-    }
+        url: url.toString(),
+    };
 }

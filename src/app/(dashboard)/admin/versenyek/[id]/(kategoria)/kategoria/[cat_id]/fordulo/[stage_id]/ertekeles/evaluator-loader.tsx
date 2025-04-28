@@ -1,7 +1,7 @@
 import { getTaskGroups } from '@/app/_data/task.data'
 import { Stage } from '@prisma/client'
 import React from 'react'
-import StudentEvaluator from './_components/ertekeles';
+import StudentEvaluator from '../../../../../../../../../_components/ertekeles/_components/evaluator';
 
 const EvaluatorLoader = async ({ stage }: { stage: Stage }) => {
     const taskGroups =  await getTaskGroups(stage.id);

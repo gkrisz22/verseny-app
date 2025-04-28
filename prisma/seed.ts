@@ -1,31 +1,11 @@
 import { PrismaClient } from '@prisma/client'
+import { roleSeeder } from './seed/roles.seed';
+import { academicYearSeeder } from './seed/academicYear.seed';
 const prisma = new PrismaClient()
 async function main() {
 
-    const roles = [
-        {
-            name: "admin",
-            description: "Adminisztrátor",
-        },
-        {
-            name: "teacher",
-            description: "Tanár",
-        },
-        {
-            name: "contact",
-            description: "Kapcsolattartó",
-        },
-        {
-            name: "trusted",
-            description: "Megbízott",
-        }
-    ];
-
-    const res = await prisma.role.createMany({
-        data: roles,
-    })
-
-    console.log(res);
+    await roleSeeder(prisma);
+    await academicYearSeeder(prisma);
 }
 main()
   .then(async () => {

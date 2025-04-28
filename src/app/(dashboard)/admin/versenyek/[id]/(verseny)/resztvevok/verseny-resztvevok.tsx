@@ -1,6 +1,4 @@
-import { DataTable } from '@/app/(dashboard)/_components/common/data-table'
 import React from 'react'
-import { columns } from './columns'
 import { getCompetitionParticipants } from '@/app/_data/competition.data';
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 import CardTitle from '@/app/(dashboard)/_components/common/card-title';

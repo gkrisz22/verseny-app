@@ -2,29 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Trophy, Users, Settings, ChevronDown, LogOut } from "lucide-react";
+import { Trophy, Settings, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
+
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { NotificationBell } from "../../_components/notifications/notification-bell";
-import { NavUser } from "../../_components/sidebar/nav-user";
-import { TeamSwitcher } from "../../_components/sidebar/team-switcher";
-import RoleSwitcher from "./role-switcher";
-
-const roleLabels = {
-  admin: "Administrator",
-  contact: "Contact User",
-  trusted: "Trusted User",
-  teacher: "Teacher",
-};
+import { roleLabels } from "../../_components/common/role-labels";
 
 interface NavItem {
   label: string;
@@ -34,7 +22,7 @@ interface NavItem {
   children?: { label: string; href: string, roles: string[] }[];
 }
 
-export function TopNavbar({ children }: { children: React.ReactNode }) {
+export function TopNavbar({ children, role }: { children: React.ReactNode, role: string }) {
   const pathname = usePathname();
 
   const navItems:NavItem[] = [
@@ -153,7 +141,11 @@ export function TopNavbar({ children }: { children: React.ReactNode }) {
         </div>
 
         <div className="flex items-center gap-4">
-        <RoleSwitcher availableRoles={["Adminisztrátor", "Kapcsolattartó", "Megbízott", "Tanár"]} activeRole="Adminisztrátor" orgId="org_1" />
+          <div className="hidden md:flex items-center gap-2">
+            <span className="text-sm font-medium text-muted-foreground">
+              {roleLabels[role as keyof typeof roleLabels]}
+            </span>
+          </div>
         {children}
         </div>
       </div>

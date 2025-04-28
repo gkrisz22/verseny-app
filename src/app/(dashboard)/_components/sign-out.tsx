@@ -1,3 +1,4 @@
+import { signOutAction } from '@/app/_actions/auth.action';
 import { signOut } from '@/auth';
 import { Button } from '@/components/ui/button'
 import React from 'react'
@@ -7,7 +8,7 @@ const SignOut = () => {
     <form
       action={async () => {
         "use server";
-        await signOut({ redirectTo: '/sign-in' });
+        await signOutAction();
       }}
     >
       <Button type="submit">Sign Out</Button>

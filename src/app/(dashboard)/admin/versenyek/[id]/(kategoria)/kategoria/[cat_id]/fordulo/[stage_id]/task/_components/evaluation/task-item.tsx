@@ -129,9 +129,8 @@ export default function TaskItem({
                       <SelectValue placeholder="Task Type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="NUMERIC">Numeric</SelectItem>
-                      <SelectItem value="BINARY">Binary</SelectItem>
-                      <SelectItem value="TEXT">Text</SelectItem>
+                      <SelectItem value="NUMERIC">Szám</SelectItem>
+                      <SelectItem value="BINARY">Bináris</SelectItem>
                     </SelectContent>
                   </Select>
 

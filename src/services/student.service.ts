@@ -1,10 +1,48 @@
 import { Prisma, Student } from "@prisma/client";
 import { CrudService, Service } from "./service";
 import settingsService from "./settings.service";
+import { randomBytes } from 'crypto';
 
 export class StudentService extends Service {
-    create(data: { name: string; schoolId: string, grade: number, gradeString?: string }) {
-        const uniqueId = Math.random().toString(36).substring(2, 8).toUpperCase();
+    generateSecureCode() {
+        const numbers = '0123456789';
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        // Véletlenszerűen választunk a karaktereket
+        const pickRandom = (chars: string, count: number) => {
+            let result = '';
+            const bytes = randomBytes(count);
+            for (let i = 0; i < count; i++) {
+                result += chars[bytes[i] % chars.length];
+            }
+            return result;
+        };
+
+        // 3 számot és 3 betűt választunk véletlenszerűen
+        const selected = (pickRandom(numbers, 3) + pickRandom(letters, 3)).split('');
+
+        // Véletlenszerűen összekeverjük a kiválasztott karaktereket
+        for (let i = selected.length - 1; i > 0; i--) {
+            const j = Math.floor(randomBytes(1)[0] / 256 * (i + 1));
+            [selected[i], selected[j]] = [selected[j], selected[i]];
+        }
+
+        return selected.join('');
+    }
+
+    async create(data: { name: string; schoolId: string, grade: number, gradeString?: string }) {
+        let uniqueId = "";
+        let found = true;
+        do {
+            uniqueId = this.generateSecureCode();
+            const r = await this.db.student.findUnique({
+                where: {
+                    uniqueId,
+                },
+            });
+            found = r !== null;
+        } while (found);
+
         return this.db.student.create({
             data: {
                 name: data.name,
@@ -14,6 +52,8 @@ export class StudentService extends Service {
                         schoolId: data.schoolId,
                     },
                 },
+                grade: data.grade,
+                gradeString: data.gradeString,
             }
         })
     }
@@ -128,13 +168,9 @@ export class StudentService extends Service {
     };
 
     async getCategoryStudents(categoryId: string) {
-        return this.db.student.findMany({
+        return this.db.studentCategory.findMany({
             where: {
-                categories: {
-                    some: {
-                        categoryId,
-                    },
-                },
+                categoryId
             },
         });
     }
@@ -151,7 +187,47 @@ export class StudentService extends Service {
         });
     }
 
+    async updateStageStudent(id: string, data: Prisma.StudentStageUpdateInput) {
+        return this.db.studentStage.update({
+            where: {
+                id,
+            },
+            data
+        })
+    }
+
+    assignFilesToStudentStage(studentStageId: string, fileIds: string[]) {
+        return this.db.studentStageFile.createMany({
+            data: fileIds.map(fileId => ({
+                studentStageId,
+                fileId
+            })),
+            skipDuplicates: true,
+        });
+    }
     
+    getStudentStageFiles(studentStageId: string) {
+        return this.db.studentStageFile.findMany({
+            where: {
+                studentStageId,
+            },
+            include: {
+                file: true,
+            }
+        });
+    }
+
+    removeStudentStageFiles(studentStageId: string, fileIds: string[]) {
+        return this.db.studentStageFile.deleteMany({
+            where: {
+                studentStageId,
+                fileId: {
+                    in: fileIds,
+                },
+            },
+        });
+    }
+               
 }
 
 const studentService = new StudentService();

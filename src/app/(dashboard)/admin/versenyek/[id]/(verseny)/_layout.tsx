@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
 import { Separator } from "@/components/ui/separator";
-import LocalVersenyMenu from "./local-verseny-menu";
+import LocalVersenyMenu from "./_components/local-competition-menu";
 import { CompetitionProvider } from "./competition-context";
 import { getCompetitionById } from "@/app/_data/competition.data";
 import { Metadata } from "next";

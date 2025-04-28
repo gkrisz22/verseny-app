@@ -1,6 +1,6 @@
 import { DataTable } from "@/app/(dashboard)/_components/common/data-table";
 import { columns } from "./columns";
-import InviteUserDialog from "./invite-user-dialog";
+import HandleOrgUserDialog from "./invite-user-dialog";
 import { getOrganizationUsers } from "@/app/_data/organization.data";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -16,7 +16,6 @@ export default async function OrgUserManagement() {
                     A szervezet tagjainak kezelése, szerepkörök módosítása.
                 </CardDescription>
                 </div>
-                <InviteUserDialog  />
 
             </CardHeader>
             <div className="flex justify-end">
@@ -32,6 +31,7 @@ export default async function OrgUserManagement() {
                     column: "name",
                     placeholder: "Keresés név alapján",
                 }}
+                addButton={<HandleOrgUserDialog />}
             />
             </CardContent>
         </Card>

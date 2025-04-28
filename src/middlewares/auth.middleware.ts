@@ -1,33 +1,37 @@
 import { Middleware } from "./middleware";
 import userService from "@/services/user.service";
 import { logger } from "@/lib/logger";
-import { auth } from "@/auth";
+import { auth, signOut } from "@/auth";
 
 class AuthMiddleware<T> implements Middleware<T> {
-    public async handle(_: FormData) {
+    public async handle(_: FormData | object) {
         const session = await auth();
-        if (!session) {
-            logger.error("Nincs bejelentkezve.");
-            return {
-                success: false,
-                message: "Nincs bejelentkezve."
-            } 
-        }
+        console.log("Running auth middleware.");
 
-        if (!session.user || !session.user.id) {
-            return {
-                success: false,
-                message: "Érvénytelen munkamenet."
-            } 
-        }
-        const isUserValid = await this.isUserValid(session.user.id);
-
-        if (!isUserValid) {
-            return {
-                success: false,
-                message: "Felhasználó nem található."
+        try{
+            if (!session) {
+                logger.error("Nincs bejelentkezve.");
+                throw new Error("Nincs bejelentkezve.");
+            }
+    
+            if (!session.user || !session.user.id) {
+                throw new Error("Érvénytelen munkamenet.");
+            }
+            
+            const isUserValid = await this.isUserValid(session.user.id);
+            if (!isUserValid) {
+                throw new Error("Az Önhöz tartozó felhasználói fiók inaktívált vagy nem található.");
             }
         }
+        catch(e) {
+            await signOut();
+            logger.error("Hiba történt a munkamenet ellenőrzése közben.");
+            return {
+                success: false,
+                message: e instanceof Error ? e.message : "Hiba történt a munkamenet ellenőrzése közben.",
+            }
+        }
+        
     }
 
     private async isUserValid(id: string) {
@@ -36,6 +40,7 @@ class AuthMiddleware<T> implements Middleware<T> {
         if (!user || user.status == "INACTIVE") {
             return false;
         }
+        return true;
     }
 }
 

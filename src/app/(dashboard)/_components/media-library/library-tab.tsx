@@ -20,16 +20,17 @@ import { FileVideoIcon, FileIcon, FileTextIcon } from "lucide-react"
 import Image from "next/image"
 
 interface LibraryTabProps {
-  selectedFiles: MediaFile[]
-  onSelectionChange: (files: MediaFile[]) => void
-  getFileIcon: (file: MediaFile, className: string) => React.JSX.Element
+  selectedFiles: MediaFile[];
+  onSelectionChange: (files: MediaFile[]) => void;
+  getFileIcon: (file: MediaFile, className: string) => React.JSX.Element;
+  mode?: "multiple" | "single";
 }
 
 type ViewMode = "grid" | "list"
 type SortOption = "newest" | "oldest" | "name" | "size"
 type FilterType = "all" | "image" | "document" | "video" | "audio"
 
-export function LibraryTab({ selectedFiles, onSelectionChange, getFileIcon }: LibraryTabProps) {
+export function LibraryTab({ selectedFiles, onSelectionChange, getFileIcon, mode }: LibraryTabProps) {
   const [files, setFiles] = useState<MediaFile[]>([])
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState<ViewMode>("grid")
@@ -54,6 +55,10 @@ export function LibraryTab({ selectedFiles, onSelectionChange, getFileIcon }: Li
   }, [])
 
   const toggleFileSelection = (file: MediaFile) => {
+    if (mode === "single") {
+      onSelectionChange([file])
+      return
+    }
     if (selectedFiles.some((f) => f.id === file.id)) {
       onSelectionChange(selectedFiles.filter((f) => f.id !== file.id))
     } else {

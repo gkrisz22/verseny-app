@@ -13,6 +13,7 @@ import { AppSidebar } from "../_components/sidebar/app-sidebar";
 import TopNav from "../_components/sidebar/top-nav";
 import { auth } from "@/auth";
 import { Toaster } from "@/components/ui/sonner";
+import { BackToTop } from "@/components/shared/back-to-top";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -61,13 +62,14 @@ export default async function RootLayout({
               <SidebarInset className="w-full flex-1 min-w-0 overflow-x-auto">
                 <div className="container mx-auto p-4 box-border">
                   <TopNav user={session?.user} />
-                  <main className="w-full min-w-0">
+                  <main className="w-full min-w-0 mt-6">
                     {children}
                   </main>
                 </div>
               </SidebarInset>
             </SidebarProvider>
           </SessionProvider>
+          <BackToTop />
         </ThemeProvider>
       </body>
     </html>

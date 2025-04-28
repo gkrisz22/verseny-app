@@ -5,12 +5,12 @@ export class SettingsService extends Service {
     getCurrentAcademicYear() {
         return this.db.academicYear.findFirst({
             where: {
-                startDate: {
+                endDate: {
                     gte: new Date()
                 }
             },
             orderBy: {
-                startDate: 'desc'
+                startDate: 'asc'
             },
             take: 1
         });
@@ -35,6 +35,24 @@ export class SettingsService extends Service {
                 id
             },
             data
+        });
+    }
+
+    deleteAcademicYear(id: string) {
+        return this.db.academicYear.delete({
+            where: {
+                id
+            }
+        });
+    }
+
+    getRolesByName(roles: string[]) {
+        return this.db.role.findMany({
+            where: {
+                name: {
+                    in: roles
+                }
+            }
         });
     }
     

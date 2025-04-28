@@ -10,32 +10,9 @@ import DataTableSortableHeader from "@/app/(dashboard)/_components/common/data-t
 import { AcademicYear } from "@prisma/client";
 import { toast } from "sonner";
 import { ManageTanevDialog } from "./manage-tanev-dialog";
+import { DeleteAcademicYearDialog } from "./delete-academicYear-dialog";
 
 export const columns: ColumnDef<AcademicYear>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        className="rounded"
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        className="rounded"
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: "name",
     header: ({ column }) => {
@@ -84,10 +61,7 @@ export const columns: ColumnDef<AcademicYear>[] = [
                     <EditIcon />
                 </Button>
             </ManageTanevDialog>
-            <Button className="h-8 w-8 p-0" variant={"destructive"} title="Tanév törlése">
-                <span className="sr-only">Tanév törlése</span>
-                <Trash2Icon />
-            </Button>
+            <DeleteAcademicYearDialog id={data.id} title={data.name} />
         </div>
       )
     },

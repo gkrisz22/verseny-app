@@ -22,7 +22,7 @@ export const getNormalUsers = async () => {
     return res;
 };
 
-export const getUserOrganizationData = async (id: string): Promise<{ organization: Organization, roles: string[] }[]> => {
+export const getUserOrganizationData = async (id: string): Promise<{ organization: Organization, roles: {name: string, description:string}[] }[]> => {
     const res = await orgService.getUserOrgsWithRoles(id);
 
     if(res.length === 0) {
@@ -31,8 +31,7 @@ export const getUserOrganizationData = async (id: string): Promise<{ organizatio
     return res.map((org) => {
         return {
             organization: org,
-            roles: org.members.length > 0 ? org.members[0].roles.map((role) => role.role.name) : [],
+            roles: org.members.length > 0 ? org.members[0].roles.map((role) => ({name: role.role.name, description: role.role.description})) : [],
         }
     })
-
 }

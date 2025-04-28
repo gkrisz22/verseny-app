@@ -10,40 +10,32 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
-import React, { useActionState } from "react";
+import React from "react";
 import { createStage } from "@/app/_actions/competition.action";
-import { StageFormData } from "@/types/form/competition";
 import { toast } from "sonner";
 import { Category } from "@prisma/client";
-import { ActionResponse } from "@/types/form/action-response";
-import { cn } from "@/lib/utils";
+import { useActionForm } from "@/hooks/use-action-form";
+import FormField from "@/app/(dashboard)/_components/common/form-field";
 
-const initialState: ActionResponse<StageFormData> = {
-  success: false,
-  message: "",
-};
-export function CreateStageDialog({ category, trigger }: { category: Category, trigger: {
-  variant: "default" | "outline",
-  size?: "sm" | "md" | "lg" | "xl",
-  className?: string,
-  icon?: React.ReactNode,
-} }) {
-  const [state, action, isPending] = useActionState(
-    createStage,
-    initialState
-  );
-
+export function CreateStageDialog({ category, trigger }: {
+  category: Category, trigger: {
+    variant: "default" | "outline",
+    size?: "sm" | "md" | "lg" | "xl",
+    className?: string,
+    icon?: React.ReactNode,
+  }
+}) {
   const [open, setOpen] = React.useState(false);
 
-  React.useEffect(() => {
-    if (state.success) {
-      setOpen(false);
+  const [state, action, isPending] = useActionForm(createStage, {
+    onSuccess: () => {
       toast.success("Forduló sikeresen létrehozva!");
+      setOpen(false);
     }
-  }, [state.success, state]);
+  });
+
+
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -64,38 +56,25 @@ export function CreateStageDialog({ category, trigger }: { category: Category, t
           </DialogDescription>
         </DialogHeader>
         <form className="flex flex-col space-y-4" action={action}>
-          <div className="flex flex-col space-y-2">
-            <Label htmlFor="compName">Kategória</Label>
-            <Input
-              id="catName"
-              name="catName"
-              type="text"
-              readOnly
-              value={category.name}
-              disabled
-            />
-            <Input
-              id="categoryId"
-              name="categoryId"
-              type="hidden"
-              value={category.id}
-            />
-          </div>
-          <div className="flex flex-col space-y-2">
-            <Label htmlFor="cat_name">Forduló neve</Label>
-            <Input
-              id="name"
-              name="name"
-              type="text"
-              className={state?.errors?.name && "border-red-500"}
-              defaultValue={state?.inputs?.name}
-            />
-            {state?.errors?.name && (
-              <p className="text-red-500 text-sm">{state.errors.name}</p>
-            )}
-          </div>
-
-          {state?.errors && state?.message && (
+          <input type="hidden" name="categoryId" value={category.id} />
+          <FormField
+            type="text"
+            name="catName"
+            id="catName"
+            label="Kategória"
+            defaultValue={category.name}
+            readOnly
+            disabled
+          />
+          <FormField
+            type="text"
+            name="name"
+            id="name"
+            label="Forduló neve"
+            defaultValue={state.inputs?.name}
+            errors={state.errors?.name}
+          />
+          {state.errors && state.message && (
             <p
               className={
                 (state.success ? "text-green-500" : "text-red-500") + " text-sm"

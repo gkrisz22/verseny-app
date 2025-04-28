@@ -1,16 +1,15 @@
 'use client'
 import {
   BadgeCheck,
-  ChevronsUpDown,
   LogOut,
+  LucideUser2,
   Moon,
   Sun,
+  UniversityIcon,
 } from "lucide-react"
 
 import {
   Avatar,
-  AvatarFallback,
-  AvatarImage,
 } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -21,15 +20,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar"
 import { User } from "next-auth"
 import { signOut } from "next-auth/react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 export  function NavUser({
   user,
@@ -48,15 +43,12 @@ export  function NavUser({
               size="sm"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="size-7 rounded-lg">
-                <AvatarImage src={user?.image ?? undefined} alt={user.name ?? ""} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+              <Avatar className="size-7 rounded-lg flex items-center justify-center">
+                <LucideUser2 className="size-7" />
               </Avatar>
-              {/*<div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user?.name}</span>
-                <span className="truncate text-xs">{user?.email}</span>
-              </div>
-              <ChevronsUpDown className="ml-auto size-4" />*/}
+              <span>
+                {user?.name && user?.name.split(" ").map(n => n.charAt(0).toUpperCase()).join(".")}.
+              </span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -67,9 +59,8 @@ export  function NavUser({
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.image ?? undefined} alt={user.name ?? ""} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <Avatar className="size-8 rounded-lg flex items-center justify-center">
+                  <LucideUser2 className="size-8" />
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{user?.name}</span>
@@ -83,10 +74,15 @@ export  function NavUser({
                 <BadgeCheck />
                 Fiók
               </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/select">
+                  <UniversityIcon />
+                  Szervezetváltás
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
                 {theme === "dark" ? <Sun /> : <Moon />}
                 {theme === "dark" ? "Világos" : "Sötét"} mód
-
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

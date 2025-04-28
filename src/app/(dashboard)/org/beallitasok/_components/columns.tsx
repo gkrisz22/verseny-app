@@ -1,20 +1,16 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, GraduationCap, Mail, MoreHorizontal, UserIcon, UserCheck } from "lucide-react";
+import { GraduationCap, UserIcon, EditIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { User } from "@prisma/client";
+import HandleOrgUserDialog from "./invite-user-dialog";
+import { UserStatusBadge } from "@/app/(dashboard)/_components/common/user-status-badge";
+import DataTableSortableHeader from "@/app/(dashboard)/_components/common/data-table-sortable-header";
+import { roleLabels } from "@/app/(dashboard)/_components/common/role-labels";
 
 
 export const columns: ColumnDef<User & {roles: string[]}>[] = [
@@ -45,53 +41,23 @@ export const columns: ColumnDef<User & {roles: string[]}>[] = [
   },
   {
     accessorKey: "name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Név
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => <DataTableSortableHeader title="Név" column={column} />,
     cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
   },
   {
     accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          E-mail cím
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => <DataTableSortableHeader title="E-mail" column={column} />,
   },
   {
     accessorKey: "roles",
-    header: "Szerepkörök",
+    header: ({ column }) => <DataTableSortableHeader title="Szerepkörök" column={column} />,
     cell: ({ row }) => {
       const roles = row.getValue("roles") as string[];
       const roleIcons: Record<string, React.JSX.Element> = {
         admin: <UserIcon className="h-4 w-4" />,
-        contact: <Mail className="h-4 w-4" />,
-        trusted: <UserCheck className="h-4 w-4" />,
         teacher: <GraduationCap className="h-4 w-4" />,
       };
-      
-      const roleLabels: Record<string, string> = {
-        admin: "Adminisztrátor",
-        contact: "Kapcsolattartó",
-        trusted: "Trusted User",
-        teacher: "Tanár",
-      };
 
-      console.log("User roles:", roles.map((role) => roleLabels[role as keyof typeof roleLabels]));
       
       return (
         <div className="flex flex-wrap gap-1">
@@ -107,30 +73,17 @@ export const columns: ColumnDef<User & {roles: string[]}>[] = [
   },
   {
     accessorKey: "status",
-    header: "Státusz",
+    header: ({ column }) => <DataTableSortableHeader title="Státusz" column={column} />,
     cell: ({ row }) => {
-      const status = row.getValue("status") as string;
+      const status = row.getValue("status") as "ACTIVE" | "INACTIVE" | "PENDING";
       return (
-        <Badge variant={status === "active" ? "default" : "secondary"}>
-          {status}
-        </Badge>
+        <UserStatusBadge status={status} />
       );
     },
   },
   {
     accessorKey: "createdAt",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          className="px-1"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Csatlakozott
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => <DataTableSortableHeader title="Létrehozva" column={column} />,
     cell: ({ row }) => {
       const date = new Date(row.getValue("createdAt") as string);
       return (
@@ -148,30 +101,16 @@ export const columns: ColumnDef<User & {roles: string[]}>[] = [
     id: "actions",
     cell: ({ row }) => {
       const user = row.original;
-      
-      const handleEditRoles = (user: User) => {
-        console.log("Edit roles for:", user);
-      };
-      
       return (
         <div className="text-right">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <MoreHorizontal className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Műveletek</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => handleEditRoles(user)}>Szerepkörváltás</DropdownMenuItem>
-              <DropdownMenuItem>Profil megtekintése</DropdownMenuItem>
-              <DropdownMenuItem>Jelszó visszaállítása</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">Törlés</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <HandleOrgUserDialog user={{id: user.id, name: user.name || "", email: user.email || "", roles: user.roles, status: user.status}} >
+            <Button
+              variant="ghost"
+              size="icon"
+            >
+              <EditIcon className="h-4 w-4" />
+            </Button>
+          </HandleOrgUserDialog>
         </div>
       );
     },

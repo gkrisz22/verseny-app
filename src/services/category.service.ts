@@ -56,7 +56,7 @@ export class CategoryService extends Service implements CrudService<Category> {
         });
     }
 
-    addStudentsToCategory(categoryId: string, studentIds: string[]) {
+    addStudentsToCategory(categoryId: string, orgId:string, studentIds: string[]) {
         return this.db.category.update({
             where: {
                 id: categoryId,
@@ -65,7 +65,29 @@ export class CategoryService extends Service implements CrudService<Category> {
                 students: {
                     create: studentIds.map((studentId) => ({
                         studentId,
+                        organizationId: orgId,
                     })),
+                },
+            },
+        });
+    }
+
+    getStudentsInCategory(categoryId: string) {
+        return this.db.category.findUnique({
+            where: {
+                id: categoryId,
+            },
+            select: {
+                students: {
+                    include: {
+                        student: true,
+                        organization: {
+                            select: {
+                                name: true,
+                                id: true,
+                            }
+                        }
+                    }
                 },
             },
         });

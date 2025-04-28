@@ -6,23 +6,14 @@ import { CreateCompetitionDialog } from "./create-competition-dialog";
 import CardTitle from "../../_components/common/card-title";
 import { getCurrentCompetitions } from "@/app/_data/competition.data";
 
-export interface Competition {
-  id: string;
-  title: string;
-  startDate: Date | null;
-  endDate: Date | null;
-  type?: string;
-  status: string;
-}
 
 const VersenyekAktualisPage = async () => {
-  const data = await getCurrentCompetitions();
+  const data = await getCurrentCompetitions({onlyPublished: false});
   return (
     <div>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Aktuális versenyek</CardTitle>
-          <CreateCompetitionDialog />
         </CardHeader>
 
         <CardContent>
@@ -33,7 +24,9 @@ const VersenyekAktualisPage = async () => {
               column: "title",
               placeholder: "Keresés versenynév alapján",
             }}
-          />
+            addButton={
+              <CreateCompetitionDialog />
+            }/>
         </CardContent>
       </Card>
     </div>

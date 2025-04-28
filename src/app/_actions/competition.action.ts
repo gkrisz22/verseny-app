@@ -6,38 +6,27 @@ import type { CategoryFormData, CompetitionFormData, StageFormData } from "@/typ
 import { db } from "@/lib/db";
 import { ActionResponse } from "@/types/form/action-response";
 import { actionHandler } from "@/lib/action.handler";
-import { competitionSchema, CompetitionUpdateMetadataDTO, competitionUpdateMetadataSchema, UpdateCompetitionDatesDTO, updateCompetitionDatesSchema, UpdateCompetitionSignUpDateDTO, updateCompetitionSignUpDateSchema } from "@/lib/definitions";
+import { CompetitionDTO, competitionSchema, CompetitionUpdateMetadataDTO, competitionUpdateMetadataSchema, UpdateCompetitionDatesDTO, updateCompetitionDatesSchema, UpdateCompetitionSettingsDTO, updateCompetitionSettingsSchema, UpdateCompetitionSignUpDateDTO, updateCompetitionSignUpDateSchema } from "@/lib/definitions";
 import { logger } from "@/lib/logger";
 import competitionService from "@/services/competition.service";
 import { auth } from "@/auth";
-import { cookies } from "next/headers";
 import userService from "@/services/user.service";
-import { isDateLessThan } from "@/lib/validations";
+import { redirect } from "next/navigation";
+import categoryService from "@/services/category.service";
+import authMiddleware from "@/middlewares/auth.middleware";
+import { getSessionOrganizationData } from "@/lib/utilities";
 
-export async function createCompetition(prevState: ActionResponse<CompetitionFormData>, formData: FormData) : Promise<ActionResponse<CompetitionFormData>>
+export async function createCompetition(prevState: ActionResponse<CompetitionDTO>, formData: FormData) : Promise<ActionResponse<CompetitionDTO>>
 {
-    logger.info("Create competition");
-    const rawData = Object.fromEntries(formData.entries());
-    logger.debug("FormData", rawData);
-    return actionHandler<CompetitionFormData>(competitionSchema, formData, async (validatedData) => {
+    return actionHandler<CompetitionDTO>(competitionSchema, formData, async (validatedData) => {
         const { title, startDate, endDate } = validatedData;
-        console.log(title, startDate, endDate);
-        if(new Date(startDate) > new Date(endDate)){
-            return {
-                success: false,
-                message: "A kezdő dátum nem lehet nagyobb, mint a befejező dátum.", 
-            }   
-        } 
 
-        const res = await db.competition.create({
-            data: {
-                title,
-                startDate: new Date(startDate),
-                endDate: new Date(endDate),
-                status: "UPCOMING",
-                description: '',
-            }, 
-        })
+        const res = await competitionService.create({
+            title,
+            startDate: new Date(startDate),
+            endDate: new Date(endDate),
+            description: ""
+        });
 
         if(!res){
             return {
@@ -52,7 +41,7 @@ export async function createCompetition(prevState: ActionResponse<CompetitionFor
             success: true,
             message: "Verseny létrehozva.",
         }
-    });
+    }, [authMiddleware]);
 }
 
 export async function updateCompetitionMetadata(prevState: ActionResponse<CompetitionUpdateMetadataDTO>, formData: FormData): Promise<ActionResponse<CompetitionUpdateMetadataDTO>> {
@@ -84,24 +73,31 @@ export async function updateCompetitionMetadata(prevState: ActionResponse<Compet
     });
 }
 
-export async function updateCompetition(prevState: ActionResponse<CompetitionFormData>, formData: FormData, id: string): Promise<ActionResponse<CompetitionFormData>> {
-    const rawData = Object.fromEntries(formData.entries());
+export async function deleteCompetition(id: string) {
+    const res = await competitionService.delete(id);
 
-    return {
-        success: true,
-        message: "Verseny frissítve.",
+    if(!res) {
+        return {
+            success: false,
+            message: "Hiba történt a verseny törlése közben.",
+        }
     }
 
+    redirect("/admin/versenyek");
 }
 
-export async function deleteCompetition(id: string) {
-    const res = await db.competition.delete({
-        where: {
-            id,
-        },
-    });
+export async function deleteCategory(id: string) {
+    const category = await categoryService.get(id);
+    const compId = category?.competitionId;
 
-    revalidatePath("/");
+    const res = await categoryService.delete(id);
+    if(!res) {
+        return {
+            success: false,
+            message: "Hiba történt a versenykategória törlése közben.",
+        }
+    }
+    redirect("/admin/versenyek/" + compId);
 }
 
 export async function createCategory(prevState: ActionResponse<CategoryFormData>, formData: FormData): Promise<ActionResponse<CategoryFormData>> {
@@ -146,9 +142,29 @@ export async function getCategoriesByCompetitionId(competitionId: string) {
         where: {
             competitionId,
         },
+        include: {
+            _count: {
+                select: {
+                    stages: true,
+                    students: true,
+                }
+            },
+            stages: {
+                where: {
+                    status: "ONGOING"
+                }
+            },
+        }
     });
 
-    return res;
+    return res.map((category) => {
+        return {
+            ...category,
+            stagesCount: category._count.stages,
+            studentsCount: category._count.students,
+            currentStage: category.stages.length > 0 ? category.stages[0] : null,
+        }
+    });
 }
 
 export async function getCategoryById(id: string) {
@@ -157,8 +173,13 @@ export async function getCategoryById(id: string) {
     if(!session || !session.user){
         return null;
     }
-    const cookieStore = await  cookies();
-    const schoolId = cookieStore.get("org")?.value as string;
+    
+    const orgData = await getSessionOrganizationData();
+    if(!orgData){
+        return null;
+    }
+    const schoolId = orgData.id;
+
     const res = await db.category.findUnique({
         where: {
             id,
@@ -166,7 +187,11 @@ export async function getCategoryById(id: string) {
         include: {
             stages: {
                 include: {
-                    files: true,
+                    files: {
+                        include: {
+                            file: true,
+                        }
+                    },
                     students: {
                         include: {
                             student: true,
@@ -244,8 +269,13 @@ export async function getStageById(id: string) {
             id,
         },
         include: {
-            files: true,
+            files: {
+                include: {
+                    file: true,
+                }
+            },
             tasks: true,
+            category: true
         }
     });
 
@@ -269,9 +299,11 @@ export async function registerAsOrganization(competitionId: string) {
             throw new Error("User not found");
         }
     
-        const cookieStore = await  cookies();
-        const organizationId = cookieStore.get("org")?.value as string;
-    
+        const orgData = await getSessionOrganizationData();
+        if(!orgData){
+            throw new Error("Ön nem tagja egy szervezetnek sem!");
+        }
+        const organizationId = orgData.id;
         if(!organizationId){
             throw new Error("Organization not found");
         }
@@ -283,7 +315,7 @@ export async function registerAsOrganization(competitionId: string) {
             }
         });
         if(alreadyRegistered){
-            throw new Error("Már regisztrált");
+            throw new Error("Már regisztrált a kijelölt versenyre.");
         }
     
         const res = await db.organizationCompetitionParticipation.create({
@@ -297,8 +329,9 @@ export async function registerAsOrganization(competitionId: string) {
         revalidatePath("/org");
     }
     catch(err) {
-        if (err instanceof Error) {
-            throw new Error(err.message || "Regisztráció sikertelen");
+        return {
+            success: false,
+            message: err instanceof Error ? err.message : "Regisztráció sikertelen",
         }
     }
     return {
@@ -319,61 +352,37 @@ export async function getRegisteredOrganizations(competitionId: string) {
     return res;
 }
 
-export async function updateCompetitionSignUpDates(prevState: ActionResponse<UpdateCompetitionSignUpDateDTO>, formData: FormData): Promise<ActionResponse<UpdateCompetitionSignUpDateDTO>> {
-    
-    return actionHandler<UpdateCompetitionSignUpDateDTO>(updateCompetitionSignUpDateSchema, formData, async (validatedData) => {
+export async function updateCompetitionSettings(prevState: ActionResponse<UpdateCompetitionSettingsDTO>, formData: FormData): Promise<ActionResponse<UpdateCompetitionSettingsDTO>> {
+    return actionHandler<UpdateCompetitionSettingsDTO>(updateCompetitionSettingsSchema, formData, async (data) => {
+        
+        try {
+            const { competitionStartDate, competitionEndDate, signUpStartDate, signUpEndDate, published} = data;
 
-        const dateCheck = await isDateLessThan(validatedData.signUpStartDate, validatedData.signUpEndDate);
-        if(!dateCheck){
-            return {
-                success: false,
-                message: "A regisztráció kezdő dátuma nem lehet nagyobb, mint a regisztráció befejező dátuma.",
+            const updated = await competitionService.update(data.id, {
+                startDate: new Date(competitionStartDate),
+                endDate: new Date(competitionEndDate),
+                signUpStartDate: new Date(signUpStartDate),
+                signUpEndDate: new Date(signUpEndDate),
+                published: published === "true",
+            });
+            if (!updated) {
+                throw new Error("Hiba történt a verseny frissítése közben.");
+            }
+            
+        }
+        catch(err) {
+            if (err instanceof Error) {
+                return {
+                    success: false,
+                    message: err.message,
+                    inputs: data,
+                }
             }
         }
-
-        const res = await competitionService.update(validatedData.id, {
-            signUpStartDate: new Date(validatedData.signUpStartDate),
-            signUpEndDate: new Date(validatedData.signUpEndDate),
-        });
-        if (!res) {
-            return {
-                success: false,
-                message: "Hiba történt a verseny frissítése közben.",
-            }
-        }
-       return {
-            success: true,
-            message: "Verseny frissítve.",
-        };
-       
-    });
-}
-
-export async function updateCompetitionDates(prevState: ActionResponse<UpdateCompetitionDatesDTO>, formData: FormData): Promise<ActionResponse<UpdateCompetitionDatesDTO>> {
-    const rawData = Object.fromEntries(formData.entries());
-    console.log("asd");
-    console.log(rawData);
-    return actionHandler<UpdateCompetitionDatesDTO>(updateCompetitionDatesSchema, formData, async (validatedData) => {
-        const dateCheck = await isDateLessThan(validatedData.competitionStartDate, validatedData.competitionEndDate);
-        if(!dateCheck){
-            return {
-                success: false,
-                message: "A verseny kezdő dátuma nem lehet nagyobb, mint a verseny befejező dátuma.",
-            }
-        }
-        const res = await competitionService.update(validatedData.id, {
-            startDate: new Date(validatedData.competitionStartDate),
-            endDate: new Date(validatedData.competitionEndDate),
-        });
-        if (!res) {
-            return {
-                success: false,
-                message: "Hiba történt a verseny frissítése közben.",
-            }
-        }
+        revalidatePath("/admin/versenyek/" + data.id);
         return {
             success: true,
             message: "Verseny frissítve.",
-        };
+        }
     });
 }

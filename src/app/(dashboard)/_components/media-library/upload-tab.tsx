@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress"
 import { uploadFiles } from "@/app/_actions/media.action"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import Image from "next/image"
+import { useActionForm } from "@/hooks/use-action-form"
 
 interface UploadTabProps {
   onUploadSuccess: () => void
@@ -24,7 +25,12 @@ type FileWithPreview = {
 
 export function UploadTab({ onUploadSuccess, getFileIcon }: UploadTabProps) {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
-  const [state, action, isPending] = useActionState(uploadFiles, { success: false, message: "" })
+  const [state, action, isPending] = useActionForm(uploadFiles,{
+    onSuccess: () => {
+      onUploadSuccess()
+      setFiles([])
+    },
+  })
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const newFiles = acceptedFiles.map((file) => ({
@@ -35,7 +41,6 @@ export function UploadTab({ onUploadSuccess, getFileIcon }: UploadTabProps) {
     }))
 
     setFiles((prev) => [...prev, ...newFiles]);
-    console.log("Fájlok:", acceptedFiles);
   }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -59,19 +64,13 @@ export function UploadTab({ onUploadSuccess, getFileIcon }: UploadTabProps) {
     })
   }
 
-  useEffect(() => {
-    if (state.success) {
-      onUploadSuccess()
-      setFiles([])
-    }
-  }, [state.success, onUploadSuccess])
-
   const handleSubmit = async () => {
     const dataToSubmit = new FormData();
     
     files.forEach(fileItem => {
       dataToSubmit.append('files', fileItem.file);
     });
+
     
     return action(dataToSubmit);
   }

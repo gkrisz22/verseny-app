@@ -57,3 +57,22 @@ export async function handleAcademicYear(
         }
     );
 }
+
+export async function deleteAcademicYear(id: string) {
+    try {
+        await settingsService.deleteAcademicYear(id);
+    }
+    catch (error) {
+        console.error("Hiba történt a tanév törlése során: ", error);
+        return {
+            success: false,
+            message: "Hiba történt a tanév törlése során!",
+        };
+    }
+
+    revalidatePath("/admin/beallitasok/tanevek");
+    return {
+        success: true,
+        message: "Sikeresen törölte a tanévet!",
+    };
+}

@@ -4,33 +4,40 @@ import OrgUserManagement from "./_components/org-user-management";
 import { AlertCircle, ArrowLeft, Building, Users } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { getSessionOrganizationData } from "@/lib/utilities";
+import { getOrganizationData } from "@/app/_data/organization.data";
+import LocalOrgSettingsMenu from "./_components/local-org-settings-tabs";
 
-export default function SettingsPage() {
-    // Mock organization data - in a real app, this would come from an API
-    const organizationData = {
-        name: "Acme Education",
-        description:
-            "A leading educational organization focused on promoting STEM education through competitions and workshops for students of all ages.",
-        email: "contact@acmeeducation.org",
-        phone: "(555) 123-4567",
-        website: "https://www.acmeeducation.org",
-        address: "123 Learning Lane",
-        city: "Knowledge City",
-        state: "Education State",
-        zipCode: "12345",
-        country: "United States",
-        organizationType: "educational",
-        logo: "/placeholder.svg?height=100&width=100",
-    };
+export default async function SettingsPage() {
+    const orgData = await getSessionOrganizationData();
 
-    if (organizationData.organizationType !== "educational") {
+    if (orgData?.role !== "admin") {
         return (
             <div className="flex flex-col items-center justify-center min-h-[50vh] p-4">
                 <AlertCircle className="h-16 w-16 text-destructive mb-4" />
                 <h1 className="text-2xl font-bold mb-2">Elérés megtagadva!</h1>
                 <p className="text-muted-foreground text-center mb-6">
-                    Ön nem rendelkezik a szükséges jogosultságokkal ennek az
+                    Ön nem rendelkezik a szükséges jogosultságokkal<br /> ennek az
                     oldalnak a megtekintéséhez.
+                </p>
+                <Link href="/org">
+                    <Button variant={"link"} size="sm">
+                        <ArrowLeft className="h-4 w-4 mr-2" />
+                        Vissza a főoldalra
+                    </Button>
+                </Link>
+            </div>
+        );
+    }
+    const organization = await getOrganizationData(orgData?.id || "");
+    if(!organization) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[50vh] p-4">
+                <AlertCircle className="h-16 w-16 text-destructive mb-4" />
+                <h1 className="text-2xl font-bold mb-2">Hiba történt!</h1>
+                <p className="text-muted-foreground text-center mb-6">
+                    Nem található a szervezet.<br /> Kérjük, ellenőrizze a
+                    szervezeti beállításokat.
                 </p>
                 <Link href="/org">
                     <Button variant={"link"} size="sm">
@@ -51,26 +58,15 @@ export default function SettingsPage() {
                     Itt kezelheti szervezete adatait, értesítési beállításait.
                 </p>
             </div>
-            <Tabs defaultValue="profile">
-                <TabsList className="grid w-full grid-cols-2 max-w-sm">
-                    <TabsTrigger value="profile">
-                        <Building className="mr-2 h-4 w-4" />
-                        Szervezeti profil
-                    </TabsTrigger>
-                    <TabsTrigger value="users">
-                        <Users className="mr-2 h-4 w-4" />
-                        Felhasználók
-                    </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="profile">
-                    <OrgDataManagement />
+            <LocalOrgSettingsMenu>
+                <TabsContent value="profil">
+                    <OrgDataManagement organization={organization} />
                 </TabsContent>
 
-                <TabsContent value="users">
+                <TabsContent value="felhasznalok">
                     <OrgUserManagement />
                 </TabsContent>
-            </Tabs>
+            </LocalOrgSettingsMenu>
         </div>
     );
 }

@@ -2,20 +2,23 @@
 
 import { useTransition } from "react";
 import { downloadFile } from "@/app/_actions/media.action";
+import { toast } from "sonner";
 
 export function useDownload() {
     const [isPending, startTransition] = useTransition();
 
     const handleDownload = async (fileId: string) => {
-        startTransition(async () => {
-            const formData = new FormData();
-            formData.append("fileId", fileId);
-            const response = await downloadFile(formData);
+        if (!fileId) {
+            toast.error("Nincs fájl kiválasztva.");
+            return;
+        }
 
-            if (response?.success && response.url) {
-                window.open(response.url, "_blank");
+        startTransition(async () => {       
+            const res = await downloadFile(fileId);
+            if (res?.success && res.url) {
+                window.open(res.url, "_blank");
             } else {
-                alert("Hiba történt a letöltés során.");
+                toast.error("Hiba történt a letöltés során.");
             }
         });
     };

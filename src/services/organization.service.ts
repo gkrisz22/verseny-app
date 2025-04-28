@@ -85,7 +85,7 @@ export class OrganizationService extends Service {
     }
 
     async get(id: string) {
-        return this.db.user.findUnique({
+        return this.db.organization.findUnique({
             where: {
                 id,
             },
@@ -169,15 +169,58 @@ export class OrganizationService extends Service {
                                 role: {
                                     select: {
                                         name: true,
+                                        description: true,
                                     }
                                 }
                             }
                         }
-                    }
+                    },
+                    where: {
+                        userId,
+                    },
                 }
             }
         })
     }
+    async deleteUserOrgRole(userId: string, orgId: string) {
+        const organizationUser = await this.db.organizationUser.findUnique({
+            where: {
+                organizationId_userId: {
+                    organizationId: orgId,
+                    userId: userId,
+                },
+            },
+        }); 
+        if (!organizationUser) {
+            return false;
+        }
+        return this.db.organizationRole.deleteMany({
+            where: {
+                organizationUserId: organizationUser.id,
+            },
+        });
+    }
+    async setUserOrgRoles(userId: string, orgId: string, roles: string[]) {
+        const organizationUser = await this.db.organizationUser.findUnique({
+            where: {
+                organizationId_userId: {
+                    organizationId: orgId,
+                    userId: userId,
+                },
+            },
+        });
+
+        if (!organizationUser) {
+            return false;
+        }
+
+        return this.db.organizationRole.createMany({
+            data: roles.map((role) => ({
+                roleId: role,
+                organizationUserId: organizationUser.id,
+            })),
+        });
+    };
 }
 
 const orgService = new OrganizationService();

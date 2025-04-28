@@ -12,13 +12,14 @@ import type { MediaFile } from "@/types/media"
 import { FileIcon, FileTextIcon, FileVideoIcon, FolderArchiveIcon } from "lucide-react"
 
 interface MediaLibraryProps {
-  onFilesSelected: (files: MediaFile[]) => void
-  selectedDefault?: MediaFile[]
-  trigger?: React.ReactNode
+  onFilesSelected: (files: MediaFile[]) => void;
+  selectedDefault?: MediaFile[];
+  trigger?: React.ReactNode;
+  mode?: "multiple" | "single";
 }
 
-export function MediaLibrary({ onFilesSelected, trigger, selectedDefault }: MediaLibraryProps) {
-  const [activeTab, setActiveTab] = useState("upload")
+export function MediaLibrary({ onFilesSelected, trigger, selectedDefault, mode = "multiple" }: MediaLibraryProps) {
+  const [activeTab, setActiveTab] = useState("library")
   const [open, setOpen] = useState(false)
   const [selectedFiles, setSelectedFiles] = useState<MediaFile[]>(selectedDefault || [])
 
@@ -55,7 +56,7 @@ export function MediaLibrary({ onFilesSelected, trigger, selectedDefault }: Medi
             <UploadTab onUploadSuccess={handleUploadSuccess} getFileIcon={getFileIcon} />
           </TabsContent>
           <TabsContent value="library" className="flex-1 overflow-hidden p-0 m-0 border-0">
-            <LibraryTab selectedFiles={selectedFiles} onSelectionChange={setSelectedFiles} getFileIcon={getFileIcon} />
+            <LibraryTab mode={mode} selectedFiles={selectedFiles} onSelectionChange={setSelectedFiles} getFileIcon={getFileIcon} />
           </TabsContent>
         </Tabs>
         <div className="flex justify-end gap-2 p-4 border-t">

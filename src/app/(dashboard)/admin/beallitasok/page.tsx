@@ -12,7 +12,6 @@ const SettingsPage = () => {
             </p>
         </div>
         <div className="flex flex-col w-full space-y-4">
-            {/* Add your settings components here */}
         </div>
     </div>
   )

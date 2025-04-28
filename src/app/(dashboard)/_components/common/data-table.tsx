@@ -28,6 +28,7 @@ import { Search, Sheet } from "lucide-react";
 
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
+import { DataTablePagination } from "./data-table-pagination";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -129,7 +130,7 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="px-4">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -151,23 +152,22 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Előző
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Következő
-        </Button>
+      <div className="flex items-center justify-between space-x-2 py-4">
+      <div className="flex-1 text-sm text-muted-foreground">
+        {table.getFilteredSelectedRowModel().rows.length > 0 ? 
+          <span>
+            {table.getFilteredSelectedRowModel().rows.length} kiválasztva{" "}
+            {table.getFilteredRowModel().rows.length} sor közül
+          </span>
+          :
+          <span>
+            Összesen {table.getFilteredRowModel().rows.length} sor.
+          </span>
+        }
+        
+      </div>
+      <DataTablePagination table={table} />
+       
       </div>
     </div>
   );

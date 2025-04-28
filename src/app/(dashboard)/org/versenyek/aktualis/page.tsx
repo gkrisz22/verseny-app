@@ -7,14 +7,23 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Users } from "lucide-react";
+import { ArrowRightIcon, Calendar, FrownIcon, Users } from "lucide-react";
 import Link from "next/link";
 import { getCurrentCompetitions } from "@/app/_data/competition.data";
-import { CompetitionRegistrationDialog } from "./[id]/registration-dialog";
+import { formatDateRange } from "@/lib/utils";
+import { Competition } from "@prisma/client";
+import { ShowCompetitionBadge } from "../../../_components/competition/show-competition-badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
+interface ExtendedCompetition extends Competition {
+    categories: ({id: string, name: string})[];
+    _count: {
+        participants: number;
+    }
+};
 
 export default async function ActiveCompetitions() {
-    const competitions = await getCurrentCompetitions();
-    console.log(competitions[0]);
+    const competitions:ExtendedCompetition[] = await getCurrentCompetitions();
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -34,9 +43,9 @@ export default async function ActiveCompetitions() {
                     <Card key={competition.id} className="flex flex-col">
                         <CardHeader>
                             <div className="flex justify-between items-start">
-                                <Badge variant="outline">
-                                    {competition.status}
-                                </Badge>
+                                <ShowCompetitionBadge
+                                    competition={competition}
+                                />
                             </div>
                             <CardTitle className="mt-2 text-xl">
                                 {competition.title}
@@ -53,48 +62,83 @@ export default async function ActiveCompetitions() {
                                         Jelentkezési határidő:
                                     </span>
                                     <span>
-                                        {competition.startDate.toDateString()}
+                                        {competition.signUpStartDate &&
+                                            competition.signUpEndDate &&
+                                            formatDateRange(
+                                                competition.signUpStartDate,
+                                                competition.signUpEndDate
+                                            )}
                                     </span>
                                 </div>
                                 <div className="flex items-center text-sm">
                                     <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
                                     <span className="text-muted-foreground mr-1">
-                                        Versenykezdés:
+                                        Verseny időpontja:
                                     </span>
-                                    <span>{competition.startDate.toDateString()}</span>
+                                    <span>
+                                        {competition.startDate &&
+                                            competition.endDate &&
+                                            formatDateRange(
+                                                competition.startDate,
+                                                competition.endDate
+                                            )}
+                                    </span>
                                 </div>
                                 <div className="flex items-center text-sm">
                                     <Users className="mr-2 h-4 w-4 text-muted-foreground" />
                                     <span className="text-muted-foreground mr-1">
-                                        Résztvevők:
+                                        Résztvevő iskolák:
                                     </span>
-                                    <span>{competition.participants.length > 0 ? competition.participants.length : "még nincs"}</span>
-
+                                    <span>
+                                        {competition._count.participants > 0
+                                            ? competition._count.participants 
+                                            : "még nincs"}
+                                    </span>
                                 </div>
 
                                 <div className="flex items-center text-sm pt-4">
                                     <div className="flex flex-wrap gap-2">
-                                        {competition.categories.map((category) => (
-                                            <Badge key={category.id} variant="outline">
-                                                {category.name}
-                                            </Badge>
-                                        ))}
+                                        {competition.categories.map(
+                                            (category: { id: string; name: string }) => (
+                                                <Badge
+                                                    key={category.id}
+                                                    variant="outline"
+                                                >
+                                                    {category.name}
+                                                </Badge>
+                                            )
+                                        )}
                                     </div>
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter className="flex justify-between border-t pt-4">
-                            <Button variant="outline" asChild>
-                                <Link
-                                    href={`/org/versenyek/aktualis/${competition.id}`}
-                                >
+                        <CardFooter className="flex justify-end border-t pt-4">
+                            <Link
+                                href={`/org/versenyek/${competition.id}`}
+                            >
+                                <Button variant="default">
                                     Részletek
-                                </Link>
-                            </Button>
-                            <CompetitionRegistrationDialog competitionId={competition.id} />
+                                    <ArrowRightIcon className="ml-1 h-4 w-4" />
+                                </Button>
+                            </Link>
                         </CardFooter>
                     </Card>
                 ))}
+                {
+                    competitions.length === 0 && (
+                        <div className="col-span-3">
+                            <Alert className="w-fit">
+                                <FrownIcon className="size-5 mr-1" />
+                                <AlertTitle className="text-base font-medium">
+                                    Nincs egy aktuális verseny sem.
+                                </AlertTitle>
+                                <AlertDescription>
+                                    Jelenleg nincsenek aktív versenyek. Kérjük, nézzen vissza máskor!
+                                </AlertDescription>
+                            </Alert>
+                        </div>
+                    )
+                }
             </div>
         </div>
     );

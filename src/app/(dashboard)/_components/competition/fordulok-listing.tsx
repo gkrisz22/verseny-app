@@ -17,7 +17,10 @@ import ForduloUpcoming from "./upcoming/fordulo-upcoming";
 import ForduloOngoing from "./ongoing/fordulo-ongoing";
 import ForduloFinished from "./finished/fordulo-finished";
 
-export function FordulokListing({ category, stages, students, isAdmin = false }: { category: Category & { stages: Stage[] }; stages: (Stage & { files: File[]; students: ({ student: Student; } & StudentStage)[]; })[]; students: ({ student: Student; } & StudentCategory)[]; isAdmin?: boolean; }) {
+export function FordulokListing({ category, stages, students, isAdmin = false }: { 
+    category: Category & { stages: Stage[] }; 
+    stages: (Stage & { files: File[]; students: ({ student: Student; } & StudentStage)[]; })[]; 
+    students: ({ student: Student; } & StudentCategory)[]; isAdmin?: boolean; }) {
     const [selectedRoundId, setSelectedRoundId] = useState<string | null>(stages.length > 0 ? stages[0].id : null);
     const [activeTab, setActiveTab] = useState("overview");
 
@@ -126,7 +129,7 @@ export function FordulokListing({ category, stages, students, isAdmin = false }:
                                                     <EditIcon className="h-4 w-4 mr-2" />Értékelő-szerkesztő
                                                 </Button>
                                             </Link>
-                                            <Link href={`/admin/versenyek/${category.competitionId}/kategoria/${category.id}/fordulo/${selectedRound.id}/task`}>
+                                            <Link href={`/admin/versenyek/${category.competitionId}/kategoria/${category.id}/fordulo/${selectedRound.id}/ertekeles`}>
                                                 <Button variant="outline" className="w-fit">
                                                     <SheetIcon className="h-4 w-4 mr-2" />Csoportos értékelő
                                                 </Button>
@@ -167,7 +170,7 @@ export function FordulokListing({ category, stages, students, isAdmin = false }:
                                     </div>
                                 </TabsContent>
                                 <TabsContent value="students" className="mt-4">
-                                    <ForduloStudentsTable students={selectedRound.students} />
+                                    <ForduloStudentsTable stageId={selectedRound.id} />
                                 </TabsContent>
                                 {isAdmin && (
                                     <TabsContent value="admintasks" className="mt-4">

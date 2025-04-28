@@ -71,6 +71,14 @@ export class MediaService extends Service {
 
         return true;
     }
+
+    getUserFiles(userId: string) {
+        return this.db.file.findMany({
+            where: {
+                uploadedBy: userId,
+            },
+        });
+    }
 }
 const mediaService = new MediaService();
 export default mediaService;

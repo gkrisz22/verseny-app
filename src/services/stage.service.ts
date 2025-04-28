@@ -11,35 +11,33 @@ export class StageService extends Service {
     }
 
     getStageFiles(stageId: string) {
-        return this.db.file.findMany({
+        return this.db.stageFile.findMany({
             where: {
                 stageId,
+            },
+            include: {
+                file: true,
             },
         });
     }
 
     assignFilesToStage(stageId: string, fileIds: string[]) {
-        return this.db.file.updateMany({
-            where: {
-                id: {
-                    in: fileIds,
-                },
-            },
-            data: {
+        return this.db.stageFile.createMany({
+            data: fileIds.map(fileId => ({
                 stageId,
-            },
+                fileId
+            })),
+            skipDuplicates: true,
         });
     }
 
     removeFiles(stageId: string, fileIds: string[]) {
-        return this.db.file.updateMany({
+        return this.db.stageFile.deleteMany({
             where: {
-                id: {
+                stageId,
+                fileId: {
                     in: fileIds,
                 },
-            },
-            data: {
-                stageId: null,
             },
         });
     }
@@ -84,17 +82,22 @@ export class StageService extends Service {
         });
     }
 
-    assignStudentsToStage(stageId: string, studentIds: string[]) {
+    assignStudentsToStage(stageId: string, students: { studentId: string, organizationId: string }[]) {
         return this.db.stage.update({
             where: {
                 id: stageId,
             },
             data: {
                 students: {
-                    create: studentIds.map((studentId) => ({
-                        studentId,
-                    })),
+                    createMany: {
+                        data: students.map((s) => ({
+                            studentId: s.studentId,
+                            organizationId: s.organizationId,
+                        })),
+                        skipDuplicates: true,
+                    },
                 },
+                           
             },
         });
     }
@@ -107,10 +110,59 @@ export class StageService extends Service {
                 students: {
                     include: {
                         student: true,
+                        files: {
+                            include: {
+                                file: true,
+                            },
+                        }
+                    },                    
+                },
+            },
+        });
+    }
+    getStageStudentsByOrganization(stageId: string, organizationId: string) {
+        return this.db.stage.findUnique({
+            where: {
+                id: stageId,
+            },
+            include: {
+                students: {
+                    include: {
+                        student: true,
+                        files: {
+                            include: {
+                                file: true,
+                            },
+                        },
+                    },
+                    where: {
+                        organizationId: organizationId,
                     },
                 },
             },
         });
+    }
+    getStageStudentsOverPoints(stageId: string, points: number) {
+        console.log("Points: ", points);
+        return this.db.stage.findUnique({
+            where: {
+                id: stageId,
+            },
+            include: {
+                students: {
+                    select: {
+                        studentId: true,
+                        totalPoints: true,
+                        organizationId: true,
+                    },
+                    where: {
+                        totalPoints: {
+                            gte: points,
+                        },
+                    },
+                }
+            }
+        })
     }
 }
 

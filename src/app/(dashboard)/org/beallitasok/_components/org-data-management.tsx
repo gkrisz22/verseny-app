@@ -1,139 +1,112 @@
 "use client";
 import React from "react";
-import {
-    Mail,
-    Phone,
-    Globe,
-    MapPin,
-    Save,
-} from "lucide-react";
+import { Save } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import FormField, { IFormField } from "@/app/(dashboard)/_components/common/form-field";
+import { useActionForm } from "@/hooks/use-action-form";
+import { updateOrganizationData } from "@/app/_actions/organization.action";
+import { toast } from "sonner";
+import { Organization } from "@prisma/client";
+import regions from "@/lib/regions.json";
 
 
-interface FormField {
-    type: string;
-    name: string;
-    id: string;
-    label: string;
-    placeholder: string;
-    colSpan: number;
-    icon?: React.ElementType;
-}
-
-const formFields:FormField[] = [
+const formFields:IFormField[] = [
     {
-        type: "input",
+        type: "text",
         name: "name",
         id: "name",
         label: "Szervezet neve",
         placeholder: "Eötvös Loránd Tudományegyetem Informatikai Kar",
         colSpan: 2,
+        required: true,
     },
     {
-        type: "input",
-        icon: Mail,
-        name: "email",
-        id: "email",
+        type: "text",
+        name: "contactName",
+        id: "contactName",
+        label: "Kapcsolattartó neve",
+        placeholder: "Teszt Igazgatóhelyettes",
+        colSpan: 1,
+        required: true,
+    },
+    {
+        type: "text",
+        name: "contactEmail",
+        id: "contactEmail",
         label: "Kapcsolati e-mail cím",
         placeholder: "kapcsolat@inf.elte.hu",
         colSpan: 1,
+        required: true,
     },
     {
-        type: "input",
-        icon: Phone,
-        name: "phone",
-        id: "phone",
+        type: "text",
+        name: "phoneNumber",
+        id: "phoneNumber",
         label: "Telefonszám",
         placeholder: "+36 1 234 5678",
         colSpan: 1,
+        required: true,
     },
     {
-        type: "input",
-        icon: Globe,
+        type: "text",
         name: "website",
         id: "website",
         label: "Weboldal",
-        placeholder: "https://www.inf.elte.hu",
-        colSpan: 2,
+        placeholder: "https://www.inf.elte.hu/",
+        colSpan: 1,
     },
     {
-        type: "textarea",
-        name: "description",
-        id: "description",
-        label: "Leírás",
-        placeholder: "Opcionális leírás a szervezetről",
-        colSpan: 2,
-    },
-    {
-        type: "input",
-        name: "zipCode",
-        id: "zipCode",
+        type: "text",
+        name: "postalCode",
+        id: "postalCode",
         label: "Irányítószám",
         placeholder: "1027",
         colSpan: 1,
+        required: true,
     },
     {
-        type: "input",
-        name: "state",
-        id: "state",
+        type: "select",
+        name: "region",
+        id: "region",
         label: "Régió/Vármegye",
-        placeholder: "State",
+        placeholder: "Régió/vármegye",
         colSpan: 1,
+        required: true,
+        options: regions.regions.map((r) => ({
+            label: r.name,
+            value: r.id,
+        })).concat(
+            regions.counties.map((r) => ({
+                label: r.name,
+                value: r.id,
+            }))
+        ),
     },
     {
-        type: "input",
+        type: "text",
         name: "city",
         id: "city",
         label: "Város",
-        placeholder: "City",
+        placeholder: "Város",
         colSpan: 1,
+        required: true,
     },
     {
-        type: "input",
-        icon: MapPin,
+        type: "text",
         name: "address",
         id: "address",
         label: "Cím",
         placeholder: "Pázmány Péter sétány 1/A",
         colSpan: 1,
+        required: true,
     },
 ];
 
 
-const OrgDataManagement = () => {
-    
-    const renderField = (field: FormField) => {
-        const Icon = field.icon;
-        return (
-            <div key={field.id} className={`col-span-${field.colSpan}`}>
-                <Label className="block text-sm font-medium">{field.label}</Label>
-                <div className="relative">
-                    {Icon && <Icon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />}
-                    {field.type === "input" && (
-                        <Input
-                            name={field.name}
-                            id={field.id}
-                            placeholder={field.placeholder}
-                            className={Icon ? "pl-8" : ""}
-                        />
-                    )}
-                    {field.type === "textarea" && (
-                        <Textarea
-                            name={field.name}
-                            id={field.id}
-                            placeholder={field.placeholder}
-                            className="min-h-[100px]"
-                        />
-                    )}
-                </div>
-            </div>
-        );
-    };
+const OrgDataManagement = ({ organization}: {organization:Organization} ) => {
+    const [state, action, isPending] = useActionForm(updateOrganizationData);
 
     return (
         <Card>
@@ -144,10 +117,27 @@ const OrgDataManagement = () => {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <form className="grid gap-4 md:grid-cols-2">
-                    {formFields.map(renderField)}
+                <form className="grid gap-4 md:grid-cols-2" action={action}>
+                    {formFields.map(field => (
+                        <FormField
+                            key={field.id}
+                            type={field.type}
+                            name={field.name}
+                            id={field.id}
+                            label={field.label}
+                            placeholder={field.placeholder}
+                            colSpan={field.colSpan}
+                            Icon={field.Icon}
+                            errors={state.errors?.[field.name as keyof typeof state.errors] || []}
+                            required={field.required}
+                            defaultValue={state.inputs?.[field.name as keyof typeof state.inputs] || organization[field.name as keyof Organization] || ""}
+                            options={field.options}
+                            />
+                        )
+                    )}
+                    
                     <div className="col-span-2 flex justify-end">
-                        <Button type="submit">
+                        <Button type="submit" variant="default" disabled={isPending} className="w-fit">
                             <Save className="mr-2 h-4 w-4" />
                             Mentés
                         </Button>

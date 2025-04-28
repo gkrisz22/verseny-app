@@ -5,10 +5,12 @@ import { ArrowRight} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Competition } from "./page";
 import Link from "next/link";
 import React from "react";
 import DataTableSortableHeader from "@/app/(dashboard)/_components/common/data-table-sortable-header";
+import { Competition } from "@prisma/client";
+import { formatDate } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 export const columns: ColumnDef<Competition>[] = [
   {
@@ -50,27 +52,32 @@ export const columns: ColumnDef<Competition>[] = [
         <DataTableSortableHeader title="Kezdés" column={column} />
       );
     },
-    cell: ({ row }) => new Date(row.original.startDate!).toLocaleDateString(),
+    cell: ({ row }) => row.original.startDate ? formatDate(row.original.startDate!) : "N/A"
   },
   {
     accessorKey: "endDate",
     header: ({ column }) =><DataTableSortableHeader title="Vége" column={column} />,
-    cell: ({ row }) => new Date(row.original.endDate!).toLocaleDateString(),
+    cell: ({ row }) => row.original.endDate ? formatDate(row.original.endDate!) : "N/A"
   },
-
   {
-    accessorKey: "status",
-    header: ({ column }) => <DataTableSortableHeader title="Státusz" column={column} />,
+    accessorKey: "published",
+    header: ({ column }) => <DataTableSortableHeader title="Közzétett" column={column} />,
     cell: ({ row }) => {
-      const status = row.original?.status;
+      const published = row.original.published;
       return (
-        <span
-          className={`bg-green-100 text-green-900 dark:bg-green-800 dark:text-green-100 rounded-full px-2 py-1 uppercase text-[10px] font-bold`}
-        >
-          {status}
-        </span>
+        <div>
+          {published ? (
+            <Badge variant="default">
+              <span className="text-xs">Igen</span>
+            </Badge>
+          ) : (
+            <Badge variant="destructive">
+              <span className="text-xs">Nem</span>
+            </Badge>
+          )}
+        </div>
       );
-    },
+    }
   },
   {
     id: "actions",

@@ -6,10 +6,9 @@ import bcrypt from "bcryptjs";
 
 declare module "next-auth" {
   interface User {
-    role?: string;
+    id?: string;
     name?: string | null;
     email?: string | null;
-    org?: string | null;
     isSuperAdmin?: boolean;
   }
 
@@ -68,48 +67,65 @@ export default {
   },
   callbacks: {
     async signIn({ user, account, profile }) {
-      if (account?.provider === "github") {
-        const email = profile?.email as string;
-        const name = profile?.name as string;
-        const userExists = await authService.getWhere({ email });
-        
-        if (userExists.length === 0) {
-         console.log("Creating user")
-          const newUser = await authService.create({
-            name,
-            email,
-          });
+      const email = profile?.email as string;
+      const name = profile?.name as string;
+      const userExists = await authService.getWhere({ email });
+    
+      if (userExists.length === 0) {
+        if (account?.provider === "github") {
+          const newUser = await authService.create({ name, email });
           user.id = newUser.id;
+          userExists[0] = newUser;
+        } else {
+          throw new Error("Nem létezik a felhasználó!");
         }
       }
+    
+      const existingUser = userExists[0];
+      user.id = existingUser.id;
+      user.isSuperAdmin = existingUser.superAdmin;
+      console.log("User:", user);
+    
       return true;
-    }, 
-    /*async jwt({ user, token}) { // on login
+    },
+    async jwt({ user, token}) {
       if(user) {
-        token.role = "";
-        token.org = "";
-        token.isSuperAdmin = false;
+        console.log(user)
+        token.sub = user.id;
+        token.isSuperAdmin = user.isSuperAdmin;
       }
 
       return token;
     },
-    async session({ session, token}) { // on every request
-      session.user.role = "";
-      token.org = "";
-      console.log("Session")
+    async session({ session, token}) {
+      if(token) {
+        session.user.id = token.sub as string;
+        session.user.isSuperAdmin = token.isSuperAdmin as boolean;
+      }
       return session;
-    },*/
+    },
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith("/admin");
+      const dashboardPaths = ["/admin", "/org", "/select"];
+      const isOnDashboard = dashboardPaths.some((path) =>
+        nextUrl.pathname.startsWith(path)
+      );
+      if(!isLoggedIn && isOnDashboard) {
+        return Response.redirect(new URL("/sign-in", nextUrl));
+      }
 
       const unauthorizedPaths = ["/sign-in", "/sign-up"];
 
-      if (isOnDashboard) {
+      if(isOnDashboard) {
+        if(!auth?.user.isSuperAdmin && nextUrl.pathname.startsWith("/admin")) {
+          return Response.redirect(new URL("/org", nextUrl));
+        }
         return isLoggedIn;
-      } else if (unauthorizedPaths.includes(nextUrl.pathname) && isLoggedIn) {
-        return Response.redirect(new URL("/admin", nextUrl));
       }
+      else if(isLoggedIn && unauthorizedPaths.includes(nextUrl.pathname)) {
+        return Response.redirect(new URL("/select", nextUrl));
+      }
+      
       return true;
     },
   },

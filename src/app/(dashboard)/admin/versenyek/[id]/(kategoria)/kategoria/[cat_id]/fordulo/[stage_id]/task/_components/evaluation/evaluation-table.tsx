@@ -14,7 +14,7 @@ import CreateTaskGroupDialog from "./create-task-group-dialog"
 import { ConfirmDialog } from "@/app/(dashboard)/_components/common/confirm-dialog"
 import { toast } from "sonner"
 
-export type TaskType = "NUMERIC" | "BINARY" | "TEXT";
+export type TaskType = "NUMERIC" | "BINARY";
 
 export interface Task {
   id: string;
@@ -143,7 +143,6 @@ export default function EvaluationTable({ stageId, initialGroups }: { stageId: s
   };
 
   const handleSave = async () => {
-    console.log("Saving tasks:", taskGroups);
     const res = await saveTasks(taskGroups);
     if (!res) {
       toast.error("Nem sikerült menteni a feladatokat.");
@@ -212,7 +211,7 @@ export default function EvaluationTable({ stageId, initialGroups }: { stageId: s
           </TabsContent>
         ))}
       </Tabs>
-      <EvaluationSaveTrigger onSave={handleSave} disabled={false} />
+      <EvaluationSaveTrigger onSave={handleSave} isLoading={false} />
       <ConfirmDialog
         title="A feladatcsoport törlésével a hozzátartozó ÖSSZES feladat is törlődik!"
         description="Biztosan törölni szeretné a feladatcsoportot?"

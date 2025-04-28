@@ -9,6 +9,7 @@ import Link from "next/link";
 import DataTableSortableHeader from "@/app/(dashboard)/_components/common/data-table-sortable-header";
 import { User } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
+import { UserStatusBadge } from "../../_components/common/user-status-badge";
 
 export const columns: ColumnDef<User & { _count: { memberships: number } }>[] = [
   {
@@ -62,7 +63,7 @@ export const columns: ColumnDef<User & { _count: { memberships: number } }>[] = 
       const data = row.original;
       return (
         <div className="flex items-center gap-2 pl-2">
-          <span>{getStatusBadge(data.status)}</span>
+          <span><UserStatusBadge status={data.status} /></span>
         </div>
       );
     }
@@ -102,17 +103,3 @@ export const columns: ColumnDef<User & { _count: { memberships: number } }>[] = 
     },
   },
 ];
-
-
-const getStatusBadge = (status: "ACTIVE" | "INACTIVE" | "PENDING") => {
-    switch (status) {
-        case "ACTIVE":
-            return <Badge variant="default">Aktív</Badge>
-        case "INACTIVE":
-            return <Badge variant="destructive">Inaktív</Badge>
-        case "PENDING":
-            return <Badge variant="secondary">Függőben</Badge>
-        default:
-            return <Badge variant="outline">Ismeretlen</Badge>
-    }
-}

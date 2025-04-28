@@ -2,7 +2,7 @@
 
 import userService from "@/services/user.service";
 import { ActionResponse } from "@/types/form/action-response";
-import { signIn } from "@/auth";
+import { auth, signIn, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 import {
     OrganizationContactDTO,
@@ -30,8 +30,8 @@ import { v4 as uuid4 } from "uuid";
 import { accountMailer } from "@/lib/mailer.lib";
 import bcrypt from "bcryptjs";
 import roleService from "@/services/role.service";
-import { cookies } from "next/headers";
-import { AuthError } from "next-auth";
+import { setSecureCookie } from "@/lib/utilities";
+import { getUserOrganizationData } from "../_data/user.data";
 
 export const signUpFirstStep = async (
     prevState: ActionResponse<SignUpStepOneDTO>,
@@ -66,9 +66,6 @@ export const signUpSchoolSkeleton = async (
     prevState: ActionResponse<SignUpSchoolSkeletonDTO>,
     formData: FormData
 ): Promise<ActionResponse<SignUpSchoolSkeletonDTO>> => {
-    const rawData = Object.fromEntries(formData.entries());
-    logger.info("signUpSchoolSkeleton", rawData);
-
     return actionHandler<SignUpSchoolSkeletonDTO>(
         signUpSchoolSkeletonSchema,
         formData,
@@ -358,27 +355,22 @@ export const signInAction = async (
                 };
             }
             const role = roles[0];
-            const cookieStore = await cookies();
-            cookieStore.set("role", role.role.name, {
-                httpOnly: true,
-                secure: true,
-                sameSite: "strict",
-                path: "/",
+            
+            const orgData = JSON.stringify({
+                id: userOrg,
+                role: role.role.name,
             });
-            cookieStore.set("org", userOrg, {
-                httpOnly: true,
-                secure: true,
-                sameSite: "strict",
-                path: "/",
-            });
-
+            await setSecureCookie({ name: "org", value: orgData });            
             redirect(`/org`);
         }
 
         redirect("/admin");
     });
 };
-
+export const signOutAction = async () => {
+    await setSecureCookie({ name: "org", value: "" });
+    await signOut({ redirectTo: "/sign-in"});
+};
 export const createSkeletonUser = async (
     prevState: ActionResponse<SignUpSkeletonDTO>,
     formData: FormData,
@@ -436,9 +428,32 @@ export const completeTeacherSignup = async (
         }
 
         redirect(`/sign-up/completed/`);
-        return {
-            success: true,
-            message: "Sikeres regisztráció!",
-        };
     });
 };
+
+export const handleOrgRoleSelect = async (formData:FormData) => {
+    const organizationId = formData.get("organizationId");
+    const role = formData.get("role");
+    const session = await auth();
+    if (!session || !session.user || !session.user.id) {
+        return;
+    }
+    const userOrganizations = await getUserOrganizationData(session.user.id);
+
+    const orgIdx = userOrganizations.findIndex(org => org.organization.id === organizationId);
+    if (orgIdx === -1) {
+        return;
+    }
+    const orgRole = userOrganizations[orgIdx].roles.find(r => r.name == role);
+    if (!orgRole) {
+        return;
+    }
+    await setSecureCookie({
+        name: "org",
+        value: JSON.stringify({
+            id: organizationId,
+            role: role,
+        }),
+    });
+    redirect("/org"); 
+}

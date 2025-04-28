@@ -36,7 +36,7 @@ model User {
   memberships  OrganizationUser[]
   accounts     Account[]
   verification VerificationToken?
-  evaluations  StudentStage[]
+  evaluations  Evaluation[]
 
   @@unique([email, username])
 }
@@ -96,7 +96,7 @@ model OrganizationCompetitionParticipation {
   competitionId  String
   organizationId String
   userId         String
-  status         ParticipationStatus @default(PENDING)
+  status         ParticipationStatus @default(APPROVED)
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
   organization   Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -120,6 +120,7 @@ model Organization {
   phoneNumber  String?
   contactEmail String?
   contactName  String?
+  website      String?
   type         String             @default("SCHOOL")
   status       OrganizationStatus @default(PENDING)
   createdAt    DateTime           @default(now())
@@ -128,6 +129,8 @@ model Organization {
   members        OrganizationUser[]
   participations OrganizationCompetitionParticipation[]
   students       SchoolStudent[]
+  categoryStudents StudentCategory[]
+  stageStudents  StudentStage[]
 }
 
 enum OrganizationType {
@@ -172,12 +175,11 @@ model Competition {
   id               String            @id @default(cuid())
   title            String
   shortDescription String?
-  description      String            @db.Text
+  description      String?            @db.Text
   startDate        DateTime
   endDate          DateTime?
   signUpStartDate   DateTime?
   signUpEndDate     DateTime?
-  status           CompetitionStatus @default(UPCOMING)
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   published        Boolean           @default(false)
@@ -186,11 +188,6 @@ model Competition {
   participants OrganizationCompetitionParticipation[]
 }
 
-enum CompetitionStatus {
-  UPCOMING
-  ONGOING
-  FINISHED
-}
 
 model Category {
   id             String            @id @default(cuid())
@@ -210,10 +207,12 @@ model StudentCategory {
   id         String   @id @default(cuid())
   categoryId String
   studentId  String
+  organizationId String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  category   Category @relation(fields: [categoryId], references: [id])
-  student    Student  @relation(fields: [studentId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 }
 
 model Stage {
@@ -225,8 +224,11 @@ model Stage {
   endDate     DateTime?
 
   accessStartDate     DateTime?
+  accessEndDate       DateTime?
   evaluationStartDate DateTime?
   evaluationEndDate   DateTime?
+  reevaluationStartDate DateTime?
+  reevaluationEndDate   DateTime?
 
   categoryId String
   published  Boolean  @default(false)
@@ -236,7 +238,7 @@ model Stage {
   updatedAt  DateTime @updatedAt
 
   category Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  files    File[]
+  files    StageFile[]
   tasks    TaskGroup[]
   students StudentStage[]
 }
@@ -267,18 +269,20 @@ model StudentStage {
   stageId     String
   custom      String?
   totalPoints Int                @default(-1)
-  evaluatorId String?
+  fileId     String?             @unique
   status      StudentStageStatus @default(NOT_SUBMITTED)
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
-  student     Student            @relation(fields: [studentId], references: [id])
-  stage       Stage              @relation(fields: [stageId], references: [id])
-  evaluator   User?              @relation(fields: [evaluatorId], references: [id])
-
+  student     Student            @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  stage       Stage              @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  organizationId String?
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  evaluations Evaluation[]
+  files       StudentStageFile[]
+  
   @@unique([studentId, stageId])
   @@index([studentId])
   @@index([stageId])
-  @@index([evaluatorId])
 }
 
 enum StudentStageStatus {
@@ -294,8 +298,8 @@ model SchoolStudent {
   schoolId  String
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
-  student   Student      @relation(fields: [studentId], references: [id])
-  school    Organization @relation(fields: [schoolId], references: [id])
+  student   Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  school    Organization @relation(fields: [schoolId], references: [id], onDelete: Cascade)
 
   @@unique([studentId, schoolId])
 }
@@ -312,8 +316,29 @@ model File {
   user       User     @relation(fields: [uploadedBy], references: [id])
   uploadedBy String
 
-  stage   Stage?  @relation(fields: [stageId], references: [id])
-  stageId String?
+  stages     StageFile[]
+  studentStages StudentStageFile[]
+}
+
+model StudentStageFile {
+  id        String   @id @default(cuid())
+  studentStageId String
+  fileId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  studentStage StudentStage @relation(fields: [studentStageId], references: [id], onDelete: Cascade)
+  file      File         @relation(fields: [fileId], references: [id], onDelete: Cascade)
+}
+
+model StageFile {
+  id        String   @id @default(cuid())
+  stageId   String
+  fileId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  stage Stage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  file File @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  @@unique([stageId, fileId])
 }
 
 model TaskGroup {
@@ -321,7 +346,7 @@ model TaskGroup {
   title     String   @default("Feladatcsoport")
   stageId   String
   tasks     Task[]
-  stage     Stage    @relation(fields: [stageId], references: [id])
+  stage     Stage    @relation(fields: [stageId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -334,18 +359,39 @@ model Task {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   groupId   String
-  group     TaskGroup @relation(fields: [groupId], references: [id])
+  group     TaskGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   parentId String?
-  parent   Task?   @relation("TaskToTask", fields: [parentId], references: [id])
+  parent   Task?   @relation("TaskToTask", fields: [parentId], references: [id], onDelete: Cascade)
   subtasks Task[]  @relation("TaskToTask")
+  evaluations Evaluation[]
 }
 
 enum TaskType {
   NUMERIC
   BINARY
-  TEXT
 }
+
+model Evaluation {
+  id          String   @id @default(cuid())
+  stageStudentId   String
+  evaluatorId String
+  taskId      String
+  points      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  task        Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  stageStudent StudentStage @relation(fields: [stageStudentId], references: [id], onDelete: Cascade)
+  evaluator   User @relation(fields: [evaluatorId], references: [id], onDelete: Cascade)
+
+  reevaluationId String?
+  reevaluation Evaluation? @relation("EvaluationToEvaluation", fields: [reevaluationId], references: [id], onDelete: Cascade)
+  reevaluations Evaluation[] @relation("EvaluationToEvaluation")
+
+  @@unique([stageStudentId, taskId,evaluatorId])
+}
+
+
 
 model Role {
   id          String   @id @default(cuid())
@@ -354,19 +400,7 @@ model Role {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  permissions Permission[]
   assignments OrganizationRole[]
-}
-
-model Permission {
-  id          String   @id @default(cuid())
-  role        Role     @relation(fields: [roleId], references: [id])
-  roleId      String
-  resource    String
-  action      String
-  description String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
 }
 
 model AcademicYear {
@@ -388,6 +422,6 @@ model StudentAcademicYear {
   gradeString    String
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  student        Student      @relation(fields: [studentId], references: [id])
-  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
+  student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
 }

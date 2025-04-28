@@ -1,7 +1,7 @@
 import React from "react";
 import { Stage } from "@prisma/client";
 
-const ForduloFinished = ({ selectedRound }: { selectedRound: Stage }) => {
+const ForduloFinished = ({ stage }: { stage: Stage }) => {
     return (
         <div className="text-sm  mt-2">
             <div className="flex flex-col gap-4">
@@ -9,9 +9,6 @@ const ForduloFinished = ({ selectedRound }: { selectedRound: Stage }) => {
                 <div className="flex flex-col gap-2">
                     <p className="text-sm text-muted-foreground">
                         A forduló már befejeződött, így nem végezhet el rajta módosítást.
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                        A forduló állapotát a verseny adminisztrátorai tudják módosítani.
                     </p>
                 </div>
             </div>

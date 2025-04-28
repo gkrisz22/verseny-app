@@ -1,14 +1,14 @@
 "use client";
 import { updateCompetitionMetadata } from '@/app/_actions/competition.action';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useActionForm } from '@/hooks/use-action-form';
 import { Competition } from '@prisma/client';
 import React, { useState } from 'react'
 import { RichTextEditor, tiptapExtensions } from '@/components/tiptap/rich-text-editor';
 import { Extension, useEditor } from '@tiptap/react';
-import { Textarea } from '@/components/ui/textarea';
+import FormField from '@/app/(dashboard)/_components/common/form-field';
+import { Label } from '@/components/ui/label';
+import { Edit2Icon, EditIcon } from 'lucide-react';
 
 const CompetitionContentForm = ({ competition }: { competition: Competition }) => {
     const [state, action, isPending] = useActionForm(updateCompetitionMetadata);
@@ -35,21 +35,27 @@ const CompetitionContentForm = ({ competition }: { competition: Competition }) =
             <h1 className='text-2xl font-bold'>Tartalom</h1>
 
             <form action={action} className='flex flex-col gap-4'>
-                <div className='flex flex-col gap-4'>
-                    <Label>Verseny neve</Label>
-                    <Input type='text' name="title" placeholder='Verseny neve' defaultValue={state.inputs?.title ?? competition?.title} className={state?.errors?.title ? 'border-red-500' : ''} />
-                    {state?.errors?.title ? <p className='text-xs text-destructive'>{state?.errors?.title[0]}</p> : null}
-                </div>
-
-                <div className='flex flex-col gap-4'>
-                    <Label>Rövid leírás</Label>
-                    <Textarea placeholder='Ez fog megjelenni a verseny listázásánál' name="shortDescription" rows={2} defaultValue={(state.inputs?.shortDescription ?? competition?.shortDescription) || ""} className={state?.errors?.shortDescription? 'border-red-500' : ''} />
-                    {
-                        state?.errors?.shortDescription? <p className='text-xs text-destructive'>{state?.errors?.shortDescription[0]}</p> : null
-                    }
-                </div>
-
-
+                <FormField
+                    type='text'
+                    id="title"
+                    name="title"
+                    label="Verseny neve"
+                    placeholder='Verseny neve'
+                    defaultValue={state.inputs?.title ?? competition?.title}
+                    errors={state.errors?.title}
+                    Icon={EditIcon}
+                />
+                <FormField
+                    type='textarea'
+                    id="shortDescription"
+                    name="shortDescription"
+                    label="Rövid leírás"
+                    placeholder='Ez fog megjelenni a verseny listázásánál'
+                    rows={2}
+                    defaultValue={(state.inputs?.shortDescription ?? competition?.shortDescription) || ""}
+                    errors={state.errors?.shortDescription}
+                    Icon={EditIcon}
+                />
                 <div className='flex flex-col gap-4 w-full'>
                     <Label>Versenyleírás</Label>
                     <div className='overflow-hidden max-w-full box-border'>
@@ -59,7 +65,7 @@ const CompetitionContentForm = ({ competition }: { competition: Competition }) =
                     <input type='hidden' name="description" value={description} />
                 </div>
 
-                <Input type='hidden' name="id" defaultValue={competition?.id} readOnly />
+                <input type='hidden' name="id" defaultValue={competition?.id} readOnly />
 
                 <Button onClick={handleSubmit} className='w-fit' disabled={isPending}>
                     {isPending ? 'Mentés...' : 'Mentés'}

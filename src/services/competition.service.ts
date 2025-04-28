@@ -1,8 +1,9 @@
-import { Competition, Prisma } from "@prisma/client";
+import { AcademicYear, Competition, Prisma } from "@prisma/client";
 import { CrudService, Service } from "./service";
+import { id } from "date-fns/locale";
 
 export class CompetitionService extends Service implements CrudService<Competition> {
-  create(data: Competition): Promise<Competition> {
+  create(data: Prisma.CompetitionCreateInput): Promise<Competition> {
     return this.db.competition.create({
       data,
     });
@@ -21,6 +22,15 @@ export class CompetitionService extends Service implements CrudService<Competiti
             select: {
               students: true,
             }
+          },
+          stages: {
+            select: {
+              id: true,
+              startDate: true,
+            },
+            orderBy: {
+              startDate: "asc",
+            },
           }
         }
       }
@@ -32,34 +42,6 @@ export class CompetitionService extends Service implements CrudService<Competiti
     return this.db.competition.findMany();
   }
 
-  getActive() {
-    return this.db.competition.findMany({
-      where: {
-        OR: [{
-            status: "UPCOMING",
-        },
-        {
-            status: "ONGOING",
-        }]
-      },
-      include: {
-        participants: true,
-        categories: true
-      }
-    });
-  }
-
-  getPast() {
-    return this.db.competition.findMany({
-      where: {
-        status: "FINISHED"
-      },
-      include: {
-        participants: true,
-        categories: true
-      }
-    });
-  }
 
   update(id: string, data: Partial<Competition>) {
     return this.db.competition.update({
@@ -102,6 +84,46 @@ export class CompetitionService extends Service implements CrudService<Competiti
         organizationId,
       },
     }).then((participations) => participations.length > 0);
+  }
+
+  getCurrentCompetitions(academicYear:AcademicYear, onlyPublished = true) {
+    return this.db.competition.findMany({
+      where: {
+        startDate: {
+          gte: new Date(academicYear.startDate),
+        },
+        endDate: {
+          lte: new Date(academicYear.endDate),
+        },
+        published: onlyPublished ? true : undefined,
+      },
+      select:
+      {
+        id: true,
+        title: true,
+        startDate: true,
+        endDate: true,
+        signUpStartDate: true,
+        signUpEndDate: true,
+        categories: {
+          select: {
+            id: true,
+            name: true,
+          }
+        },
+        _count: {
+          select: {
+            participants: true,
+          }
+        },
+        createdAt: true,
+        updatedAt: true,
+        shortDescription: true,
+        description: true,
+        published: true,
+      },
+
+    });
   }
 }
 

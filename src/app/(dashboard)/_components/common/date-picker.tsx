@@ -13,6 +13,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { SelectSingleEventHandler } from "react-day-picker"
+import { hu } from "date-fns/locale"
 
 interface DatePickerProps {
     date: Date | undefined
@@ -20,7 +21,6 @@ interface DatePickerProps {
     label: string,
     name?: string
 }
-
 export function DatePicker({ date, setDate, label }: DatePickerProps) {
 
   return (
@@ -35,7 +35,7 @@ export function DatePicker({ date, setDate, label }: DatePickerProps) {
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP") : <span>{label}</span>}
+          {date ? format(date, "PPP", { locale: hu}) : <span>{label}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
@@ -45,6 +45,7 @@ export function DatePicker({ date, setDate, label }: DatePickerProps) {
           onSelect={setDate}
           lang="hu"
         />
+        
       </PopoverContent>
     </Popover>
   )

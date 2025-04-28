@@ -1,6 +1,5 @@
 import { Prisma } from "@prisma/client";
 import { Service } from "./service";
-import { SignUpSchoolSkeletonDTO } from "@/lib/definitions";
 
 export class AuthService extends Service {
     constructor() {

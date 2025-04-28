@@ -32,7 +32,7 @@ const ForduloEditDialog = ({ stage }: { stage: Stage }) => {
     return (
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} modal>
             <DialogTrigger asChild>
-                <Button variant="ghost" size="sm" onClick={() => setIsEditDialogOpen(true)}>
+                <Button variant="outline" size="sm" onClick={() => setIsEditDialogOpen(true)}>
                     <EditIcon className="h-4 w-4 mr-1" />
                     Szerkesztés
                 </Button>
