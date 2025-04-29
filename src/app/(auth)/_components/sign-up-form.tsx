@@ -39,16 +39,11 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                     <div className="flex flex-col gap-6">
                         <div className="space-y-2">
                             <Label>Regisztrálás, mint:</Label>
-                            <RadioGroup name="role" className="grid grid-cols-2 gap-4" required defaultValue={state.inputs?.role}>
+                            <RadioGroup name="role" className="grid  gap-4" required defaultValue={state.inputs?.role}>
                                 <Label htmlFor="school" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary">
                                     <RadioGroupItem value="school" id="school" className="sr-only" />
                                     <SchoolIcon className="mb-3 h-6 w-6" />
                                     Szervezet
-                                </Label>
-                                <Label htmlFor="teacher" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary">
-                                    <RadioGroupItem value="teacher" id="teacher" className="sr-only" />
-                                    <UserIcon className="mb-3 h-6 w-6" />
-                                    Tanár
                                 </Label>
                             </RadioGroup>
                             {state.errors?.role && (
@@ -65,7 +60,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                         <Button type="submit" className="w-full" disabled={isPending}>
                             {isPending ? (
                                 <>
-                                    <LoaderCircle className="animate-spin" /> <span>Ellenőrzés...</span>
+                                    <LoaderCircle className="animate-spin" /> <span>Átirányítás...</span>
                                 </>
                             ) : (
                                 "Tovább"
@@ -74,11 +69,6 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                     </div>
                 </div>
             </form>
-
-            <footer className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
-                A folyatatással Ön elfogadja az {" "}
-                <a href="#">adatvédelmi irányelveinket</a>.
-            </footer>
         </div>
     );
 }

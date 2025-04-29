@@ -330,8 +330,6 @@ export const updateOngoingStageSchema = z.object({
     accessEndDate: z.string().optional(),
     evaluationStartDate: z.string().optional(),
     evaluationEndDate: z.string().optional(),
-    reevaluationStartDate: z.string().optional(),
-    reevaluationEndDate: z.string().optional()
 }).refine((val) => {
     if (val.accessEndDate) {
         const accessStartDate = new Date(val.accessStartDate);
@@ -350,16 +348,7 @@ export const updateOngoingStageSchema = z.object({
     return true;
 }, {
     message: "Az értékelési időszak kezdődátumának korábbinak kell lennie, mint az értékelési időszak végének dátuma!",
-}).refine((val) => {
-    if (val.reevaluationStartDate && val.reevaluationEndDate) {
-        const reevaluationStartDate = new Date(val.reevaluationStartDate);
-        const reevaluationEndDate = new Date(val.reevaluationEndDate);
-        return reevaluationStartDate < reevaluationEndDate;
-    }
-    return true;
-}, {
-    message: "Az újraértékelési időszak kezdődátumának korábbinak kell lennie, mint az újraértékelési időszak végének dátuma!",
-});
+})
 export type UpdateOngoingStageDTO = z.infer<typeof updateOngoingStageSchema>;
 
 export const saveEvaluationSchema = z

@@ -2,21 +2,15 @@
 
 import * as React from "react"
 import {
-  AudioWaveform,
-  Bot,
   Globe,
-  History,
+  HomeIcon,
   LayoutGrid,
-  PieChart,
-  Settings2,
   ShieldCheck,
   University,
-  UniversityIcon,
   Users2,
 } from "lucide-react"
 
 import { NavMain } from "./nav-main"
-import { TeamSwitcher } from "./team-switcher"
 import {
   Sidebar,
   SidebarContent,
@@ -26,43 +20,22 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar"
+import Icons from "@/components/icons"
 
 export const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Stromfeld Aurél Technikum",
-      logo: UniversityIcon,
-      role: "Adminisztrátor",
-    },
-    {
-      name: "Táncsics Mihály Technikum",
-      logo: AudioWaveform,
-      role: "Kapcsolattartó",
-    },
-  ],
   navMain: [
     {
-      title: "Analítika",
+      title: "Kezdőoldal",
       url: "/admin",
-      icon: PieChart,
+      icon: HomeIcon,
     },
   ],
   navCompetitions: [
     {
-      title: "Aktuális",
+      title: "Versenyek",
       url: "/admin/versenyek",
       icon: LayoutGrid,
     },
-    {
-      title: "Korábbi",
-      url: "/admin/versenyek/korabbi",
-      icon: History,
-    }
   ],
   navUserManagement: [
     {
@@ -91,10 +64,14 @@ export const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const sidebar = useSidebar();
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <div className="flex items-center justify-center mt-4 gap-2">
+          <Icons.logo className="h-8 w-auto" />
+          {sidebar.state !== "collapsed" && <span className="">IK Tehetség</span>}
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} label="Platform" />

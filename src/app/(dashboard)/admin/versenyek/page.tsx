@@ -13,7 +13,7 @@ const VersenyekAktualisPage = async () => {
     <div>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Aktuális versenyek</CardTitle>
+          <CardTitle>Versenyek</CardTitle>
         </CardHeader>
 
         <CardContent>

@@ -31,7 +31,6 @@ model User {
   updatedAt     DateTime   @updatedAt
   status        UserStatus @default(PENDING)
   files         File[]
-  sessions      Session[]
 
   memberships  OrganizationUser[]
   accounts     Account[]
@@ -47,15 +46,6 @@ enum UserStatus {
   PENDING
 }
 
-model Session {
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
 
 model Account {
   userId            String
@@ -91,7 +81,7 @@ model VerificationToken {
   @@unique([token])
 }
 
-model OrganizationCompetitionParticipation {
+model CompetitionOrganization {
   id             String              @id @default(cuid())
   competitionId  String
   organizationId String
@@ -127,7 +117,7 @@ model Organization {
   updatedAt    DateTime           @updatedAt
 
   members        OrganizationUser[]
-  participations OrganizationCompetitionParticipation[]
+  participations CompetitionOrganization[]
   students       SchoolStudent[]
   categoryStudents StudentCategory[]
   stageStudents  StudentStage[]
@@ -185,7 +175,7 @@ model Competition {
   published        Boolean           @default(false)
 
   categories   Category[]
-  participants OrganizationCompetitionParticipation[]
+  participants CompetitionOrganization[]
 }
 
 
@@ -227,9 +217,6 @@ model Stage {
   accessEndDate       DateTime?
   evaluationStartDate DateTime?
   evaluationEndDate   DateTime?
-  reevaluationStartDate DateTime?
-  reevaluationEndDate   DateTime?
-
   categoryId String
   published  Boolean  @default(false)
   order      Int      @default(0)
@@ -384,9 +371,6 @@ model Evaluation {
   stageStudent StudentStage @relation(fields: [stageStudentId], references: [id], onDelete: Cascade)
   evaluator   User @relation(fields: [evaluatorId], references: [id], onDelete: Cascade)
 
-  reevaluationId String?
-  reevaluation Evaluation? @relation("EvaluationToEvaluation", fields: [reevaluationId], references: [id], onDelete: Cascade)
-  reevaluations Evaluation[] @relation("EvaluationToEvaluation")
 
   @@unique([stageStudentId, taskId,evaluatorId])
 }

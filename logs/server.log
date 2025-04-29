@@ -1,0 +1,4 @@
+[4/29/2025, 9:14:32 PM] [INFO] [Seed] Szerepkörök sikeresen létrehozva! 
+[4/29/2025, 9:14:32 PM] [INFO] [Seed] Sikeres tanév létrehozása! 
+[4/29/2025, 9:14:32 PM] [INFO] [userSeeder] Super admin felhasználó létrehozva: (email: superadmin@test.local, jelszó: 12345678) 
+[4/29/2025, 9:14:32 PM] [INFO] [userSeeder] Admin szerepkör hozzáadva az org admin felhasználóhoz! 

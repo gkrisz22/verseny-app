@@ -31,7 +31,7 @@ export function StudentUploadForm({ student, onSuccess }: StudentUploadFormProps
       </div>
 
       <div className="grid gap-6">
-        <Select name="grade" defaultValue="">
+        <Select name="grade" defaultValue={student?.grade?.toString()}>
           <SelectTrigger>
             <SelectValue placeholder="Osztály" />
           </SelectTrigger>

@@ -168,21 +168,32 @@ export async function getCategoriesByCompetitionId(competitionId: string) {
 }
 
 export async function getCategoryById(id: string) {
-
     const session = await auth();
     if(!session || !session.user){
         return null;
     }
     
     const orgData = await getSessionOrganizationData();
-    if(!orgData){
+    if(!orgData && !session.user.superAdmin){
         return null;
     }
-    const schoolId = orgData.id;
 
     const res = await db.category.findUnique({
         where: {
             id,
+            ...((!session.user.superAdmin && orgData) && {
+                students: {
+                    some: {
+                        student: {
+                            schools: {
+                                some: {
+                                    schoolId: orgData.id
+                                }
+                            }
+                        }
+                    }
+                }
+            })
         },
         include: {
             stages: {
@@ -211,7 +222,7 @@ export async function getCategoryById(id: string) {
                         schools: {
                             some: {
                                 schoolId: {
-                                    equals: schoolId,
+                                    equals: orgData?.id
                                 }
                             }
                         }
@@ -308,22 +319,22 @@ export async function registerAsOrganization(competitionId: string) {
             throw new Error("Organization not found");
         }
     
-        const alreadyRegistered = await db.organizationCompetitionParticipation.findFirst({
-            where: {
-                competitionId,
-                organizationId,
-            }
+        const alreadyRegistered = await db.competitionOrganization.findFirst({
+          where: {
+            competitionId,
+            organizationId,
+          },
         });
         if(alreadyRegistered){
             throw new Error("Már regisztrált a kijelölt versenyre.");
         }
     
-        const res = await db.organizationCompetitionParticipation.create({
-            data: {
-              competitionId,
-              organizationId,
-              userId: user[0].id
-            }
+        const res = await db.competitionOrganization.create({
+          data: {
+            competitionId,
+            organizationId,
+            userId: user[0].id,
+          },
         });
 
         revalidatePath("/org");
@@ -341,13 +352,13 @@ export async function registerAsOrganization(competitionId: string) {
 }
 
 export async function getRegisteredOrganizations(competitionId: string) {
-    const res = await db.organizationCompetitionParticipation.findMany({
-        where: {
-            competitionId,
-        },
-        include: {
-            organization: true,
-        }
+    const res = await db.competitionOrganization.findMany({
+      where: {
+        competitionId,
+      },
+      include: {
+        organization: true,
+      },
     });
     return res;
 }

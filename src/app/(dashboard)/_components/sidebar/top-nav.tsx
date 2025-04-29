@@ -33,14 +33,10 @@ const TopNav = ({ user }: { user: User | undefined }) => {
               <span className="sr-only">Következő oldal</span>
             </Button>
           </div>
-          {/* <Breadcrumb /> */}
           <Separator orientation="vertical" className="md:hidden mr-2 h-4 bg-muted-foreground/80" />
         </div>
 
         <div className="flex items-center gap-2">
-          <Button size="sm" variant="outline" className="hidden md:block">
-            Levelezés
-          </Button>
           <NavUser user={user} />
         </div>
       </div>

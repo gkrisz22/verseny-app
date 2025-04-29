@@ -267,17 +267,12 @@ export async function updateOngoinStage(
                     accessStartDate,
                     accessEndDate,
                     evaluationStartDate,
-                    evaluationEndDate,
-                    reevaluationStartDate,
-                    reevaluationEndDate,
                 } = data;
                 await stageService.update(data.id, {
                     accessStartDate,
                     accessEndDate: accessEndDate || null,
                     evaluationStartDate: evaluationStartDate || null,
-                    evaluationEndDate: evaluationEndDate || null,
-                    reevaluationStartDate: reevaluationStartDate || null,
-                    reevaluationEndDate: reevaluationEndDate || null,
+                    evaluationEndDate: data.evaluationEndDate || null,
                 });
             } catch (error) {
                 if (error instanceof Error) {
@@ -314,7 +309,6 @@ export async function assignSolutionToStudent(
             studentStageId,
             files,
         });
-        console.log("Validated data: ", validatedData);
 
         if (!validatedData.success) {
             return false;
@@ -327,7 +321,7 @@ export async function assignSolutionToStudent(
         const getStudentFiles = await studentService.getStudentStageFiles(
             validatedData.data.studentStageId
         );
-        console.log("Get student files: ", getStudentFiles);
+
         const to_delete = getStudentFiles.filter(
             (file) => !newFiles.includes(file.fileId)
         );
@@ -336,12 +330,10 @@ export async function assignSolutionToStudent(
             validatedData.data.studentStageId,
             newFiles
         );
-        console.log("To delete: ", to_delete);
         await studentService.removeStudentStageFiles(
             validatedData.data.studentStageId,
             to_delete.map((file) => file.fileId)
         );
-        console.log("Files assigned to student: ", newFiles);
     } catch (error) {
         if (error instanceof Error) {
             logger.error("[assignSolutionToStudent] ", error);

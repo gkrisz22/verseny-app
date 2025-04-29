@@ -14,7 +14,7 @@ const SetDeadlines = ({ stage }: { stage: Stage }) => {
     return (
         <form className="space-y-4" action={action}>
             <input type="hidden" name="id" value={stage.id} />
-            <div className="grid md:lg-grid-cols-2 lg:grid-cols-3 gap-4 items-start">
+            <div className="grid md:lg-grid-cols-2   gap-4 items-start">
                 <div className="grid grid-cols-1 gap-4">
                     <Label htmlFor="accessDate" className="inline-flex items-center">
                         <EyeIcon className="mr-1 size-4" /> Hozzáférési dátum
@@ -58,28 +58,6 @@ const SetDeadlines = ({ stage }: { stage: Stage }) => {
                     />
                     <small className="text-muted-foreground">
                         A forduló értékelése ekkor kezdődik és eddig tart.
-                    </small>
-                </div>
-                <div className="grid grid-cols-1 gap-4">
-                    <Label htmlFor="reevaluationStartDate" className="inline-flex items-center">
-                        <EditIcon className="mr-1 size-4" /> Felülértékelés dátum
-                    </Label>
-                    <FormField
-                        type="date"
-                        name="reevaluationStartDate"
-                        id="reevaluationDate"
-                        label="Újraértékelési dátum"
-                        defaultValue={state?.inputs?.reevaluationStartDate || stage.reevaluationStartDate || ""}
-                    />
-                    <FormField
-                        type="date"
-                        name="reevaluationEndDate"
-                        id="reevaluationEndDate"
-                        label="Újraértékelési dátum vége"
-                        defaultValue={state?.inputs?.reevaluationEndDate || stage.reevaluationEndDate || ""}
-                    />
-                    <small className="text-muted-foreground">
-                        A forduló újraértékelése ekkor kezdődik és eddig tart.
                     </small>
                 </div>
             </div>

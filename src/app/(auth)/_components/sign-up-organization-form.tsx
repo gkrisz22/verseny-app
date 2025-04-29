@@ -36,11 +36,11 @@ const SignUpOrganizationForm = () => {
     };
 
     return (
-        <form ref={formRef} action={action} className="w-full max-w-lg mx-auto border rounded-xl flex flex-col gap-4 p-4 lg:p-6 shadow bg-background">
+        <form ref={formRef} action={action} className="mt-12 w-full max-w-lg mx-auto border rounded-xl flex flex-col gap-4 p-4 lg:p-6 shadow bg-background">
             <div className="mb-4">
-                <h1 className="text-lg font-medium">1/2. lépés: Iskola adatai</h1>
+                <h1 className="text-lg font-medium">Szervezet adatai</h1>
                 <p className="text-sm text-muted-foreground">
-                    Kérjük, adja meg az iskola adatait.
+                    Kérjük, adja meg a szervezet (iskola) adatait.
                 </p>
             </div>
             

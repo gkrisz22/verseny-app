@@ -87,13 +87,7 @@ export function SignInForm({
 
         </CardContent>
       </Card>
-      <div className="text-balance text-center text-sm text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary  ">
-        A folyatatással Ön elfogadja az{" "}
-        <a href="#" className="underline underline-offset-4">
-          Adatvédelmi irányelveket
-        </a>
-        .
-      </div>
+
     </div>
   )
 }

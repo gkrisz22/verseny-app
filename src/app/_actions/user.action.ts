@@ -87,7 +87,7 @@ export async function updateUser(
                 const res = await userService.update(data.id, {
                     name,
                     email,
-                    superAdmin: superAdmin ? true : false,
+                    superAdmin: superAdmin === "true" ? true : false,
                     status: data.isActive ? "ACTIVE" : "INACTIVE",
                 });
                 if (res) {

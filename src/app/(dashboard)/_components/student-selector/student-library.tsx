@@ -168,11 +168,9 @@ export function StudentLibrary({
 
     function toggleSelectAll() {
         if (selectedIds.size === filteredStudents.length) {
-            // Deselect all
             setSelectedIds(new Set());
             updateSelectedStudents(new Set());
         } else {
-            // Select all
             const newSelectedIds = new Set(filteredStudents.map((s) => s.id));
             setSelectedIds(newSelectedIds);
             updateSelectedStudents(newSelectedIds);
@@ -340,14 +338,13 @@ export function StudentLibrary({
                 </Table>
             </div>
 
-            {/* Edit Student Dialog */}
             <Dialog
                 open={!!editingStudent}
                 onOpenChange={(open) => !open && setEditingStudent(null)}
             >
                 <DialogContent className="sm:max-w-[600px]">
                     <DialogHeader>
-                        <DialogTitle>Edit Student</DialogTitle>
+                        <DialogTitle>Diák adatainak szerkesztése</DialogTitle>
                     </DialogHeader>
                     {editingStudent && (
                         <StudentUploadForm
@@ -358,19 +355,18 @@ export function StudentLibrary({
                 </DialogContent>
             </Dialog>
 
-            {/* Delete Confirmation Dialog */}
             <AlertDialog
                 open={!!studentToDelete}
                 onOpenChange={(open) => !open && setStudentToDelete(null)}
             >
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogTitle>Biztosan törli a kijelölt diákot?</AlertDialogTitle>
                         <AlertDialogDescription>Törlés</AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel disabled={isDeleting}>
-                            Cancel
+                            Mégsem
                         </AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleDeleteStudent}

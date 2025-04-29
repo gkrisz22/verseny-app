@@ -67,23 +67,25 @@ export class CompetitionService extends Service implements CrudService<Competiti
   }
 
   getOrganizations(id: string) {
-    return this.db.organizationCompetitionParticipation.findMany({
+    return this.db.competitionOrganization.findMany({
       where: {
         competitionId: id,
       },
       include: {
         organization: true,
-      }
+      },
     });
   }
 
   hasOrganization(id: string, organizationId: string) {
-    return this.db.organizationCompetitionParticipation.findMany({
-      where: {
-        competitionId: id,
-        organizationId,
-      },
-    }).then((participations) => participations.length > 0);
+    return this.db.competitionOrganization
+      .findMany({
+        where: {
+          competitionId: id,
+          organizationId,
+        },
+      })
+      .then((participations) => participations.length > 0);
   }
 
   getCurrentCompetitions(academicYear:AcademicYear, onlyPublished = true) {
