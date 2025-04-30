@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { MailIcon, RotateCwIcon } from "lucide-react";
 import { signUpSchoolSkeleton } from "@/app/_actions/auth.action";
 import Icons from "@/components/icons";
+import FormField from "@/app/(dashboard)/_components/common/form-field";
 
 
 const SignUpOrganizationForm = () => {
@@ -190,6 +191,17 @@ const SignUpOrganizationForm = () => {
                             </p>
                         }
                     </div>
+                </div>
+                <div className="grid gap-2">
+                    <FormField
+                    id="contactEmail"
+                    name="contactEmail"
+                    type="email"
+                    label="Kapcsolattartó e-mail"
+                    required
+                    defaultValue={state?.inputs?.contactEmail}
+                    errors={state?.errors?.contactEmail}
+                    />
                 </div>
             </div>
 

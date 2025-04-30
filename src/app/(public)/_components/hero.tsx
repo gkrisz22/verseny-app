@@ -34,7 +34,7 @@ export default function HeroSection() {
                 <div className="mt-5 max-w-2xl">
                   <h1 className="scroll-m-20 font-medium font-heading text-4xl tracking-tight lg:text-5xl">
                     <TextAnimate animation="blurInUp" by="character" once duration={0.8}>
-                      IK Tehetség
+                      Verseny App
                     </TextAnimate>
                   </h1>
                 </div>
@@ -42,7 +42,7 @@ export default function HeroSection() {
                 <div className="mt-5 max-w-3xl">
                   <div className="text-lg text-muted-foreground">
                     <TextAnimate animation="fadeIn" by="line" once duration={0.8}>
-                        Az ELTE Informatikai Karának tehetséggondozó programja, ahol minden diák egyenlő esélyekkel indulhat.
+                        Az ELTE Informatikai Karának tehetséggondozó programja.
                     </TextAnimate>
                   </div>
                 </div>

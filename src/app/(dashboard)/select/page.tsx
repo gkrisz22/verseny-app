@@ -18,7 +18,6 @@ export default async function OrganizationsPage() {
     }
     const userOrganizations = await getUserOrganizationData(user.id);
 
-    console.log("session", session);
 
     return (
         <div className="min-h-screen p-4 md:p-8">

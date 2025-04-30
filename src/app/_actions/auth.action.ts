@@ -95,6 +95,7 @@ export const signUpSchoolSkeleton = async (
                 city: data.city,
                 postalCode: data.postalCode,
                 address: data.address,
+                contactEmail: data.contactEmail,
             });
             if (!org) {
                 return {

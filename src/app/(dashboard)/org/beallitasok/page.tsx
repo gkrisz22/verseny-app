@@ -60,7 +60,7 @@ export default async function SettingsPage() {
             </div>
             <LocalOrgSettingsMenu>
                 <TabsContent value="profil">
-                    <OrgDataManagement organization={organization} />
+                    <OrgDataManagement organization={organization} isAdmin={false} />
                 </TabsContent>
 
                 <TabsContent value="felhasznalok">

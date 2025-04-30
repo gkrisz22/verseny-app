@@ -9,7 +9,7 @@ const SignInPage = () => {
           <div className="flex size-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
             <Icons.logo className="size-8" />
           </div>
-          ELTE IK Tehetség
+          Verseny App
         </a>
         <SignInForm />
       </div>

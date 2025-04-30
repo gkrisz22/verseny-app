@@ -2,3 +2,5 @@
 [4/29/2025, 9:14:32 PM] [INFO] [Seed] Sikeres tanév létrehozása! 
 [4/29/2025, 9:14:32 PM] [INFO] [userSeeder] Super admin felhasználó létrehozva: (email: superadmin@test.local, jelszó: 12345678) 
 [4/29/2025, 9:14:32 PM] [INFO] [userSeeder] Admin szerepkör hozzáadva az org admin felhasználóhoz! 
+[30/04/2025, 11:28:23] [ERROR] [signInAction] Read more at https://errors.authjs.dev#callbackrouteerror 
+[30/04/2025, 11:28:24] [ERROR] [signInAction] Read more at https://errors.authjs.dev#callbackrouteerror 

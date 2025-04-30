@@ -29,7 +29,7 @@ export const columns: ColumnDef<Stage>[] = [
         checked={row.getIsSelected()}
         className="rounded"
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
+        aria-label="Sor kiválasztása"
       />
     ),
     enableSorting: false,

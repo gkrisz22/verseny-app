@@ -23,7 +23,7 @@ export const getNormalUsers = async () => {
 };
 
 export const getUserOrganizationData = async (id: string): Promise<{ organization: Organization, roles: {name: string, description:string}[] }[]> => {
-    const res = await orgService.getUserOrgsWithRoles(id);
+    const res = await orgService.getUserOrgsWithRoles(id, { status: "ACTIVE"});
 
     if(res.length === 0) {
         return [];

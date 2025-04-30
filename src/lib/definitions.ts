@@ -41,6 +41,7 @@ export const signUpSchoolSkeletonSchema = z.object({
     auth: z.enum(["email", "google", "github"]).refine((val) => !!val, {
         message: "Szerepkör megadása kötelező!",
     }),
+    contactEmail: z.string().nonempty("Kapcsolattartó e-mail cím megadása kötelező!").email("Hibás e-mail cím formátum!"),
 });
 export type SignUpSchoolSkeletonDTO = z.infer<typeof signUpSchoolSkeletonSchema>;
 
@@ -54,6 +55,7 @@ export const organizationSchema = z.object({
     postalCode: z.string().nonempty("Irányítószám megadása kötelező!"),
     city: z.string().nonempty("Város megadása kötelező!"),
     address: z.string().nonempty("Cím megadása kötelező!"),
+    contactEmail: z.string().nonempty("Kapcsolattartó e-mail cím megadása kötelező!").email("Hibás e-mail cím formátum!"),
 });
 export type OrganizationDTO = z.infer<typeof organizationSchema>;
 
@@ -402,6 +404,8 @@ export const organizationUpdateSchema = organizationSchema.extend({
     {
         message: "A telefonszám formátuma hibás! Jó formátum: +36 1 234 5678.",
     }),
+    id: z.string().optional(),
+    isActive: z.string().optional(),
 }).refine((val) => {
     const website = val.website;
     return website === "" || website?.startsWith("http://") || website?.startsWith("https://");

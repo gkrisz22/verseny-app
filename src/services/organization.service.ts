@@ -152,7 +152,7 @@ export class OrganizationService extends Service {
         });
     }
 
-    async getUserOrgsWithRoles(userId: string) {
+    async getUserOrgsWithRoles(userId: string, where:Prisma.OrganizationWhereInput = {}) {
         return this.db.organization.findMany({
             where: {
                 members: {
@@ -160,6 +160,7 @@ export class OrganizationService extends Service {
                         userId,
                     },
                 },
+                ...where,
             },
             include: {
                 members: {

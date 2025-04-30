@@ -70,7 +70,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <div className="flex items-center justify-center mt-4 gap-2">
           <Icons.logo className="h-8 w-auto" />
-          {sidebar.state !== "collapsed" && <span className="">IK Tehetség</span>}
+          {sidebar.state !== "collapsed" && <span className="">Verseny App</span>}
         </div>
       </SidebarHeader>
       <SidebarContent>

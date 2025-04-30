@@ -1,4 +1,4 @@
-import { Category, Competition, Prisma, Stage } from "@prisma/client";
+import { Category, Competition, Organization, Prisma, Stage } from "@prisma/client";
 import { Service } from "./service";
 import { Mailer } from "@/lib/mailer.lib";
 
@@ -102,6 +102,16 @@ export class MailerService extends Service {
             return;
         }
         return await this.mailer.sendEmail(recipients, subject, html);
+    }
+    
+    async sendOrganizationAcceptedEmail(organization:Organization) {
+
+        const subject = 'Szervezet jóváhagyva';
+        const html = `
+          <p>A(z) ${organization.name} szervezet regisztrációját elfogadtuk. Kérjük, jelentkezzen be a rendszerbe:</p>
+          <a href="${process.env.URL}/sign-in">Bejelentkezés</a>
+        `;
+        return await this.mailer.sendEmail(organization.contactEmail!, subject, html);
     }
 
 }

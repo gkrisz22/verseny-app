@@ -25,7 +25,7 @@ export interface IFormField {
     rows?: number;
     min?: number;
     max?: number;
-    options?: { value: string; label: string }[]; // Add options for select type
+    options?: { value: string; label: string }[]; 
 }
 
 const FormField: React.FC<IFormField> = (

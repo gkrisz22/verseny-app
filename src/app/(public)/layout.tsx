@@ -34,8 +34,7 @@ const fonts = [
 ];
 
 export const metadata: Metadata = {
-  title: "IK Tehetség",
-  description: "Az ELTE Informatikai Karának tehetséggondozó programja, ahol minden diák egyenlő esélyekkel indulhat"
+  title: "Verseny App",
 };
 
 export default function RootLayout({

@@ -70,7 +70,7 @@ export function NavigationBar() {
           <div className="flex items-center space-x-4">
             <Link href="/" passHref className="flex items-center space-x-2">
               <Icons.logo className="h-8 w-8" />
-              <span className="text-lg font-medium">ELTE IK Tehetség</span>
+              <span className="text-lg font-medium">Verseny App</span>
             </Link>
           </div>
           <NavigationMenu className="text-lg ml-16">

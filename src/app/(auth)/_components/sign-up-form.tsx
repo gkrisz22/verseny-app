@@ -23,10 +23,10 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                             <div className="flex size-10 lg:size-14 items-center justify-center rounded-md">
                                 <Icons.logo className="size-10 lg:size-14" />
                             </div>
-                            <span className="sr-only">ELTE IK Tehetség</span>
+                            <span className="sr-only">Verseny App</span>
                         </Link>
                         <h1 className="text-lg md:text-xl lg:text-2xl font-medium text-center">
-                            Üdvözöljük az IK Tehetség felületén!
+                            Üdvözöljük a Verseny App felületén!
                         </h1>
                         <div className="text-center text-sm">
                             Már regisztrált?{" "}

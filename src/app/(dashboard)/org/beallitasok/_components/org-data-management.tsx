@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import FormField, { IFormField } from "@/app/(dashboard)/_components/common/form-field";
 import { useActionForm } from "@/hooks/use-action-form";
 import { updateOrganizationData } from "@/app/_actions/organization.action";
-import { toast } from "sonner";
 import { Organization } from "@prisma/client";
 import regions from "@/lib/regions.json";
 
@@ -105,46 +104,70 @@ const formFields:IFormField[] = [
 ];
 
 
-const OrgDataManagement = ({ organization}: {organization:Organization} ) => {
+const OrgDataManagement = ({ organization, isAdmin = false}: {organization:Organization, isAdmin: boolean} ) => {
     const [state, action, isPending] = useActionForm(updateOrganizationData);
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Szervezeti adatok</CardTitle>
-                <CardDescription>
-                    Itt módosíthatja szervezete nevét, leírását és egyéb adatait.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <form className="grid gap-4 md:grid-cols-2" action={action}>
-                    {formFields.map(field => (
-                        <FormField
-                            key={field.id}
-                            type={field.type}
-                            name={field.name}
-                            id={field.id}
-                            label={field.label}
-                            placeholder={field.placeholder}
-                            colSpan={field.colSpan}
-                            Icon={field.Icon}
-                            errors={state.errors?.[field.name as keyof typeof state.errors] || []}
-                            required={field.required}
-                            defaultValue={state.inputs?.[field.name as keyof typeof state.inputs] || organization[field.name as keyof Organization] || ""}
-                            options={field.options}
-                            />
-                        )
-                    )}
-                    
-                    <div className="col-span-2 flex justify-end">
-                        <Button type="submit" variant="default" disabled={isPending} className="w-fit">
-                            <Save className="mr-2 h-4 w-4" />
-                            Mentés
-                        </Button>
-                    </div>
-                </form>
-            </CardContent>
-        </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Szervezeti adatok</CardTitle>
+          <CardDescription>
+            Itt módosíthatja szervezete nevét, leírását és egyéb adatait.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form className="grid gap-4 md:grid-cols-2" action={action}>
+            {formFields.map((field) => (
+              <FormField
+                key={field.id}
+                type={field.type}
+                name={field.name}
+                id={field.id}
+                label={field.label}
+                placeholder={field.placeholder}
+                colSpan={field.colSpan}
+                Icon={field.Icon}
+                errors={
+                  state.errors?.[field.name as keyof typeof state.errors] || []
+                }
+                required={field.required}
+                defaultValue={
+                  state.inputs?.[field.name as keyof typeof state.inputs] ||
+                  organization[field.name as keyof Organization] ||
+                  ""
+                }
+                options={field.options}
+              />
+            ))}
+
+            {isAdmin && (
+              <>
+                <FormField
+                  type="switch"
+                  name="isActive"
+                  id="isActive"
+                  label="Szervezet aktív"
+                  placeholder="Szervezet aktív"
+                  colSpan={2}
+                />
+                <input type="hidden" name="id" value={organization.id} />
+              </>
+            )}
+
+            <div className="col-span-2 flex justify-end">
+              <Button
+                type="submit"
+                variant="default"
+                disabled={isPending}
+                className="w-fit"
+              >
+                <Save className="mr-2 h-4 w-4" />
+                Mentés
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     );
 };
 

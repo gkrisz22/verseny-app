@@ -21,6 +21,8 @@ import authMiddleware from "@/middlewares/auth.middleware";
 import mailerService from "@/services/mailer.service";
 import authService from "@/services/auth.service";
 import { v4 as uuidv4 } from "uuid";
+import { auth } from "@/auth";
+import { OrganizationStatus } from "@prisma/client";
 
 export const saveRolePreference = async (role: string) => {
     if (!isLoggedIn()) {
@@ -157,15 +159,55 @@ export async function updateOrganizationData(
         formData,
         async (data) => {
             try {
-                const orgData = await getSessionOrganizationData();
-                if (!orgData) {
-                    return {
-                        success: false,
-                        message: "Nincs szervezet kiválasztva.",
-                    };
+                const session = await auth();
+                if (!session || !session.user) {
+                    throw new Error("Nincs bejelentkezve.");
                 }
-                const orgId = orgData.id;
-                await orgService.update(orgId, data);
+                const superAdmin = data.isActive !== undefined && !session.user.superAdmin;
+                let updateData = null;
+                let sendMail = false;
+                let org = null;
+                if (!session.user.superAdmin){
+                  const orgData = await getSessionOrganizationData();
+                  if (!orgData) {
+                    return {
+                      success: false,
+                      message: "Nincs szervezet kiválasztva.",
+                    };
+                  }
+                  // data without isActive and id:
+                  updateData = {...data,id: orgData.id};
+                }
+                else {
+                    if (!data.id) {
+                      throw new Error("Nincs kiválasztva szervezet.");
+                    }
+
+                    org = await orgService.get(data.id);
+                    if (!org) {
+                        throw new Error("Szervezet nem található.");
+                    }
+
+                    if(org.status === "PENDING") {
+                        sendMail = true;
+                    }
+                    const isActive = data.isActive === "true";
+                    data.isActive = undefined;
+                    updateData = {
+                        ...data,
+                        id: data.id,
+                        status: isActive ? ("ACTIVE" as OrganizationStatus) : ("INACTIVE" as OrganizationStatus),
+                    };
+
+                }
+                await orgService.update(updateData.id!, updateData);
+
+                if (sendMail && org) {
+                    const sent = await mailerService.sendOrganizationAcceptedEmail(org);
+                    if(!sent) {
+                        throw new Error("Nem sikerült elküldeni az e-mailt, de a szervezet létre lett hozva.");
+                    }
+                }
             } catch (e) {
                 if (e instanceof Error) {
                     logger.error(e.message);

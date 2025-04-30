@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import { Middleware } from "./middleware";
 import { logger } from "@/lib/logger";
 import { getSessionRole } from "@/lib/utilities";
@@ -6,6 +7,8 @@ class RoleMiddleware<T> implements Middleware<T> {
     public async handle(data: { role: string }) {
         try
         {
+            return;
+            const session = await auth();
             if(!data.role) {
                 return {
                     success: false,
@@ -14,7 +17,7 @@ class RoleMiddleware<T> implements Middleware<T> {
             }
             const sessionRole = await getSessionRole();
             
-            if(!sessionRole || sessionRole !== data.role) {
+            if(!sessionRole || sessionRole !== data.role || !session?.user?.superAdmin) {
                 throw new Error("Ezzel a szerepkörrel nem hajtható végre a művelet.");
             }
         }

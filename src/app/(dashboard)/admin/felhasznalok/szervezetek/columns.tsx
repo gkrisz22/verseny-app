@@ -1,14 +1,15 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Mail } from "lucide-react";
+import { ArrowRight, Mail } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import DataTableSortableHeader from "@/app/(dashboard)/_components/common/data-table-sortable-header";
-import { Organization } from "@prisma/client";
+import { Organization, OrganizationStatus } from "@prisma/client";
 import regions from "@/lib/regions.json";
+import { Badge } from "@/components/ui/badge";
 
 
 export const columns: ColumnDef<Organization & { _count: { members: number } }> [] = [
@@ -30,7 +31,7 @@ export const columns: ColumnDef<Organization & { _count: { members: number } }> 
         checked={row.getIsSelected()}
         className="rounded"
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
+        aria-label="Sor kiválasztása"
       />
     ),
     enableSorting: false,
@@ -75,7 +76,7 @@ export const columns: ColumnDef<Organization & { _count: { members: number } }> 
       const data = row.original;
       return (
         <div className="flex items-center gap-2 pl-2">
-          <span>{data.status}</span>
+          <span><OrganizationStatusBadge status={data.status} /></span>
         </div>
       );
     }
@@ -98,20 +99,27 @@ export const columns: ColumnDef<Organization & { _count: { members: number } }> 
       const data = row.original;
 
       return (
-        <Link href={``}>
-        <Button
-          variant="secondary"
-          size="sm"
-          className="flex items-center"
-            onClick={(e) => {
-                e.stopPropagation();
-            }}
-        >
-            <Mail className="h-4 w-4" />
-            <span className="">Értesítés</span>
-        </Button>   
+        <Link href={`/admin/felhasznalok/szervezetek/${data.id}`}>
+          <Button
+            variant="outline"
+            size="sm"
+            >
+              Részletek <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>   
         </Link>
       );
     },
   },
 ];
+
+export const OrganizationStatusBadge = ({status}: {status:OrganizationStatus}) => {
+  switch (status) {
+    case "ACTIVE":
+      return <Badge variant="default">Aktív</Badge>;
+    case "INACTIVE":
+      return <Badge variant="destructive">Inaktív</Badge>;
+    case "PENDING":
+      return <Badge variant="outline">Függőben</Badge>;
+  }
+  return <Badge variant="outline">Ismeretlen</Badge>;
+}
