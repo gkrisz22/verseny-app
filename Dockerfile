@@ -18,6 +18,8 @@ COPY . .
 # 6. Prisma kliens generálása (adatbázis-kliens inicializálása)
 RUN npx prisma generate
 
+RUN npx prisma db push --accept-data-loss && npx prisma db seed
+
 # 7. Next.js build
 RUN npm run build
 
