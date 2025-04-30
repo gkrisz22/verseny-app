@@ -1,8 +1,7 @@
-import { getCategoryById } from '@/app/_actions/competition.action';
 import React from 'react'
 import { Separator } from '@/components/ui/separator';
 import { TabsContent } from '@/components/ui/tabs';
-import { getEligibleGrades } from '@/app/_data/category.data';
+import { getCategoryById, getEligibleGrades } from '@/app/_data/category.data';
 import EligibilityForm from './beallitasok/eligibility-form';
 import { EyeIcon, EyeOffIcon} from 'lucide-react';
 import KategoriaMetadataForm from './beallitasok/metadata-form';
@@ -17,7 +16,7 @@ const VersenyKategoriaDetailsPage = async ({ params }: { params: Promise<{ cat_i
     const category = await getCategoryById(id);
 
     if (!category) {
-        return <div>Loading...</div>
+        return <div>Nem található</div>
     }
 
     const eligibleGrades = await getEligibleGrades(id);
@@ -33,7 +32,7 @@ const VersenyKategoriaDetailsPage = async ({ params }: { params: Promise<{ cat_i
                         {category.name}
                     </h1>
                     <p className='text-muted-foreground text-sm'>
-                        {category.eligibleGrades.join(', ')}. osztályok számára
+                        {category.eligibleGrades.length > 0 && category.eligibleGrades.join(', ') + ' osztály(ok)'}
                     </p>
                     <p className='text-muted-foreground'>
                         Kategória részletei és beállításai itt jelennek meg.

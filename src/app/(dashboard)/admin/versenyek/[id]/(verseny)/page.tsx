@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { getCategoriesByCompetitionId } from "@/app/_actions/competition.action";
 import React, { Suspense } from "react";
 import { getCompetitionById } from "@/app/_data/competition.data";
 import CardTitle from "@/app/(dashboard)/_components/common/card-title";
@@ -16,6 +15,7 @@ import VersenyBeallitasokForm from "./_components/verseny-beallitasok-form";
 import LocalCompetitionMenu from "./_components/local-competition-menu";
 import { DeleteCompetitionDialog } from "./_components/delete-competition-dialog";
 import { ShowCompetitionBadge } from "@/app/(dashboard)/_components/competition/show-competition-badge";
+import { getCategoriesByCompetitionId } from "@/app/_data/category.data";
 
 
 const VersenyDetailsPage = async ({

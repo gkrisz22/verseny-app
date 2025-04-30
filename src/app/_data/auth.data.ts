@@ -17,7 +17,6 @@ export const validateToken = async (token: string) => {
             message: "Felhasználó nem található."
         }
     }
-
     return {
         success: true,
         data: {

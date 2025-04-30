@@ -1,9 +1,9 @@
-import { getStageById } from '@/app/_actions/competition.action';
 import React from 'react'
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { getTaskGroups } from '@/app/_data/task.data';
 import EvaluationTable from './_components/evaluation/evaluation-table';
+import { getStageById } from '@/app/_data/stage.data';
 
 const ForduloFeladatErtekelo = async ({
   params,
@@ -15,7 +15,7 @@ const ForduloFeladatErtekelo = async ({
   const stage = await getStageById(stage_id);
 
   if (!stage) {
-    return <div>Loading...</div>;
+    return <div>Nem található a forduló</div>;
   }
   const taskGroups = await getTaskGroups(stage_id) || [];
   console.log("taskGroups", taskGroups);

@@ -15,10 +15,13 @@ import {
 } from "@/lib/definitions";
 import { logger } from "@/lib/logger";
 import { isLoggedIn } from "@/lib/utilities";
+import categoryService from "@/services/category.service";
+import competitionService from "@/services/competition.service";
+import mailerService from "@/services/mailer.service";
 import stageService from "@/services/stage.service";
 import studentService from "@/services/student.service";
 import { ActionResponse } from "@/types/form/action-response";
-import { TaskFormData } from "@/types/form/competition";
+import { StageFormData, TaskFormData } from "@/types/form/competition";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -89,6 +92,47 @@ export async function assignTask(
     };
 }
 
+
+
+export async function createStage(prevState: ActionResponse<StageFormData>, formData: FormData): Promise<ActionResponse<StageFormData>> {
+    const rawData = Object.fromEntries(formData.entries());
+
+    const stageSchema = z.object({
+        name: z.string().min(3, "Túl rövid a forduló neve"),
+        categoryId: z.string().nonempty("Kategória azonosító nem lehet üres"),
+    });
+
+    const validatedData = stageSchema.safeParse(rawData);
+
+    if(!validatedData.success){
+        return {
+            success: false,
+            message: "Validációs hibák történtek.",
+            errors: validatedData.error.flatten().fieldErrors,
+            inputs: validatedData.data
+        };
+    }
+
+    const { name, categoryId } = validatedData.data;
+
+    const res = await db.stage.create({
+        data: {
+            name,
+            categoryId,
+            description: "",
+            startDate: new Date(),
+            endDate: new Date(),
+        },
+    });
+
+    revalidatePath("/");
+
+    return {
+        success: true,
+        message: "Forduló létrehozva.",
+    }
+}
+
 export async function updateStage(
     prevState: ActionResponse<EditStageDTO>,
     formData: FormData
@@ -135,16 +179,34 @@ export async function closeStage(
         closeStageSchema,
         formData,
         async (data) => {
-            const update = await stageService.update(data.stageId, {
-                minPoints: parseInt(data.points),
-                status: "FINISHED",
-            });
-            if (!update) {
-                return {
-                    success: false,
-                    message: "Hiba történt a forduló módosítása közben.",
-                    inputs: data,
-                };
+            try {
+                const update = await stageService.update(data.stageId, {
+                    minPoints: parseInt(data.points),
+                    status: "FINISHED",
+                });
+                if (!update) {
+                    throw new Error("Hiba történt a forduló módosítása közben.")
+                }
+
+                const category = await categoryService.get(update.categoryId);
+                if (!category) {
+                    throw new Error("Nem található a forduló kategóriája.");
+                }
+                const competition = await competitionService.get(category.competitionId);
+                if(!competition) {
+                    throw new Error("Nem található a forduló versenye!")
+                }
+                await mailerService.sendStageEndEmail(competition, category, update);
+            }
+            catch (error) { 
+                if (error instanceof Error) {
+                    logger.error("[closeStage] ", error);
+                    return {
+                        success: false,
+                        message: error.message,
+                        inputs: data,
+                    };
+                }
             }
 
             revalidatePath("/");
@@ -234,6 +296,16 @@ export async function openStage(
                     data.stageId,
                     students
                 );
+
+                const category = await categoryService.get(update.categoryId);
+                if (!category) {
+                    throw new Error("Nem található a forduló kategóriája.");
+                }
+                const competition = await competitionService.get(category.competitionId);
+                if(!competition) {
+                    throw new Error("Nem található a forduló versenye!")
+                }
+                await mailerService.sendStageStartEmail(competition, category, update);
             } catch (error) {
                 if (error instanceof Error) {
                     logger.error("[openStage] ", error);
@@ -254,7 +326,7 @@ export async function openStage(
     );
 }
 
-export async function updateOngoinStage(
+export async function updateOngoingStage(
     prevState: ActionResponse<UpdateOngoingStageDTO>,
     formData: FormData
 ): Promise<ActionResponse<UpdateOngoingStageDTO>> {
@@ -276,7 +348,7 @@ export async function updateOngoinStage(
                 });
             } catch (error) {
                 if (error instanceof Error) {
-                    logger.error("[updateOngoinStage] ", error);
+                    logger.error("[updateOngoingStage] ", error);
                     return {
                         success: false,
                         message: error.message,

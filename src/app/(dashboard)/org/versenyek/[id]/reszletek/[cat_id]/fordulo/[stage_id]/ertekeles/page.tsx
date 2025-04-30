@@ -1,7 +1,6 @@
 import React from 'react'
 import { getTaskGroups } from '@/app/_data/task.data';
-import { getStageById } from '@/app/_actions/competition.action';
-import { getStageStudents, getStageStudentsByOrganization } from '@/app/_data/stage.data';
+import { getStageById, getStageStudentsByOrganization } from '@/app/_data/stage.data';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -17,7 +16,15 @@ export default async function OrgErtekelesPage({ params }: Props) {
     if (!stage_id) return null;
     const stage = await getStageById(stage_id);
 
-    if (!stage) return null;
+    if (!stage) return <>
+        <div className="flex justify-center items-center h-screen">
+            <div className="text-center">
+                <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
+                    Forduló nem található
+                </h1>
+            </div>
+        </div>
+    </>
     const taskGroups = await getTaskGroups(stage_id);
     const students = await getStageStudentsByOrganization(stage_id);
 

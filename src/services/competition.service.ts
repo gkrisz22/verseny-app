@@ -1,6 +1,5 @@
 import { AcademicYear, Competition, Prisma } from "@prisma/client";
 import { CrudService, Service } from "./service";
-import { id } from "date-fns/locale";
 
 export class CompetitionService extends Service implements CrudService<Competition> {
   create(data: Prisma.CompetitionCreateInput): Promise<Competition> {

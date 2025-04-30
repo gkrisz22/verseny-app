@@ -6,6 +6,10 @@ import { CategoryEligibilityDTO, categoryEligibilitySchema, competitionSchema, U
 import { logger } from "@/lib/logger";
 import { revalidatePath } from "next/cache";
 import categoryService from "@/services/category.service";
+import { db } from "@/lib/db";
+import { redirect } from "next/navigation";
+import { CategoryFormData } from "@/types/form/competition";
+import { z } from "zod";
 
 export async function setEligibleGrades(prevState: ActionResponse<CategoryEligibilityDTO>, formData: FormData): Promise<ActionResponse<CategoryEligibilityDTO>>
 {
@@ -70,4 +74,56 @@ export async function updateCategoryMetadata(prevState: ActionResponse<UpdateCat
             message: "Kategória adatai sikeresen módosítva.",
         }
     });
+}
+
+
+export async function deleteCategory(id: string) {
+    const category = await categoryService.get(id);
+    const compId = category?.competitionId;
+
+    const res = await categoryService.delete(id);
+    if(!res) {
+        return {
+            success: false,
+            message: "Hiba történt a versenykategória törlése közben.",
+        }
+    }
+    redirect("/admin/versenyek/" + compId);
+}
+
+export async function createCategory(prevState: ActionResponse<CategoryFormData>, formData: FormData): Promise<ActionResponse<CategoryFormData>> {
+    const rawData = Object.fromEntries(formData.entries());
+
+    const categorySchema = z.object({
+        name: z.string().min(3, "Túl rövid a kategória neve"),
+        competitionId: z.string().nonempty("Verseny azonosító nem lehet üres"),
+    });
+
+    const validatedData = categorySchema.safeParse(rawData);
+
+    if(!validatedData.success){
+        return {
+            success: false,
+            message: "Validációs hibák történtek.",
+            errors: validatedData.error.flatten().fieldErrors,
+            inputs: validatedData.data
+        };
+    }
+
+    const { name, competitionId } = validatedData.data;
+
+    const res = await db.category.create({
+        data: {
+            name,
+            competitionId,
+            description: "",
+        },
+    });
+
+    revalidatePath("/");
+
+    return {
+        success: true,
+        message: "Versenykategória létrehozva.",
+    }
 }

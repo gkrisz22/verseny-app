@@ -12,8 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import React from "react";
-import { createCategory } from "@/app/_actions/competition.action";
-import { CategoryFormData } from "@/types/form/competition";
+import { createCategory } from "@/app/_actions/category.action";
 import { toast } from "sonner";
 import { Competition } from "@prisma/client";
 import { useActionForm } from "@/hooks/use-action-form";

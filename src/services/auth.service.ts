@@ -26,7 +26,7 @@ export class AuthService extends Service {
             data: {
                 token,
                 userId,
-                expires: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 óra
+                expires: new Date(Date.now() + 1000 * 60 * 60 * 48), // 48 óra
             },
         });
     }
@@ -102,6 +102,13 @@ export class AuthService extends Service {
     async getWhere(params: Prisma.UserWhereInput) {
         return this.db.user.findMany({
             where: params,
+        });
+    }
+    async getByEmail(email: string) {
+        return this.db.user.findUnique({
+            where: {
+                email: email,
+            },
         });
     }
 

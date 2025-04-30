@@ -1,6 +1,5 @@
 "use server";
 
-import { auth } from "@/auth";
 import { actionHandler } from "@/lib/action.handler";
 import { HandleOrgUserDTO, handleOrgUserSchema, OrganizationUpdateDTO, organizationUpdateSchema } from "@/lib/definitions";
 import competitionService from "@/services/competition.service";
@@ -19,6 +18,9 @@ import orgService from "@/services/organization.service";
 import settingsService from "@/services/settings.service";
 import roleMiddleware from "@/middlewares/role.middleware";
 import authMiddleware from "@/middlewares/auth.middleware";
+import mailerService from "@/services/mailer.service";
+import authService from "@/services/auth.service";
+import { v4 as uuidv4 } from "uuid";
 
 export const saveRolePreference = async (role: string) => {
     if (!isLoggedIn()) {
@@ -106,9 +108,14 @@ export async function handleOrgUser(
                     });
                     await orgService.assignUser(orgId, user.id);
 
+                    const token = uuidv4();
+                    await authService.createToken(token, user.id);
+                    const sent = await mailerService.sendInviteEmail(data.email, token);
+                    if(!sent) {
+                        throw new Error("Nem sikerült elküldeni az e-mailt, de a felhasználó létre lett hozva.");
+                    }
                 }
 
-                // Update roles
                 await orgService.deleteUserOrgRole(user.id, orgId);
                 if (data.roles) {
                     const roles = data.roles.split("&");
@@ -121,8 +128,6 @@ export async function handleOrgUser(
                         );
                     }
                 }
-                // Send email
-                //TODO: send email to user
             } catch (e) {
                 if (e instanceof Error) {
                     logger.error(e.message);

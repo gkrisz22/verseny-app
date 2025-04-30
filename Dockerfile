@@ -12,10 +12,10 @@ COPY package.json package-lock.json* ./
 # 4. Függőségek telepítése
 RUN npm install --force --legacy-peer-deps
 
-# 5. Teljes projekt bemásolása (most már van .dockerignore!)
+# 5. Teljes projekt bemásolása (.dockerignore-ban megadottak kivételével)
 COPY . .
 
-# 6. Prisma kliens generálása (típusok miatt kötelező!)
+# 6. Prisma kliens generálása (adatbázis-kliens inicializálása)
 RUN npx prisma generate
 
 # 7. Next.js build

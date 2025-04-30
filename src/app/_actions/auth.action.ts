@@ -27,13 +27,13 @@ import { actionHandler } from "@/lib/action.handler";
 import authService from "@/services/auth.service";
 import organizationService from "@/services/organization.service";
 import { v4 as uuid4 } from "uuid";
-import { accountMailer } from "@/lib/mailer.lib";
 import bcrypt from "bcryptjs";
 import roleService from "@/services/role.service";
 import { deleteSecureCookie, getSecureCookie, setSecureCookie } from "@/lib/utilities";
 import { getUserOrganizationData } from "../_data/user.data";
 import orgService from "@/services/organization.service";
 import { cookies } from "next/headers";
+import mailerService from "@/services/mailer.service";
 
 export const signUpFirstStep = async (
     prevState: ActionResponse<SignUpStepOneDTO>,
@@ -45,12 +45,11 @@ export const signUpFirstStep = async (
         async (data) => {
             const { role } = data;
 
-            if (role === "teacher") {
-                redirect("/sign-up/teacher");
-            } else if (role === "school") {
-                redirect("/sign-up/organization");
-            } else {
-                redirect("/sign-up/student");
+            switch (role) {
+                case "school":
+                    redirect("/sign-up/organization");
+                default:
+                    redirect("/sign-up");
             }
         }
     );
@@ -140,40 +139,6 @@ export const signUpSchoolSkeleton = async (
     );
 };
 
-export const signUpSchoolAdminContact = async (
-    prevState: ActionResponse<OrganizationContactDTO>,
-    formData: FormData
-): Promise<ActionResponse<OrganizationContactDTO>> => {
-    return actionHandler<OrganizationContactDTO>(
-        organizationContactSchema,
-        formData,
-        async (data) => {
-            const org = await organizationService.getWhere({ id: data.id });
-            if (!org) {
-                console.log("org", org);
-                return {
-                    success: false,
-                    message: "Hiba történt a regisztráció során.",
-                };
-            }
-            const res = await organizationService.update(data.id, {
-                contactEmail: data.email,
-                contactName: data.name,
-                phoneNumber: data.phone,
-            });
-
-            if (!res) {
-                return {
-                    success: false,
-                    message: "Hiba történt a regisztráció során.",
-                };
-            }
-
-            redirect(`/sign-up/complete/`);
-        }
-    );
-};
-
 export const signUpEmail = async (
     prevState: ActionResponse<SignUpEmailDTO>,
     formData: FormData
@@ -209,7 +174,7 @@ export const signUpEmail = async (
 
                 const token = uuid4();
                 await authService.createToken(token, res.id);
-                const sent = await accountMailer.sendVerificationEmail(
+                const sent = await mailerService.sendVerificationEmail(
                     email,
                     token
                 );
@@ -219,7 +184,7 @@ export const signUpEmail = async (
 
                 const cookie = await getSecureCookie("reg");
                 if (!cookie) {
-                    throw new Error("Hiba történt a cookie beállítása során.");
+                    throw new Error("Hiba történt regisztrációs süti beállítása során.");
                 }
                 await setSecureCookie({
                     name: "reg",
@@ -256,7 +221,7 @@ export const signUpCompleteAction = async (
                 if (!userId) {
                     throw new Error("Nem található a felhasználó-azonosító.");
                 }
-                const user = await authService.getWhere({ id: data.userId });
+                const user = await authService.get(userId);
                 if (!user) {
                     throw new Error("Felhasználó nem található.");
                 }
@@ -266,10 +231,16 @@ export const signUpCompleteAction = async (
                 });
 
                 if (!updated) {
-                    return {
-                        success: false,
-                        message: "Hiba történt a regisztráció során.",
-                    };
+                    throw new Error("Hiba történt a regisztráció során.");
+                }
+
+                const userOrgs = await orgService.getUserOrgs(user.id);
+                if(user.superAdmin || userOrgs.length > 0) {
+                    await setSecureCookie({
+                        name: "invite",
+                        value: user.id,
+                        time: { minutes: 2}
+                    })
                 }
             }
             catch (e) {
@@ -291,6 +262,7 @@ export const signInAction = async (
 ): Promise<ActionResponse<SignInDTO>> => {
     return actionHandler<SignInDTO>(signInSchema, formData, async (data) => {
         const { email, password } = data;
+        
         try {
             await signIn("credentials", {
                 email,
@@ -298,117 +270,19 @@ export const signInAction = async (
                 redirect: false,
             });
         } catch (e) {
-            console.log("Hiba", e);
+            logger.error("[signInAction] " + (e instanceof Error && e.message));
             return {
                 success: false,
                 message: "Hibás e-mail cím vagy jelszó!",
                 inputs: { email, password },
             };
         }
-        const res = await authService.getWhere({ email });
-        if (!res || res.length === 0) {
-            return {
-                success: false,
-                message: "Hiba történt a bejelentkezés során.",
-            };
-        }
-        const user = res[0];
-
-        if (!user.superAdmin) {
-            const userOrgs = await organizationService.getUserOrgs(user.id);
-            if (!userOrgs || userOrgs.length === 0) {
-                return {
-                    success: false,
-                    message: "Hiba történt a bejelentkezés során.",
-                };
-            }
-            const userOrg = userOrgs[0].id;
-
-            const roles = await organizationService.getUserOrgRoles(
-                user.id,
-                userOrg
-            );
-            if (!roles || roles.length === 0) {
-                return {
-                    success: false,
-                    message: "Hiba történt a bejelentkezés során.",
-                };
-            }
-            const role = roles[0];
-            
-            const orgData = JSON.stringify({
-                id: userOrg,
-                role: role.role.name,
-            });
-            await setSecureCookie({ name: "org", value: orgData });            
-            redirect(`/org`);
-        }
-
-        redirect("/admin");
+        redirect("/select");
     });
 };
 export const signOutAction = async () => {
-    await setSecureCookie({ name: "org", value: "" });
-    await signOut({ redirectTo: "/sign-in"});
-};
-export const createSkeletonUser = async (
-    prevState: ActionResponse<SignUpSkeletonDTO>,
-    formData: FormData,
-): Promise<ActionResponse<SignUpSkeletonDTO & { userId? : string}>> => {
-    return actionHandler<SignUpSkeletonDTO>(
-        signUpSkeletonSchema,
-        formData,
-        async (data) => {
-            const { email, name, password } = data;
-            const res = await userService.getWhere({ email });
-
-            if (res && res.length > 0) {
-                return {
-                    success: false,
-                    message: "Validációs hibák történtek.",
-                    inputs: data,
-                    errors: {
-                        email: ["Ezzel az e-mail címmel már regisztráltak."],
-                    },
-                };
-            }
-
-            const hashedPassword = await bcrypt.hash(password, 10);
-            const user = await userService.create({
-                email,
-                name,
-                password: hashedPassword,
-            });
-
-            const userId = user.id;
-
-            return {
-                success: true,
-                inputs: { ...data, userId },
-                message: "Sikeres regisztráció",
-            };
-        }
-    );
-}
-
-
-
-export const completeTeacherSignup = async (
-    prevState: ActionResponse<SignUpTeacherDTO>,
-    formData: FormData
-) => {
-    return actionHandler<SignUpTeacherDTO>(signUpTeacherSchema, formData, async (data) => {
-        const { userId } = data;
-        const user = await authService.getWhere({ id: userId });
-        if (!user || user.length === 0) {
-            return {
-                success: false,
-                message: "Hiba történt a regisztráció során.",
-            };
-        }
-
-        redirect(`/sign-up/completed/`);
-    });
+    await deleteSecureCookie("prg")
+    await signOut();
 };
 
 export const handleOrgRoleSelect = async (formData:FormData) => {
@@ -440,6 +314,12 @@ export const handleOrgRoleSelect = async (formData:FormData) => {
 
 export const signUpAssignToOrganization = async () => {
     const session = await auth();
+    const invite = await getSecureCookie("invite");
+    if(invite) {
+        return {
+            success: true
+        }
+    }
     const regData = await getSecureCookie("reg");
     if(!regData) {
         return null;
@@ -463,8 +343,6 @@ export const signUpAssignToOrganization = async () => {
     if(!userEmail) {
         return null;
     }
-    console.log("userEmail", userEmail);
-    console.log("1.cccsignUpAssignToOrganization");
 
     // Felhasználó létezik
     const existingUser = await authService.getWhere({ email: userEmail });

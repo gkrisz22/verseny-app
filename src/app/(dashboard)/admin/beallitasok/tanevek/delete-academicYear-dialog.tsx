@@ -1,5 +1,4 @@
 "use client";
-import { deleteCategory } from "@/app/_actions/competition.action";
 import { deleteAcademicYear } from "@/app/_actions/settings.action";
 import {
     AlertDialog,

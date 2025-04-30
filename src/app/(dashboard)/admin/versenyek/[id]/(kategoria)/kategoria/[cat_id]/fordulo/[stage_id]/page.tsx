@@ -1,13 +1,13 @@
 import ForduloContent from "@/app/(dashboard)/_components/competition/fordulo-content";
 import ForduloDeleteDialog from "@/app/(dashboard)/_components/competition/fordulo-delete-dialog";
 import ForduloEditDialog from "@/app/(dashboard)/_components/competition/fordulo-edit-dialog";
-import { getStageById } from "@/app/_actions/competition.action";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Stage } from "@prisma/client";
 import { CalendarIcon } from "lucide-react";
 import React from "react";
 import LocalStageMenu from "./_components/local-stage-menu";
+import { getStageById } from "@/app/_data/stage.data";
 
 const ForduloDetailsPage = async ({
     params,

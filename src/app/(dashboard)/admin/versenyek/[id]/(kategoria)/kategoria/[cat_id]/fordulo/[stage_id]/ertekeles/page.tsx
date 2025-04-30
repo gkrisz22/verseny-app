@@ -1,8 +1,7 @@
 import React from 'react'
 import StudentEvaluator from '../../../../../../../../../_components/ertekeles/_components/evaluator';
 import { getTaskGroups } from '@/app/_data/task.data';
-import { getStageById } from '@/app/_actions/competition.action';
-import { getStageStudents } from '@/app/_data/stage.data';
+import { getStageById, getStageStudents } from '@/app/_data/stage.data';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';

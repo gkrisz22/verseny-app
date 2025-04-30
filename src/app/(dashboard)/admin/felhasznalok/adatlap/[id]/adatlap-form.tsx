@@ -28,7 +28,7 @@ const AdatlapForm = ({ user }: { user: Partial<User>}) => {
                     {isLoading && <span className="animate-spin mr-2"><Loader2Icon className="h-4 w-4" /></span>} 
                     Mentés
                 </Button>  
-            </form>   
+            </form>
         </CardContent>   
 
     </Card> 

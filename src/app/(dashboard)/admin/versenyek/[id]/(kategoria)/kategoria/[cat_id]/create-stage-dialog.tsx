@@ -12,11 +12,11 @@ import {
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import React from "react";
-import { createStage } from "@/app/_actions/competition.action";
 import { toast } from "sonner";
 import { Category } from "@prisma/client";
 import { useActionForm } from "@/hooks/use-action-form";
 import FormField from "@/app/(dashboard)/_components/common/form-field";
+import { createStage } from "@/app/_actions/stage.action";
 
 export function CreateStageDialog({ category, trigger }: {
   category: Category, trigger: {
@@ -34,8 +34,6 @@ export function CreateStageDialog({ category, trigger }: {
       setOpen(false);
     }
   });
-
-
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

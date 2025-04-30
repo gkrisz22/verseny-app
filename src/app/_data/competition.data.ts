@@ -32,7 +32,7 @@ export const getCompetitionById = cache(async (id:string) => {
 
 export const getCompetitionParticipants = cache(async (competitionId: string) => {
     const res = await competitionService.getOrganizations(competitionId);
-    return res || null;
+    return res;
 });
 
 export const getCompetitionsByAcademicYear = cache(async (academicYear:AcademicYear) => {

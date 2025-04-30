@@ -86,228 +86,16 @@ export async function deleteCompetition(id: string) {
     redirect("/admin/versenyek");
 }
 
-export async function deleteCategory(id: string) {
-    const category = await categoryService.get(id);
-    const compId = category?.competitionId;
-
-    const res = await categoryService.delete(id);
-    if(!res) {
-        return {
-            success: false,
-            message: "Hiba történt a versenykategória törlése közben.",
-        }
-    }
-    redirect("/admin/versenyek/" + compId);
-}
-
-export async function createCategory(prevState: ActionResponse<CategoryFormData>, formData: FormData): Promise<ActionResponse<CategoryFormData>> {
-    const rawData = Object.fromEntries(formData.entries());
-
-    const categorySchema = z.object({
-        name: z.string().min(3, "Túl rövid a kategória neve"),
-        competitionId: z.string().nonempty("Verseny azonosító nem lehet üres"),
-    });
-
-    const validatedData = categorySchema.safeParse(rawData);
-
-    if(!validatedData.success){
-        return {
-            success: false,
-            message: "Validációs hibák történtek.",
-            errors: validatedData.error.flatten().fieldErrors,
-            inputs: validatedData.data
-        };
-    }
-
-    const { name, competitionId } = validatedData.data;
-
-    const res = await db.category.create({
-        data: {
-            name,
-            competitionId,
-            description: "",
-        },
-    });
-
-    revalidatePath("/");
-
-    return {
-        success: true,
-        message: "Versenykategória létrehozva.",
-    }
-}
-
-export async function getCategoriesByCompetitionId(competitionId: string) {
-    const res = await db.category.findMany({
-        where: {
-            competitionId,
-        },
-        include: {
-            _count: {
-                select: {
-                    stages: true,
-                    students: true,
-                }
-            },
-            stages: {
-                where: {
-                    status: "ONGOING"
-                }
-            },
-        }
-    });
-
-    return res.map((category) => {
-        return {
-            ...category,
-            stagesCount: category._count.stages,
-            studentsCount: category._count.students,
-            currentStage: category.stages.length > 0 ? category.stages[0] : null,
-        }
-    });
-}
-
-export async function getCategoryById(id: string) {
-    const session = await auth();
-    if(!session || !session.user){
-        return null;
-    }
-    
-    const orgData = await getSessionOrganizationData();
-    if(!orgData && !session.user.superAdmin){
-        return null;
-    }
-
-    const res = await db.category.findUnique({
-        where: {
-            id,
-            ...((!session.user.superAdmin && orgData) && {
-                students: {
-                    some: {
-                        student: {
-                            schools: {
-                                some: {
-                                    schoolId: orgData.id
-                                }
-                            }
-                        }
-                    }
-                }
-            })
-        },
-        include: {
-            stages: {
-                include: {
-                    files: {
-                        include: {
-                            file: true,
-                        }
-                    },
-                    students: {
-                        include: {
-                            student: true,
-                        }
-                    }
-                },
-                orderBy: {
-                    startDate: "asc"
-                }
-            },
-            students: {
-                include: {
-                    student: true,
-                },
-                where: {
-                    student: {
-                        schools: {
-                            some: {
-                                schoolId: {
-                                    equals: orgData?.id
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    });
-
-    return res;
-}
-
-export async function createStage(prevState: ActionResponse<StageFormData>, formData: FormData): Promise<ActionResponse<StageFormData>> {
-    const rawData = Object.fromEntries(formData.entries());
-
-    const stageSchema = z.object({
-        name: z.string().min(3, "Túl rövid a forduló neve"),
-        categoryId: z.string().nonempty("Kategória azonosító nem lehet üres"),
-    });
-
-    const validatedData = stageSchema.safeParse(rawData);
-
-    if(!validatedData.success){
-        return {
-            success: false,
-            message: "Validációs hibák történtek.",
-            errors: validatedData.error.flatten().fieldErrors,
-            inputs: validatedData.data
-        };
-    }
-
-    const { name, categoryId } = validatedData.data;
-
-    const res = await db.stage.create({
-        data: {
-            name,
-            categoryId,
-            description: "",
-            startDate: new Date(),
-            endDate: new Date(),
-        },
-    });
-
-    revalidatePath("/");
-
-    return {
-        success: true,
-        message: "Forduló létrehozva.",
-    }
-}
-
-export async function getStageById(id: string) {
-    const res = await db.stage.findUnique({
-        where: {
-            id,
-        },
-        include: {
-            files: {
-                include: {
-                    file: true,
-                }
-            },
-            tasks: true,
-            category: true
-        }
-    });
-
-    return res;
-}
-
-
-
-
-
-
 
 export async function registerAsOrganization(competitionId: string) {
     try {
         const session = await auth();
         if (!session || !session.user) {
-            throw new Error("Unauthorized");
+            throw new Error("Nincs bejelentkezve!");
         }
         const user = await userService.getWhere({ email:  session.user.email as string});
         if(!user || user.length === 0){
-            throw new Error("User not found");
+            throw new Error("Felhasználó nem található!");
         }
     
         const orgData = await getSessionOrganizationData();
@@ -316,7 +104,7 @@ export async function registerAsOrganization(competitionId: string) {
         }
         const organizationId = orgData.id;
         if(!organizationId){
-            throw new Error("Organization not found");
+            throw new Error("Szervezet nem található!");
         }
     
         const alreadyRegistered = await db.competitionOrganization.findFirst({

@@ -1,8 +1,8 @@
 "use server";
 
 import stageService from "@/services/stage.service";
-import { getOrganizationData } from "./organization.data";
 import { getSessionOrganizationData } from "@/lib/utilities";
+import { db } from "@/lib/db";
 
 export async function getStageFiles(stageId: string)
 {
@@ -38,4 +38,24 @@ export async function getStageStudentsByOrganization(
         studentStageId: s.id,
         files: s.files.map((f) => f.file),
     }));
+}
+
+
+export async function getStageById(id: string) {
+    const res = await db.stage.findUnique({
+        where: {
+            id,
+        },
+        include: {
+            files: {
+                include: {
+                    file: true,
+                }
+            },
+            tasks: true,
+            category: true
+        }
+    });
+
+    return res;
 }

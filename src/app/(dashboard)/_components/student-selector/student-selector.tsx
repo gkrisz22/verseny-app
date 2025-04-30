@@ -124,10 +124,6 @@ export function StudentSelector({
               <TabsTrigger value="library">Diákok</TabsTrigger>
               <TabsTrigger value="upload">Létrehozás</TabsTrigger>
             </TabsList>
-            <Button variant="outline" size="sm" onClick={() => setActiveTab("upload")} className="gap-1">
-              <PlusCircle className="h-4 w-4" />
-              Új diák
-            </Button>
           </div>
 
           <TabsContent value="upload" className="mt-4">

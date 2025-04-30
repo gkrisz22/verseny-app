@@ -1,4 +1,5 @@
 import GitHub from "next-auth/providers/github";
+import Google from "next-auth/providers/google";
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import authService from "./services/auth.service";
@@ -19,7 +20,16 @@ declare module "next-auth" {
 
 export default {
     providers: [
-        GitHub,
+        GitHub({
+            allowDangerousEmailAccountLinking: true,
+            clientId: process.env.AUTH_GITHUB_ID as string,
+            clientSecret: process.env.AUTH_GITHUB_SECRET as string,
+        }),
+        Google({
+            allowDangerousEmailAccountLinking: true,
+            clientId: process.env.AUTH_GOOGLE_ID as string,
+            clientSecret: process.env.AUTH_GOOGLE_SECRET as string,
+        }),
         Credentials({
             credentials: {
                 email: { label: "E-mail", type: "text" },
@@ -73,8 +83,8 @@ export default {
     },
     callbacks: {
         async signIn({ user, account, profile }) {
-            const email = profile?.email as string;
-            const userExists = await authService.getWhere({ email });
+            const isCredentials = account?.provider === "credentials";
+            const userExists = await authService.getWhere({ email: isCredentials ? user.email : profile?.email as string });
 
             if (userExists.length === 0) {
                 if (account?.provider === "github") {

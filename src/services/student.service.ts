@@ -66,9 +66,16 @@ export class StudentService extends Service {
         });
     }
 
-    getWhere(where: Prisma.StudentWhereUniqueInput) {
-        return this.db.student.findUnique({
+    getWhere(where: Prisma.StudentWhereUniqueInput, include?: Prisma.StudentInclude) {
+        return this.db.student.findMany({
             where,
+            include: {
+                schools: {
+                    select: {
+                        schoolId: true,
+                    },
+                },
+            }
         });
     }
 

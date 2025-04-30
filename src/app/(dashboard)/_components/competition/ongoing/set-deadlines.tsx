@@ -4,12 +4,12 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { EditIcon, EyeIcon, Loader2Icon, SaveIcon } from "lucide-react";
 import { useActionForm } from "@/hooks/use-action-form";
-import { openStage, updateOngoinStage } from "@/app/_actions/stage.action";
+import { updateOngoingStage } from "@/app/_actions/stage.action";
 import FormField from "../../common/form-field";
 import { Stage } from "@prisma/client";
 
 const SetDeadlines = ({ stage }: { stage: Stage }) => {
-    const [state, action, isPending] = useActionForm(updateOngoinStage);
+    const [state, action, isPending] = useActionForm(updateOngoingStage);
 
     return (
         <form className="space-y-4" action={action}>

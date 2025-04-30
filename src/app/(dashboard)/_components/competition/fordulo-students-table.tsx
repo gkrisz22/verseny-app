@@ -1,8 +1,7 @@
 import React from 'react'
 import { DataTable } from '../common/data-table'
 import { columns } from './fordulo-student-table-column'
-import { getStageStudents } from '@/app/_data/stage.data'
-import { getStageById } from '@/app/_actions/competition.action'
+import { getStageById, getStageStudents } from '@/app/_data/stage.data'
 
 const ForduloStudentsTable = async ({stageId, isAdmin = false}: {stageId: string; isAdmin?: boolean}) => {
   const students = await getStageStudents(stageId)

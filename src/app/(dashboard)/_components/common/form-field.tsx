@@ -71,13 +71,15 @@ const RenderField = ({ field }: { field: IFormField }) => {
 
     switch (field.type) {
         case "number":
-            return <Input type="number" disabled={field.disabled || false} readOnly={field.readOnly || false} name={field.name} id={field.id} placeholder={field.placeholder} defaultValue={Number(field.defaultValue)} className={cn(errorClass, `peer ${field.Icon ? "pl-8" : ""}`)} min={field.min} max={field.max} />;
+            return <Input type="number" disabled={field.disabled || false} readOnly={field.readOnly || false} name={field.name} id={field.id} placeholder={field.placeholder} defaultValue={Number(field.defaultValue || "")} className={cn(errorClass, `peer ${field.Icon ? "pl-8" : ""}`)} min={field.min} max={field.max} />;
         case "text":
-            return <Input disabled={field.disabled || false} readOnly={field.readOnly || false} name={field.name} id={field.id} placeholder={field.placeholder} defaultValue={field.defaultValue?.toString()} className={cn(errorClass, `peer ${field.Icon ? "pl-8" : ""}`)} />;
+            return <Input disabled={field.disabled || false} readOnly={field.readOnly || false} name={field.name} id={field.id} placeholder={field.placeholder} defaultValue={field.defaultValue?.toString() || ""} className={cn(errorClass, `peer ${field.Icon ? "pl-8" : ""}`)} />;
+        case "password":
+            return <Input type="password" disabled={field.disabled || false} readOnly={field.readOnly || false} name={field.name} id={field.id} placeholder={field.placeholder} defaultValue={field.defaultValue?.toString() || ""} className={cn(errorClass, `peer ${field.Icon? "pl-8" : ""}`)} />;
         case "email":
-            return <Input type="email" disabled={field.disabled || false} readOnly={field.readOnly || false} name={field.name} id={field.id} placeholder={field.placeholder} defaultValue={field.defaultValue?.toString()} className={cn(errorClass, `peer ${field.Icon ? "pl-8" : ""}`)}/>;
+            return <Input type="email" disabled={field.disabled || false} readOnly={field.readOnly || false} name={field.name} id={field.id} placeholder={field.placeholder} defaultValue={field.defaultValue?.toString() || ""} className={cn(errorClass, `peer ${field.Icon ? "pl-8" : ""}`)}/>;
         case "textarea":
-            return <Textarea disabled={field.disabled || false} readOnly={field.readOnly || false} name={field.name} id={field.id} placeholder={field.placeholder} defaultValue={field.defaultValue?.toString()} className={cn(errorClass, `peer ${field.Icon ? "pl-8" : ""}`)} rows={field.rows || 2} />;
+            return <Textarea disabled={field.disabled || false} readOnly={field.readOnly || false} name={field.name} id={field.id} placeholder={field.placeholder} defaultValue={field.defaultValue?.toString() || ""} className={cn(errorClass, `peer ${field.Icon ? "pl-8" : ""}`)} rows={field.rows || 2} />;
         case "date": 
             return <>
                 <DatePicker date={date} setDate={setDate} label={field.label} />

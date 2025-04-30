@@ -1,5 +1,5 @@
 "use client";
-import { deleteCategory } from "@/app/_actions/competition.action";
+import { deleteCategory } from "@/app/_actions/category.action";
 import {
     AlertDialog,
     AlertDialogAction,

@@ -103,14 +103,33 @@ export type CategoryEligibilityDTO = z.infer<typeof categoryEligibilitySchema>;
 
 
 export const createStudentSchema = z.object({
-    name: z.string().nonempty("Név megadása kötelező!"),
-    grade: z.string().nonempty("Osztály megadása kötelező!"),
+    id: z.string().optional(),
+    name: z.string().optional().refine((val) => {
+        return val === undefined || val === "" || val.length >= 2;
+    }, "A név legalább 2 karakter hosszú kell legyen!"),
+    grade: z.string().refine((val) => {
+        const grade = parseInt(val);
+        return val === undefined || val === "0" || (!isNaN(grade) && grade >= 1 && grade <= 13);
+    }, "Az osztály értéke 1 és 13 között kell legyen!"),
+    uniqueId: z.string().optional().refine((val) => {
+        return val === undefined || val === "" || val.length === 6;
+    }, "Az egyedi azonosító pontosan 6 karakter hosszú kell legyen!"),
 }).refine((val) => {
-    const grade = parseInt(val.grade);
-    return grade >= 1 && grade <= 12;
+    const hasName = val.name !== undefined && val.name !== "";
+    const hasGrade = val.grade !== undefined && val.grade !== "0";
+    const hasUniqueId = val.uniqueId !== undefined && val.uniqueId !== "";
+
+    if(hasUniqueId && !val.id)
+    {
+        return true;
+    }
+    if((hasGrade && !hasName) || (hasName &&!hasGrade)) {
+        return false;
+    }
+    return hasName && hasGrade
 }, {
-    message: "Az osztály értéke 1 és 12 között kell legyen!"
-})
+    message: "Legalább egy mező megadása kötelező! A név és az osztály vagy az egyedi azonosító megadása kötelező!",
+});
 export type CreateStudentDTO = z.infer<typeof createStudentSchema>;
 
 

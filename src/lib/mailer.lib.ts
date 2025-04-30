@@ -14,38 +14,22 @@ export class Mailer {
     });
   }
 
-  async sendEmail(to: string, subject: string, html: string) {
+  async sendEmail(to: string | string[], subject: string, html: string) {
+    const recipients = Array.isArray(to) ? to.join(', ') : to;
     const mailOptions = {
       from: process.env.SMTP_USER,
-      to,
+      to: recipients,
       subject,
       html,
     };
-    await this.transporter.sendMail(mailOptions);
-  }
-}
-
-class AccountMailer extends Mailer {
-  constructor() {
-    super();
-  }
-  async sendVerificationEmail(to: string, token: string) {
-    const subject = 'Fiók megerősítése';
-    const html = `
-      <p>A regisztráció folytatásához, kérjük folytassa az alábbi linken:</p>
-      <a href="${process.env.URL}/sign-up/verify/${token}">Megerősítés</a>
-    `;
     try {
-      await this.sendEmail(to, subject, html);
-      logger.info(`Verification email sent to ${to}`);
-      return true;
+      await this.transporter.sendMail(mailOptions);
     }
     catch (error) {
-      console.error(error);
-      logger.error(`Error sending verification email to ${to}`);
+      if (error instanceof Error)
+        logger.error("[MAILER] " + error.message);
       return false;
     }
+    return true;
   }
 }
-
-export const accountMailer = new AccountMailer();

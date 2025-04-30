@@ -1,9 +1,9 @@
-import { getCategoryById } from "@/app/_actions/competition.action";
 import React from "react";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CategoryStudentTable from "./category-student-table";
 import FordulokListingCards from "@/app/(dashboard)/_components/competition/fordulok-listing-cards";
+import { getCategoryById } from "@/app/_data/category.data";
 
 const VersenyKategoriaFordulokPage = async ({
     params,

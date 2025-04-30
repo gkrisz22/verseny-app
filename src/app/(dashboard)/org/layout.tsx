@@ -9,13 +9,10 @@ import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
 import { Toaster } from "@/components/ui/sonner";
 import { TopNavbar } from "./_components/top-navbar";
-import { NotificationProvider } from "../_components/notifications/notification-provider";
-import { NotificationBell } from "../_components/notifications/notification-bell";
 import { NavUser } from "../_components/sidebar/nav-user";
 import { BackToTop } from "@/components/shared/back-to-top";
 import { getSessionOrganizationData } from "@/lib/utilities";
 import { redirect } from "next/navigation";
-import { userAgent } from "next/server";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -45,10 +42,10 @@ export default async function RootLayout({
   const session = await auth();
   const orgData = await getSessionOrganizationData();
 
-  if(!session || !session.user){
+  if (!session || !session.user) {
     return <div>Nincs bejelentkezve.</div>
   }
-  if(!orgData){
+  if (!orgData) {
     redirect("/select");
   }
 
@@ -70,13 +67,10 @@ export default async function RootLayout({
           <Toaster />
 
           <SessionProvider>
-              <NotificationProvider>
-                <TopNavbar role={role}>
-                  <NotificationBell />
-                  <NavUser user={session.user} />
-                </TopNavbar>
-                <main className="flex-1 container mx-auto p-4">{children}</main>
-              </NotificationProvider>
+            <TopNavbar role={role}>
+              <NavUser user={session.user} />
+            </TopNavbar>
+            <main className="flex-1 container mx-auto p-4">{children}</main>
           </SessionProvider>
           <BackToTop />
         </ThemeProvider>

@@ -16,6 +16,7 @@ import Link from "next/link"
 import { signInAction } from "@/app/_actions/auth.action";
 import { useActionState } from "react";
 import FormField from "@/app/(dashboard)/_components/common/form-field";
+import { Loader2Icon } from "lucide-react";
 
 export function SignInForm({
   className,
@@ -44,29 +45,22 @@ export function SignInForm({
                   <FormField id="email" name="email" label="E-mail cím" type="email" defaultValue={state?.inputs?.email} required errors={state?.errors?.email} />
                 </div>
                 <div className="grid gap-2">
-                  <div className="flex items-center">
-                    <Label htmlFor="password">Jelszó</Label>
-                    <a
-                      href="#"
-                      className="ml-auto text-sm underline-offset-4 hover:underline text-muted-foreground hover:text-primary"
-                    >
-                      Elfelejtette a jelszavát?
-                    </a>
-                  </div>
-                  <Input id="password" type="password" name="password" required defaultValue={state?.inputs?.password} className={state?.errors?.password ? "border-red-500" : ""} />
-                  {state?.errors?.password && (
-                    <div className="text-red-500 text-sm">
-                      {state?.errors?.password}
-                    </div>
-                  )}
+                  <FormField id="password" name="password" label="Jelszó" type="password" defaultValue={state?.inputs?.password} required errors={state?.errors?.password} />
                 </div>
-                {!state?.success && (
+                {!state?.success && state?.message && (
                   <div className="text-red-500 text-sm">
                     {state?.message}
                   </div>
                 )}
                 <Button type="submit" className="w-full" disabled={isPending}>
-                  Bejelentkezés {isPending && "Folyamatban..."}
+                  {
+                    isPending ? <>
+                    <Loader2Icon className="animate-spin" />
+                    <span className="ml-2">Bejelentkezés...</span>
+                    </> : <>
+                    Bejelentkezés
+                    </>
+                  }
                 </Button>
               </div>
               <div className="text-center text-sm text-muted-foreground">
