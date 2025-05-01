@@ -52,7 +52,6 @@ export async function saveTasks(
 
         for (const group of data) {
             if (!group.id) continue;
-            console.log("Feladatcsoport feldolgozása folyamatban: ", group.id);
 
             const existingTasks = await taskService.getWhere({
                 groupId: group.id,
@@ -110,7 +109,6 @@ export async function saveTasks(
             }
         }
 
-        console.log("Feladatok sikeresen mentve!");
         const res = await taskService.getTaskGroups(stageId);
         return res;
     } catch (error) {

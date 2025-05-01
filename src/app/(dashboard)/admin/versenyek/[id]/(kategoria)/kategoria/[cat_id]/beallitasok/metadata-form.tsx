@@ -48,8 +48,8 @@ const KategoriaMetadataForm = ({ category }: { category: Category }) => {
                         name="published"
                         id="published"
                         label="Nyilvános"
-                        placeholder="Legyen-e listázva a verseny az oldalon?"
-                        defaultValue={category.published.toString()}
+                        placeholder="Legyen-e listázva a kategória az oldalon?"
+                        defaultValue={category.published}
                     />
 
                     <Button type="submit" className='w-fit' disabled={isLoading}>

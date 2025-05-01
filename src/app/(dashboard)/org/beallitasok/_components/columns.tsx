@@ -14,31 +14,6 @@ import { roleLabels } from "@/app/(dashboard)/_components/common/role-labels";
 
 
 export const columns: ColumnDef<User & {roles: string[]}>[] = [
-
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        className="rounded"
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        className="rounded"
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Sor kiválasztása"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: "name",
     header: ({ column }) => <DataTableSortableHeader title="Név" column={column} />,

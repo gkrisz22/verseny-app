@@ -68,7 +68,6 @@ export const signedUpForCompetition = async (competitionId: string) => {
             orgData.id
         );
     } catch (e) {
-        console.log(e);
         return false;
     }
 };
@@ -175,7 +174,6 @@ export async function updateOrganizationData(
                       message: "Nincs szervezet kiválasztva.",
                     };
                   }
-                  // data without isActive and id:
                   updateData = {...data,id: orgData.id};
                 }
                 else {

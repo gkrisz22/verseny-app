@@ -185,3 +185,4 @@ export async function updateCompetitionSettings(prevState: ActionResponse<Update
         }
     });
 }
+

@@ -7,7 +7,6 @@ class RoleMiddleware<T> implements Middleware<T> {
     public async handle(data: { role: string }) {
         try
         {
-            return;
             const session = await auth();
             if(!data.role) {
                 return {

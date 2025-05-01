@@ -10,6 +10,8 @@ import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { CategoryFormData } from "@/types/form/competition";
 import { z } from "zod";
+import authMiddleware from "@/middlewares/auth.middleware";
+import { isLoggedIn } from "@/lib/utilities";
 
 export async function setEligibleGrades(prevState: ActionResponse<CategoryEligibilityDTO>, formData: FormData): Promise<ActionResponse<CategoryEligibilityDTO>>
 {
@@ -24,7 +26,6 @@ export async function setEligibleGrades(prevState: ActionResponse<CategoryEligib
                 }
             }
             const grades = data.grades?.split(",").map((grade) => parseInt(grade)) || [];
-            console.log(grades);
             await categoryService.update(data.categoryId, {
                 eligibleGrades: grades
             });
@@ -43,7 +44,7 @@ export async function setEligibleGrades(prevState: ActionResponse<CategoryEligib
             inputs: data,
             message: "Évfolyamok sikeresen beállítva.",
         }
-    });
+    }, [authMiddleware]);
 }
 
 export async function updateCategoryMetadata(prevState: ActionResponse<UpdateCategoryMetadataDTO>, formData: FormData): Promise<ActionResponse<UpdateCategoryMetadataDTO>>
@@ -78,6 +79,7 @@ export async function updateCategoryMetadata(prevState: ActionResponse<UpdateCat
 
 
 export async function deleteCategory(id: string) {
+
     const category = await categoryService.get(id);
     const compId = category?.competitionId;
 

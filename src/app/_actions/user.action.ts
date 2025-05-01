@@ -5,6 +5,8 @@ import {
     InviteUserDTO,
     inviteUserSchema,
     UpdateUserDTO,
+    UpdateUserProfileDTO,
+    updateUserProfileSchema,
     updateUserSchema,
 } from "@/lib/definitions";
 import userService from "@/services/user.service";
@@ -73,7 +75,6 @@ export async function inviteUser(
     );
 }
 
-// updateUser
 export async function updateUser(
     prevState: ActionResponse<UpdateUserDTO>,
     formData: FormData
@@ -112,6 +113,48 @@ export async function updateUser(
                         "Hiba történt a felhasználó frissítése során!",
                 };
             }
+        }
+    );
+}
+
+export async function updateUserProfile(
+    prevState: ActionResponse<UpdateUserProfileDTO>,
+    formData: FormData
+): Promise<ActionResponse<UpdateUserProfileDTO>> {
+    return actionHandler<UpdateUserProfileDTO>(
+        updateUserProfileSchema,
+        formData,
+        async (data) => {
+            try {
+                const { id, name, email, password } = data;
+                
+                let encryptedPassword = null;
+                if(password) {
+                    encryptedPassword = await userService.hashPassword(password);
+                }
+                
+                await userService.update(data.id, {
+                    name,
+                    email,
+                    ...(encryptedPassword && { password: encryptedPassword }),
+                });
+            } catch (error) {
+                console.error(
+                    "Hiba történt a felhasználó frissítése során: ",
+                    error
+                );
+                return {
+                    success: false,
+                    message:
+                        "Hiba történt a felhasználó frissítése során!",
+                };
+            }
+
+            revalidatePath("/select/fiok");
+            return {
+                success: true,
+                message: "Sikeresen frissítette a felhasználói fiókját!",
+            };
         }
     );
 }

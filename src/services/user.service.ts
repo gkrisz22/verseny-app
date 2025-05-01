@@ -1,5 +1,6 @@
 import { Prisma, User } from "@prisma/client";
 import { CrudService, Service } from "./service";
+import bcrypt from "bcryptjs";
 
 export class UserService extends Service implements CrudService<User> {
     constructor() {
@@ -54,6 +55,15 @@ export class UserService extends Service implements CrudService<User> {
 
     async getAll() {
         return this.db.user.findMany(); 
+    }
+
+    async hashPassword(password: string) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        return hashedPassword;
+    }
+    async comparePassword(password: string, hashedPassword: string) {
+        const isMatch = await bcrypt.compare(password, hashedPassword);
+        return isMatch;
     }
 }
 

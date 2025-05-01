@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CategoryStudentTable from "./category-student-table";
 import FordulokListingCards from "@/app/(dashboard)/_components/competition/fordulok-listing-cards";
 import { getCategoryById } from "@/app/_data/category.data";
+import { LayersIcon, UsersIcon } from "lucide-react";
 
 const VersenyKategoriaFordulokPage = async ({
     params,
@@ -37,9 +38,8 @@ const VersenyKategoriaFordulokPage = async ({
             <Separator className="mb-6" />
             <Tabs defaultValue="fordulok" className="space-y-4">
                 <TabsList>
-                    <TabsTrigger value="fordulok">Fordulók</TabsTrigger>
-                    <TabsTrigger value="diakok">Diákok</TabsTrigger>
-                    <TabsTrigger value="statisztika">Statisztika</TabsTrigger>
+                    <TabsTrigger value="fordulok"><LayersIcon className="size-4 mr-1" /> Fordulók</TabsTrigger>
+                    <TabsTrigger value="diakok"><UsersIcon className="size-4 mr-1" /> Diákok</TabsTrigger>
                 </TabsList>
                 <TabsContent value="fordulok">
                     <FordulokListingCards
@@ -63,7 +63,6 @@ const VersenyKategoriaFordulokPage = async ({
                         categoryId={cat_id}
                     />
                 </TabsContent>
-                <TabsContent value="statisztika">Statisztika</TabsContent>
             </Tabs>
         </div>
     );

@@ -54,10 +54,6 @@ export function FordulokListingCards({category, stages, isAdmin }: {
                                     </CardHeader>
                                     <CardContent className="pb-3 flex-grow">
                                         <div className="flex flex-wrap gap-2 items-center text-sm">
-                                            <div className="flex items-center gap-1">
-                                                <UsersIcon className="h-4 w-4" />
-                                                <span>{round.students.length || 0} résztvevő</span>
-                                            </div>
                                             {round.files && round.files.length > 0 && (
                                                 <div className="flex items-center gap-1">
                                                     <FileTextIcon className="h-4 w-4" />

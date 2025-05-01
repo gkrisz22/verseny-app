@@ -12,7 +12,6 @@ const EligibilityForm = ({ categoryId, eligibleGrades } : { categoryId: string, 
     const [grades, setGrades] = React.useState<number[]>(eligibleGrades);
 
     const handleChange = (grade: number) => {
-        console.log(grade);
         if (grades.includes(grade)) {
             setGrades(grades.filter((g) => g !== grade));
         } else {

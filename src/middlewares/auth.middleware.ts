@@ -6,11 +6,8 @@ import { auth, signOut } from "@/auth";
 class AuthMiddleware<T> implements Middleware<T> {
     public async handle(_: FormData | object) {
         const session = await auth();
-        console.log("Running auth middleware.");
-
         try{
             if (!session) {
-                logger.error("Nincs bejelentkezve.");
                 throw new Error("Nincs bejelentkezve.");
             }
     

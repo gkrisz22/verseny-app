@@ -18,7 +18,6 @@ const ForduloFeladatErtekelo = async ({
     return <div>Nem található a forduló</div>;
   }
   const taskGroups = await getTaskGroups(stage_id) || [];
-  console.log("taskGroups", taskGroups);
   return (
     <div>
       <h1 className="text-2xl font-semibold">{stage.name} forduló értékelő</h1>

@@ -47,11 +47,6 @@ export default async function ErtekelesPage({ params }: Props) {
 
     const evaluations = await getEvaluationsForStage(stage_id);
 
-    console.log(students.map((s) => ({
-        ...s,
-        studentStageId: s.id,
-    })));
-
     return (
         <div>
             <StudentEvaluator 

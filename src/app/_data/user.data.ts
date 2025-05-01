@@ -1,5 +1,6 @@
 "use server";
 
+import { auth } from "@/auth";
 import orgService from "@/services/organization.service";
 import userService from "@/services/user.service";
 import { Organization } from "@prisma/client";
@@ -35,3 +36,15 @@ export const getUserOrganizationData = async (id: string): Promise<{ organizatio
         }
     })
 }
+
+export const getUserProfile = async () => {
+    const session = await auth();
+    if (!session || !session.user || !session.user.id) {
+        return null;
+    }
+    const res = await userService.get(session.user.id);
+    if (!res) {
+        return null;
+    }
+    return res;
+};

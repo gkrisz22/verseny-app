@@ -19,24 +19,21 @@ import TaskUploader from "../../admin/versenyek/[id]/(kategoria)/kategoria/[cat_
 import ListFiles from "../common/list-files";
 import { getSessionRole } from "@/lib/utilities";
 import { formatDate } from "@/lib/utils";
+import { getStageStatistics } from "@/app/_data/stage.data";
 
 export async function ForduloContent({
     stage,
     category,
     files,
     isAdmin = false,
-    statistics,
 }: {
     stage: Stage;
     category: Category;
     files: File[];
     isAdmin?: boolean;
-    statistics?: {
-        participants: number;
-        submittedTasks: number;
-        evaluatedTasks: number;
-    };
 }) {
+
+    const statistics = await getStageStatistics(stage.id);
     const role = await getSessionRole();
 
     const canViewTasks = () => {

@@ -11,7 +11,6 @@ import React, { useActionState } from "react";
 const EmailRegPage = () => {
     const searchParams = useSearchParams();
     const orgId = searchParams.get("org");
-    console.log(orgId);
     const [state, action, isPending] = useActionState(signUpEmail, {
         success: false,
         message: "",

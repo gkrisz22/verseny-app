@@ -28,8 +28,6 @@ export default async function OrgErtekelesPage({ params }: Props) {
     const taskGroups = await getTaskGroups(stage_id);
     const students = await getStageStudentsByOrganization(stage_id);
 
-    console.log(students);
-
     if (!taskGroups || taskGroups.length === 0) return (
         <div className='flex flex-col gap-4'>
             <h1 className='text-2xl font-medium'>A fordulóhoz nem tartozik egyetlen feladat sem.</h1>
@@ -55,11 +53,6 @@ export default async function OrgErtekelesPage({ params }: Props) {
     )
 
     const evaluations = await getEvaluationsForStage(stage_id);
-
-    console.log(students.map((s) => ({
-        ...s,
-        studentStageId: s.id,
-    })));
 
     return (
         <div>

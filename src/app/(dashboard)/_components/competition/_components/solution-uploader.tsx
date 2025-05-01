@@ -18,7 +18,6 @@ const StudentSolutionUploader = ({
 }) => {
 
   const handleAssign = async (localFiles:MediaFile[]) => {
-    console.log("Fájlok: ", localFiles);
     toast.promise(assignSolutionToStudent(studentStageId, localFiles.map((file) => file.id)), {
       loading: "Feltöltés...",
       success: () => {

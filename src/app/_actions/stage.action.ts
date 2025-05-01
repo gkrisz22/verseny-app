@@ -77,7 +77,6 @@ export async function assignTask(
     const to_delete = getStageFiles.filter(
         (file) => !newFiles.includes(file.fileId)
     );
-    console.log("I need to delete these files: ", to_delete);
     await stageService.assignFilesToStage(validatedData.data.stageId, newFiles);
     await stageService.removeFiles(
         validatedData.data.stageId,

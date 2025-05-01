@@ -15,7 +15,6 @@ export async function uploadFiles(
     formData: FormData
 ): Promise<ActionResponse<MediaUploadDTO>> {
     const rawData = Object.fromEntries(formData.entries());
-    console.log("Raw data:", rawData);
     return actionHandler<MediaUploadDTO>(
         mediaUploadSchema,
         formData,
@@ -28,7 +27,6 @@ export async function uploadFiles(
                     throw new Error("Érvénytelen munkamenet. Kérem jelentkezzen be újra!");   
                 }
 
-                console.log("Fájlok:", files);
                 for (let i = 0; i < files.length; i++) {
                     savedFiles.push(
                         await mediaService.uploadFile(files[i], session.user.id)

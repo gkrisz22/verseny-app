@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import DataTableSortableHeader from "@/app/(dashboard)/_components/common/data-table-sortable-header";
-import { Organization } from "@prisma/client";
+import { CompetitionOrganization, Organization, ParticipationStatus } from "@prisma/client";
+import { Badge } from "@/components/ui/badge";
 
 
 export interface Participant {
@@ -20,30 +21,6 @@ export interface Participant {
 
 
 export const columns: ColumnDef<Participant>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        className="rounded"
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        className="rounded"
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Sor kiválasztása"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: "organization",
     header: ({ column }) => <DataTableSortableHeader title="Név" column={column} />
@@ -67,31 +44,38 @@ export const columns: ColumnDef<Participant>[] = [
       const data = row.original;
       return (
         <div className="flex items-center gap-2">
-          <span>{data.status}</span>
+          <span><OrganizationStatusBadge status={data.status as ParticipationStatus} /></span>
         </div>
       );
     }
   },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      const data = row.original;
-
-      return (
-        <Link href={``}>
-        <Button
-          variant="secondary"
-          size="sm"
-          className="flex items-center"
-            onClick={(e) => {
-                e.stopPropagation();
-            }}
-        >
-            <Mail className="h-4 w-4" />
-            <span className="">Értesítés</span>
-        </Button>   
-        </Link>
-      );
-    },
-  },
 ];
+
+function OrganizationStatusBadge({ status }: { status: ParticipationStatus }) {
+  switch (status) {
+    case "APPROVED":
+      return (
+        <Badge variant="default">
+          <span className="text-xs">Jóváhagyva</span>
+        </Badge>
+      );
+    case "REJECTED":
+      return (
+        <Badge variant="destructive">
+          <span className="text-xs">Elutasítva</span>
+        </Badge>
+      );
+    case "PENDING":
+      return (
+        <Badge variant="outline">
+          <span className="text-xs">Függőben</span>
+        </Badge>
+      );
+    default:
+      return (
+        <Badge variant="outline">
+          <span className="text-xs">Ismeretlen</span>
+        </Badge>
+      );
+  }
+}

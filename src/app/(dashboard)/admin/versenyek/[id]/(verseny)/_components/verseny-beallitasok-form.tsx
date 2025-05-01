@@ -30,7 +30,7 @@ const VersenyBeallitasokForm = ({ competition } : { competition: Competition}) =
                         <FormField type="date" name="competitionEndDate" id="competitionEndDate" label="Verseny vége" defaultValue={competition.endDate || ''} errors={state.errors?.competitionEndDate} />
                         <FormField type="date" name="signUpStartDate" id="signUpStartDate" label="Jelentkezés kezdete" defaultValue={competition.signUpStartDate || ''} errors={state.errors?.signUpStartDate} />
                         <FormField type="date" name="signUpEndDate" id="signUpEndDate" label="Jelentkezés vége" defaultValue={competition.signUpEndDate || ''} errors={state.errors?.signUpEndDate} />
-                        <FormField type="switch" name="published" id="published" label="Nyilvános" defaultValue={competition.published.toString()} placeholder="A verseny megjelenik-e az iskolák számára?" errors={state.errors?.published} colSpan={2} />
+                        <FormField type="switch" name="published" id="published" label="Nyilvános" defaultValue={competition.published} placeholder="A verseny megjelenik-e az iskolák számára?" errors={state.errors?.published} colSpan={2} />
                         <input hidden type="text" name="id" value={competition.id} readOnly />
                         <div className="col-span-2 w-full">
                             {

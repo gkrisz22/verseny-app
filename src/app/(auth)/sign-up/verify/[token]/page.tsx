@@ -30,8 +30,6 @@ const VerifyRegPage = async ({
         return "Hiba történt!";
     }
 
-    console.log(data);
-
     return (
         <div className="w-full max-w-lg flex flex-col gap-4">
             <SignUpComplete userId={user.id} email={user.email} />

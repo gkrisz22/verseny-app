@@ -14,30 +14,6 @@ import { Badge } from "@/components/ui/badge";
 
 export const columns: ColumnDef<Competition>[] = [
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        className="rounded"
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        className="rounded"
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Sor kiválasztása"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
     accessorKey: "title",
     header: ({ column }) => {
       return (

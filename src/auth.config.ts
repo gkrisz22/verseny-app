@@ -3,7 +3,7 @@ import Google from "next-auth/providers/google";
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import authService from "./services/auth.service";
-import bcrypt from "bcryptjs";
+import userService from "./services/user.service";
 
 declare module "next-auth" {
     interface User {
@@ -53,7 +53,7 @@ export default {
                         throw new Error("Nincs jelszó beállítva!");
                     }
 
-                    const isValid = await bcrypt.compare(
+                    const isValid = await userService.comparePassword(
                         password,
                         user[0].password
                     );

@@ -68,7 +68,7 @@ const VersenyKategoriaDetailsPage = async ({ params }: { params: Promise<{ cat_i
                     <CategoryStudentsTable categoryId={id} />
                 </TabsContent>
                 <TabsContent value="statisztika">
-                    Statisztika
+                    
                 </TabsContent>
             </LocalCategoryMenu>
         </div>

@@ -28,7 +28,7 @@ export async function getStageStudentsByOrganization(
     stageId: string,
 ) {
     const orgData = await getSessionOrganizationData();
-    console.log("OrgData: ", orgData);
+
     if(!orgData) return [];
     const res = await stageService.getStageStudentsByOrganization(stageId, orgData.id);
     return res?.students.map((s) => ({
@@ -58,4 +58,35 @@ export async function getStageById(id: string) {
     });
 
     return res;
+}
+
+export async function getStageStatistics(id: string) {
+    const evaluationsCount = await db.evaluation.count({
+        where: {
+            stageStudent: {
+                stageId: id,
+            },
+        },
+    });
+
+    const studentStageFilesCount = await db.studentStageFile.count({
+        where: {
+            studentStage: {
+                stageId: id,
+            },
+        },
+    });
+
+    const studentStageCount = await db.studentStage.count({
+        where: {
+            stageId: id,
+        },
+    });
+
+
+    return {
+        participants: studentStageCount,
+        submittedTasks: studentStageFilesCount,
+        evaluatedTasks: evaluationsCount,
+    }
 }

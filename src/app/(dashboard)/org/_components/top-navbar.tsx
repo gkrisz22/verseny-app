@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Trophy, Settings, ChevronDown } from "lucide-react";
+import { Trophy, Settings, ChevronDown, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +29,7 @@ export function TopNavbar({ children, role }: { children: React.ReactNode, role:
     {
       label: "Összefoglaló",
       href: "/org",
-      icon: Trophy,
+      icon: Home,
       roles: ["admin", "teacher"],
     },
     {
@@ -37,18 +37,6 @@ export function TopNavbar({ children, role }: { children: React.ReactNode, role:
       href: "/org/versenyek",
       icon: Trophy,
       roles: ["admin", "teacher"],
-      children: [
-        {
-          label: "Aktuális versenyek",
-          href: "/org/versenyek/aktualis",
-          roles: ["admin", "teacher"],
-        },
-        {
-          label: "Korábbi versenyek",
-          href: "/org/versenyek/korabbi",
-          roles: ["admin", "teacher"],
-        },
-      ],
     },
     {
       label: "Beállítások",

@@ -5,8 +5,6 @@ import { ActionResponse } from "@/types/form/action-response";
 import { auth, signIn, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 import {
-    OrganizationContactDTO,
-    organizationContactSchema,
     SignInDTO,
     signInSchema,
     SignUpEmailDTO,
@@ -15,24 +13,18 @@ import {
     signUpSchoolSkeletonSchema,
     signUpSkeletonComplete,
     SignUpSkeletonCompleteDTO,
-    SignUpSkeletonDTO,
-    signUpSkeletonSchema,
     SignUpStepOneDTO,
     signUpStepOneSchema,
-    SignUpTeacherDTO,
-    signUpTeacherSchema,
 } from "@/lib/definitions";
 import { logger } from "@/lib/logger";
 import { actionHandler } from "@/lib/action.handler";
 import authService from "@/services/auth.service";
 import organizationService from "@/services/organization.service";
 import { v4 as uuid4 } from "uuid";
-import bcrypt from "bcryptjs";
 import roleService from "@/services/role.service";
 import { deleteSecureCookie, getSecureCookie, setSecureCookie } from "@/lib/utilities";
 import { getUserOrganizationData } from "../_data/user.data";
 import orgService from "@/services/organization.service";
-import { cookies } from "next/headers";
 import mailerService from "@/services/mailer.service";
 
 export const signUpFirstStep = async (
@@ -105,7 +97,6 @@ export const signUpSchoolSkeleton = async (
             }
 
             const { auth: authType } = data;
-            console.log("auth", authType);
 
             await setSecureCookie({
                 name: "reg",
@@ -226,9 +217,10 @@ export const signUpCompleteAction = async (
                 if (!user) {
                     throw new Error("Felhasználó nem található.");
                 }
-                const password = await bcrypt.hash(data.password, 10);
+                const password = await userService.hashPassword(data.password);
                 const updated = await authService.update(data.userId, {
                     password,
+                    status: "ACTIVE"
                 });
 
                 if (!updated) {
@@ -359,7 +351,6 @@ export const signUpAssignToOrganization = async () => {
     }
 
     // Szervezet létezik
-    console.log("orgId", orgId);
     const existingOrg = await organizationService.getWhere({ id: orgId });
     if (!existingOrg || existingOrg.length === 0) {
         return null;

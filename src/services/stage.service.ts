@@ -143,7 +143,6 @@ export class StageService extends Service {
         });
     }
     getStageStudentsOverPoints(stageId: string, points: number) {
-        console.log("Points: ", points);
         return this.db.stage.findUnique({
             where: {
                 id: stageId,

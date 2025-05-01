@@ -70,9 +70,12 @@ export  function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Fiók
+              <DropdownMenuItem asChild>
+                
+                <Link href="/select/fiok">
+                  <BadgeCheck />
+                  Fiók
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/select">

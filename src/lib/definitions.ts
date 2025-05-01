@@ -304,6 +304,26 @@ export const updateUserSchema = z.object({
 });
 export type UpdateUserDTO = z.infer<typeof updateUserSchema>;
 
+export const updateUserProfileSchema = z.object({
+    id: z.string().nonempty("Felhasználói azonosító megadása kötelező!"),
+    name: z.string().nonempty("Név megadása kötelező!"),
+    email: z.string().email("Hibás e-mail cím formátum!"),
+    password: z.string().optional().refine((val) => {
+        return val === undefined || val === "" || val.length >= 8;
+    }, "A jelszó legalább 8 karakter hosszú kell legyen!"),
+    passwordConfirm: z.string().optional().refine((val) => {
+        return val === undefined || val === "" || val.length >= 8;
+    }, "A jelszó legalább 8 karakter hosszú kell legyen!"),
+}).refine((val) => {
+    const password = val.password;
+    const passwordConfirm = val.passwordConfirm;
+    return password === passwordConfirm;
+}
+, {
+    message: "A jelszavaknak meg kell egyezniük!",
+});
+export type UpdateUserProfileDTO = z.infer<typeof updateUserProfileSchema>;
+
 export const updateCompetitionSettingsSchema = z.object({
     id: z.string().nonempty("Verseny azonosító megadása kötelező!"),
     competitionStartDate: z.string().nonempty("Verseny kezdődátumának megadása kötelező!"),

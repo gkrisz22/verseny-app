@@ -40,7 +40,6 @@ export const columns: ColumnDef<AcademicYear>[] = [
     id: "actions",
     cell: ({ row }) => {
       const data = row.original;
-      console.log(data);
       return (
         <div className="flex items-center justify-center gap-2">
             <Button

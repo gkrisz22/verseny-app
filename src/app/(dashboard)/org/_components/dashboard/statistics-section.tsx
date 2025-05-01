@@ -20,31 +20,13 @@ const StatisticsSection = async () => {
         <div className="text-3xl font-bold">{competitions.length}</div>
         <p className="text-xs text-muted-foreground">Jelenleg ennyi verseny elérhető</p>
         <Button asChild variant="ghost" className="mt-4 w-full justify-between">
-          <Link href="/org/versenyek/aktualis">
+          <Link href="/org/versenyek/">
             Tekintse meg őket
             <ArrowRight className="h-4 w-4" />
           </Link>
         </Button>
       </CardContent>
     </Card>
-
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-lg font-medium">Korábbi versenyek</CardTitle>
-        <History className="h-5 w-5 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-3xl font-bold">12</div>
-        <p className="text-xs text-muted-foreground">Verseny teljesítve</p>
-        <Button asChild variant="ghost" className="mt-4 w-full justify-between">
-          <Link href="/org/versenyek/korabbi">
-            Korábbi versenyek
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </Button>
-      </CardContent>
-    </Card>
-
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-lg font-medium">Szervezeti felhasználók</CardTitle>

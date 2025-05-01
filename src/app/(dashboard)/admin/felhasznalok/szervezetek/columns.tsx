@@ -4,7 +4,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowRight, Mail } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import DataTableSortableHeader from "@/app/(dashboard)/_components/common/data-table-sortable-header";
 import { Organization, OrganizationStatus } from "@prisma/client";
@@ -13,30 +12,6 @@ import { Badge } from "@/components/ui/badge";
 
 
 export const columns: ColumnDef<Organization & { _count: { members: number } }> [] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        className="rounded"
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        className="rounded"
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Sor kiválasztása"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: "name",
     header: ({ column }) => <DataTableSortableHeader title="Név" column={column} />

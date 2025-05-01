@@ -6,7 +6,6 @@ import { Building2, Shield, ArrowRight } from "lucide-react"
 import { getUserOrganizationData } from "@/app/_data/user.data"
 import { auth } from "@/auth"
 import Link from "next/link"
-import { NavUser } from "../_components/sidebar/nav-user"
 import SelectOrg from "./_components/select-org"
 import { handleOrgRoleSelect } from "@/app/_actions/auth.action"
 
@@ -21,18 +20,7 @@ export default async function OrganizationsPage() {
 
     return (
         <div className="min-h-screen p-4 md:p-8">
-            <div className="max-w-6xl mx-auto">
-                <div className="flex justify-between items-center mb-8">
-                    <div>
-                        <h1 className="text-3xl font-bold">Szervezetválasztás</h1>
-                        <p className="text-muted-foreground mt-1">
-                            Üdvözöljük, {user.name}!
-                        </p>
-                    </div>
-                    <div className="flex gap-2">
-                        <NavUser user={user} />
-                    </div>
-                </div>
+            <div className="mx-auto">
 
                 {user.superAdmin && (
                     <Card className="mb-8 border-primary/20 bg-primary/5">

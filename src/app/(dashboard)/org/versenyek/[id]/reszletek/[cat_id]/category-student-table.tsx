@@ -14,9 +14,7 @@ const CategoryStudentTable = ({ categoryId, students } : { categoryId: string, s
     const [selectedStudents, setSelectedStudents] = React.useState<Student[]>(students.map(s => s.student) || []);
 
     const addStudents = async () => {
-        console.log(selectedStudents)
         const res = await signStudentsUpForCategory(categoryId, selectedStudents.map(s => s.id));
-        console.log(res);
         if(res.success) {
             toast.success("Sikeresen jelentkeztél a versenykategóriára!");
             const { students, not_ok, eligibleGrades } = res.data || { students: [], not_ok: [], eligibleGrades: undefined };

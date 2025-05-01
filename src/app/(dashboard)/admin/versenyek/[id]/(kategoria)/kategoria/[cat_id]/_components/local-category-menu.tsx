@@ -20,12 +20,7 @@ const _MENU_ITEMS = [
     title: 'Diákok',
     url: 'diakok',
     icon: UsersIcon,
-  },
-  {
-    title: 'Statisztika',
-    url: 'statisztika',
-    icon: ChartColumnIcon,
-  },
+  }
 ];
 
 const LocalCategoryMenu = ({ children}: { children: React.ReactNode; }) => {

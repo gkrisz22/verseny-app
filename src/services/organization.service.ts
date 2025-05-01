@@ -8,7 +8,6 @@ export class OrganizationService extends Service {
     }
 
     async create(data: OrganizationDTO) {
-        console.log(data);
         return this.db.organization.create({
             data,
         }); 

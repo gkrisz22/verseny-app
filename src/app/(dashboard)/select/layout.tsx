@@ -7,6 +7,7 @@ import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
 import { Toaster } from "@/components/ui/sonner";
 import { BackToTop } from "@/components/shared/back-to-top";
+import { NavUser } from "../_components/sidebar/nav-user";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -32,6 +33,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  const session = await auth();
+  const user = session?.user;
+  if (!user || !user.id) return null;
   return (
     <html lang="hu">
       <body
@@ -47,7 +52,18 @@ export default async function RootLayout({
           <WebVitals />
           <Toaster />
           <SessionProvider>
-            <main className="w-full min-w-0 mt-6 bg-background">
+            <main className="w-full min-w-0 mt-6 bg-background container mx-auto max-w-6xl ">
+            <div className="flex justify-between items-center mb-8">
+                    <div>
+                        <h1 className="text-3xl font-bold">Szervezetválasztás</h1>
+                        <p className="text-muted-foreground mt-1">
+                            Üdvözöljük, {user.name}!
+                        </p>
+                    </div>
+                    <div className="flex gap-2">
+                        <NavUser user={user} />
+                    </div>
+                </div>
                 {children}
             </main>
           </SessionProvider>

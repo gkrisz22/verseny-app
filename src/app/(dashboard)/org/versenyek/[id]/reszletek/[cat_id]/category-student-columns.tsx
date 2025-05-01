@@ -11,30 +11,7 @@ import DataTableSortableHeader from "@/app/(dashboard)/_components/common/data-t
 import { Student } from "@prisma/client";
 
 export const columns: ColumnDef<Student>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        className="rounded"
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        className="rounded"
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Sor kiválasztása"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+
   {
     accessorKey: "name",
     header: ({ column }) => {
@@ -75,18 +52,6 @@ export const columns: ColumnDef<Student>[] = [
       return (
           <span className="p-2">{data.grade}.</span>
       );
-    }
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      const data = row.original;
-      console.log(data);
-      return (
-        <>
-            ...
-        </>
-      )
     }
   },
 ];
