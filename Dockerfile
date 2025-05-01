@@ -18,8 +18,6 @@ COPY . .
 # 6. Prisma kliens generálása (adatbázis-kliens inicializálása)
 RUN npx prisma generate
 
-RUN npx prisma db push --accept-data-loss && npx prisma db seed
-
 # 7. Next.js build
 RUN npm run build
 
@@ -35,11 +33,8 @@ COPY --from=builder /app/public public
 COPY --from=builder /app/node_modules node_modules
 COPY --from=builder /app/prisma prisma
 
-# 10. Prisma generálás futásidőben is (ha seed vagy db push kell)
-RUN npx prisma generate
-
-# 11. Környezeti változó
+# 10. Környezeti változó
 ENV NODE_ENV=production
 
-# 12. Alkalmazás indítása
+# 11. Alkalmazás indítása
 CMD ["npm", "start"]
