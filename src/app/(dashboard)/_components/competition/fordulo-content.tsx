@@ -41,8 +41,8 @@ export async function ForduloContent({
 
     const canViewTasks = () => {
         if (isAdmin) return true;
+        if (stage.status === "FINISHED") return true;
         if (role === "admin") {
-            if (stage.status === "FINISHED") return true;
             if (
                 stage.status === "ONGOING" &&
                 stage.accessStartDate &&

@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   db:
     image: postgres:15
@@ -15,22 +14,12 @@ services:
 
   app:
     build: .
-    restart: always
     ports:
       - "3000:3000"
-    depends_on:
-      - db
     env_file:
       - .env
-    volumes:
-      - .:/app
-      - /app/node_modules
-    command: sh -c "
-      npx prisma generate &&
-      npx prisma db push &&
-      npx prisma db seed &&
-      npm start"
-
+    depends_on:
+      - db
 
 volumes:
   db_data:
