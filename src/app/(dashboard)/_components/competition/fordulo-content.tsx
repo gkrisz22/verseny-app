@@ -1,8 +1,5 @@
 import React from "react";
-import {
-    Card,
-    CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,7 +25,7 @@ export async function ForduloContent({
     category,
     files,
     isAdmin = false,
-    statistics
+    statistics,
 }: {
     stage: Stage;
     category: Category;
@@ -45,49 +42,56 @@ export async function ForduloContent({
     const canViewTasks = () => {
         if (isAdmin) return true;
         if (role === "admin") {
-            if(stage.status === "FINISHED")
-                return true;
-            if(stage.status === "ONGOING" && stage.accessStartDate && new Date(stage.accessStartDate) < new Date())
-            {
-                if(stage.accessEndDate) {
+            if (stage.status === "FINISHED") return true;
+            if (
+                stage.status === "ONGOING" &&
+                stage.accessStartDate &&
+                new Date(stage.accessStartDate) < new Date()
+            ) {
+                if (stage.accessEndDate) {
                     return new Date(stage.accessEndDate) > new Date();
                 }
                 return true;
             }
         }
-        if(stage.evaluationStartDate && new Date(stage.evaluationStartDate) < new Date())
-        {
-            if(stage.evaluationEndDate) {
+        if (
+            stage.evaluationStartDate &&
+            new Date(stage.evaluationStartDate) < new Date()
+        ) {
+            if (stage.evaluationEndDate) {
                 return new Date(stage.evaluationEndDate) > new Date();
             }
             return true;
         }
         return false;
-    }
+    };
 
     const canViewEvaluation = () => {
         if (isAdmin) return true;
         if (role === "admin") {
-            if(stage.status === "FINISHED")
-                return true;
-            if(stage.status === "ONGOING" && stage.evaluationStartDate && new Date(stage.evaluationStartDate) < new Date())
-            {
-                if(stage.evaluationEndDate) {
-                    return new Date(stage.evaluationEndDate) > new Date();
-                }
-                return true;
+            if (stage.status === "FINISHED") return true;
+        }
+        if (
+            stage.status === "ONGOING" &&
+            stage.evaluationStartDate &&
+            new Date(stage.evaluationStartDate) < new Date()
+        ) {
+            if (stage.evaluationEndDate) {
+                return new Date(stage.evaluationEndDate) > new Date();
             }
+            return true;
         }
         return false;
-    }
+    };
 
     const getEvaluationUrl = () => {
-        if (isAdmin) return `/admin/versenyek/${category.competitionId}/kategoria/${stage.categoryId}/fordulo/${stage.id}/ertekeles`;
-        if(canViewEvaluation()) {
+        if (isAdmin)
+            return `/admin/versenyek/${category.competitionId}/kategoria/${stage.categoryId}/fordulo/${stage.id}/ertekeles`;
+        if (canViewEvaluation()) {
             return `/org/versenyek/${category.competitionId}/reszletek/${stage.categoryId}/fordulo/${stage.id}/ertekeles`;
         }
-        return '#';
-    }
+        return "#";
+    };
 
     return (
         <div className="space-y-6">
@@ -142,11 +146,10 @@ export async function ForduloContent({
                 </div>
             </TabsContent>
             <TabsContent value="feladatok">
-                
                 <div className="space-y-4">
                     <div className="flex flex-col pt-4 border-t">
                         <h4 className="text-sm font-medium mb-2">Feladatok</h4>
-                        {(stage.id && canViewTasks()?  (
+                        {stage.id && canViewTasks() ? (
                             <ListFiles files={files} />
                         ) : (
                             <div className="flex items-center gap-2">
@@ -154,15 +157,19 @@ export async function ForduloContent({
                                     A feladatok még nem érhetők el.
                                 </h4>
                                 <p className="text-xs text-muted-foreground">
-                                    {role === 'admin' && stage.accessStartDate &&
-                                        `Kezdés: ${formatDate(stage.accessStartDate)}`}
-                                    {role === 'admin' && stage.accessEndDate &&
+                                    {role === "admin" &&
+                                        stage.accessStartDate &&
+                                        `Kezdés: ${formatDate(
+                                            stage.accessStartDate
+                                        )}`}
+                                    {role === "admin" &&
+                                        stage.accessEndDate &&
                                         ` - Befejezés: ${formatDate(
                                             stage.accessEndDate
                                         )}`}
                                 </p>
                             </div>
-                        ))}
+                        )}
                         {isAdmin && (
                             <TaskUploader stageId={stage.id} files={files} />
                         )}
@@ -173,9 +180,7 @@ export async function ForduloContent({
                                 Értékelő-táblázat
                             </h4>
                             {canViewEvaluation() ? (
-                                <Link
-                                    href={getEvaluationUrl()}
-                                >
+                                <Link href={getEvaluationUrl()}>
                                     <Button variant="outline" className="w-fit">
                                         <SheetIcon className="h-4 w-4 mr-2" />
                                         Csoportos értékelő indítása
@@ -188,13 +193,15 @@ export async function ForduloContent({
                                     </h4>
                                     <p className="text-xs text-muted-foreground">
                                         {stage.evaluationStartDate &&
-                                            `Kezdés: ${formatDate(stage.evaluationStartDate)}`}
+                                            `Kezdés: ${formatDate(
+                                                stage.evaluationStartDate
+                                            )}`}
                                         {stage.evaluationEndDate &&
                                             ` - Befejezés: ${formatDate(
                                                 stage.evaluationEndDate
                                             )}`}
                                     </p>
-                                    </div>
+                                </div>
                             )}
                         </div>
                         {isAdmin && (
