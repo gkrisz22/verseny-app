@@ -14,6 +14,11 @@ export const roleSeeder = async (db:PrismaClient) => {
     ];
 
     try {
+        const count = await db.role.count();
+        if (count > 0) {
+            logger.info("[Seed] Szerepkörök már léteznek.");
+            return;
+        }
         await db.role.createMany({
             data: roles,
         });

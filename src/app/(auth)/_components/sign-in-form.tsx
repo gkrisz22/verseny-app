@@ -9,23 +9,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import ThirdPartySignIn from "./third-party-login"
 import Link from "next/link"
 import { signInAction } from "@/app/_actions/auth.action";
-import { useActionState } from "react";
 import FormField from "@/app/(dashboard)/_components/common/form-field";
 import { Loader2Icon } from "lucide-react";
+import { useActionForm } from "@/hooks/use-action-form";
 
 export function SignInForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const [state, action, isPending] = useActionState(signInAction, {
-    message: '',
-    success: false,
-  });
+  const [state, action, isPending] = useActionForm(signInAction);
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -41,7 +36,6 @@ export function SignInForm({
             <div className="grid gap-6">
               <div className="grid gap-6">
                 <div className="grid gap-2">
-                 
                   <FormField id="email" name="email" label="E-mail cím" type="email" defaultValue={state?.inputs?.email} required errors={state?.errors?.email} />
                 </div>
                 <div className="grid gap-2">

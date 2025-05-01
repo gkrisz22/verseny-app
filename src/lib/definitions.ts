@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const signUpStepOneSchema = z.object({
-    role: z.enum(["school", "teacher", "student"]).refine((val) => !!val, {
+    role: z.enum(["school"]).refine((val) => !!val, {
         message: "Szerepkör megadása kötelező!",
     }),
 });

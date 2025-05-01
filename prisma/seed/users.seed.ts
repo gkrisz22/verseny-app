@@ -3,6 +3,11 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 export const userSeeder = async (db:PrismaClient) => {
 
+    const count = await db.user.count();
+    if (count > 0) {
+        logger.info("[userSeeder] Felhasználók már léteznek.");
+        return;
+    }
     // Super Admin
     const password = "12345678";
     const salt = await bcrypt.genSalt(10);
