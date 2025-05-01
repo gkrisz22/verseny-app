@@ -36,7 +36,7 @@ const StatisticsSection = async () => {
         <div className="text-3xl font-bold">{organizationUsers.length}</div>
         <p className="text-xs text-muted-foreground">Aktív felhasználó a szervezétben</p>
         <Button asChild variant="ghost" className="mt-4 w-full justify-between">
-          <Link href="/org/users">
+          <Link href="/org/beallitasok?tab=felhasznalok">
             Felhasználók kezelése
             <ArrowRight className="h-4 w-4" />
           </Link>
