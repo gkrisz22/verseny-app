@@ -22,8 +22,6 @@ services:
       - .env
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://postgres:Password1@postgres:5432/verseny-app
-      AUTH_TRUST_HOST: true
     ports:
       - "3025:3025"
     command: > 
