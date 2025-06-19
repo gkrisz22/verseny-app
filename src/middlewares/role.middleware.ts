@@ -16,7 +16,7 @@ class RoleMiddleware<T> implements Middleware<T> {
             }
             const sessionRole = await getSessionRole();
             
-            if(!sessionRole || sessionRole !== data.role || !session?.user?.superAdmin) {
+            if (!session?.user?.superAdmin && (!sessionRole || sessionRole !== data.role)) {
                 throw new Error("Ezzel a szerepkörrel nem hajtható végre a művelet.");
             }
         }
