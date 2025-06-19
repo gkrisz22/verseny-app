@@ -95,6 +95,7 @@
     "prisma": "^6.4.1",
     "tailwindcss": "^3.4.1",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3"
   },
@@ -103,6 +104,6 @@
     "@types/react-dom": "19.0.4"
   },
   "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "seed": "tsx --tsconfig tsconfig.json -r tsconfig-paths/register prisma/seed.ts"
   }
 }
