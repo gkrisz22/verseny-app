@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Password1
+      POSTGRES_DB: verseny-app
+
+  app:
+    build: .
+    container_name: nextjs-app
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:Password1@postgres:5432/verseny-app
+      AUTH_TRUST_HOST: true
+    ports:
+      - "3025:3025"
+    command: > 
+       sh -c "npx prisma db push --force-reset &&
+         npx prisma db seed &&
+         npm run start"
+
+volumes:
+  postgres_data:
