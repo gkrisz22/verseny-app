@@ -1,5 +1,5 @@
 import { logger } from "@/lib/logger";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient, UserStatus } from "@prisma/client";
 import bcrypt from "bcryptjs";
 export const userSeeder = async (db:PrismaClient) => {
 
@@ -16,7 +16,7 @@ export const userSeeder = async (db:PrismaClient) => {
         email: "superadmin@test.local",
         name: "Super Admin",
         password: hashedPassword,
-        status: "ACTIVE",
+        status: UserStatus.ACTIVE,
         superAdmin: true,
         emailVerified: new Date()
     };
