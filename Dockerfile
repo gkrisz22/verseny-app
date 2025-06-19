@@ -9,8 +9,8 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+RUN npx prisma generate
 RUN npm run build
-RUN npm install prisma --save-dev --force
 
 # 3. Production image
 FROM node:20-alpine AS runner

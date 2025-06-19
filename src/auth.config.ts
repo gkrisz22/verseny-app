@@ -87,7 +87,7 @@ export default {
             const userExists = await authService.getWhere({ email: isCredentials ? user.email : profile?.email as string });
 
             if (userExists.length === 0) {
-                if (account?.provider === "github") {
+                if (account?.provider === "github" || account?.provider === "google") {
                     return true;
                 }
                throw new Error("Nem létezik a felhasználó!");
