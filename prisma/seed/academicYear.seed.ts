@@ -9,7 +9,7 @@ export const academicYearSeeder = async (db:PrismaClient) => {
     }
     const academicYear:Prisma.AcademicYearCreateInput = {
         startDate: new Date("2024-09-02"),
-        endDate: new Date("2025-06-30"),
+        endDate: new Date("2025-08-20"),
         name: "2024/2025"
     }
 

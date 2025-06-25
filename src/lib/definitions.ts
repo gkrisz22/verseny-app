@@ -416,14 +416,7 @@ export const organizationUpdateSchema = organizationSchema.extend({
     website: z.string().optional(),
     contactName: z.string().nonempty("Kapcsolattartó név megadása kötelező!"),
     contactEmail: z.string().nonempty("Kapcsolattartó e-mail cím megadása kötelező!").email("Hibás e-mail cím formátum!"),
-    phoneNumber: z.string().optional().refine((val) => {
-        if (!val || val === "") return true;    
-        const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-        return phoneRegex.test(val);
-    },
-    {
-        message: "A telefonszám formátuma hibás! Jó formátum: +36 1 234 5678.",
-    }),
+    phoneNumber: z.string().optional(),
     id: z.string().optional(),
     isActive: z.string().optional(),
 }).refine((val) => {

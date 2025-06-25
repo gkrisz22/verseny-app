@@ -61,7 +61,7 @@ export class MailerService extends Service {
     }
 
     async sendStageStartEmail(competition:Competition, category:Category, stage:Stage) {
-        const subject = 'Új forduló kezdődöt a(z) ' + competition.title + ' versenyen';
+        const subject = 'Új forduló kezdődött a(z) ' + competition.title + ' versenyen';
         const html = `
           <p>Új forduló kezdődöt a(z) ${category.name} kategóriában:</p>
           <p>Neve: ${stage.name}</p>

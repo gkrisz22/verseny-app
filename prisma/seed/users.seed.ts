@@ -38,6 +38,7 @@ export const userSeeder = async (db:PrismaClient) => {
         phoneNumber: "06301111111",
         contactEmail: "admin@bookversum.app",
         contactName: "Admin",
+        status: "ACTIVE"
     }
 
     const org = await db.organization.create({
